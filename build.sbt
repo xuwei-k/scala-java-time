@@ -12,7 +12,9 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.11.8"),
   publishArtifact in (Compile, packageDoc) := false,
-  publishArtifact in packageDoc := false
+  publishArtifact in packageDoc := false,
+  testOptions +=
+    Tests.Argument(TestFramework("com.novocode.junit.JUnitFramework"), "-v", "-a")
 )
 
 lazy val threetenbpRoot = project.in(file("."))
@@ -24,13 +26,14 @@ lazy val threetenbpRoot = project.in(file("."))
     crossScalaVersions := Seq("2.11.8")
   )
 
-
 lazy val threetenbpCross = crossProject.crossType(CrossType.Full).in(file("."))
+  .jsConfigure(_.enablePlugins(ScalaJSJUnitPlugin))
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.0.0-M15" % "test",
       "junit" % "junit" % "4.12" % "test",
-      "org.testng" % "testng" % "6.9.10" % "test"
+      "org.testng" % "testng" % "6.9.10" % "test",
+      "com.novocode" % "junit-interface" % "0.11" % "test"
     )
   )
 
@@ -38,4 +41,3 @@ lazy val threetenbp = threetenbpCross.jvm
   .settings(commonSettings: _*)
 lazy val threetenbpJS = threetenbpCross.js
   .settings(commonSettings: _*)
-
