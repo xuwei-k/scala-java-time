@@ -5,13 +5,13 @@ import java.util.Locale
 import org.junit.{Before, Test}
 import org.junit.Assert._
 
-import scala.scalajs.js.LocaleDB
+import scala.scalajs.js.LocaleRegistry
 import scala.scalajs.testsuite.utils.AssertThrows._
 
 class LocaleTest {
   @Before def reset(): Unit = {
     // Ensure no locale has been installed
-    LocaleDB.resetDatabase()
+    LocaleRegistry.resetDatabase()
   }
 
   @Test def test_no_default_locale(): Unit = {
@@ -20,7 +20,7 @@ class LocaleTest {
   }
 
   @Test def test_loaded_en_US(): Unit = {
-    LocaleDB.installLocale(enUS)
+    LocaleRegistry.installLocale(enUS)
 
     assertEquals(Locale.forLanguageTag("en_US").getLanguage, "en")
     assertEquals(Locale.forLanguageTag("en_US").getCountry, "US")

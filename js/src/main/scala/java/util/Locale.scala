@@ -1,9 +1,14 @@
 package java.util
 
+import scala.scalajs.js.LocaleRegistry
+
 object Locale {
+
   var defaultLocale: Option[Locale] = None
-  val US: Locale    = new Locale("en", "US")
-  val CANADA: Locale    = new Locale("en", "CA")
+  val US: Locale    = new Locale("en", "US", "")
+  val CANADA: Locale    = new Locale("en", "CA", "")
+
+  private val EMPTY: Locale = new Locale("", "", "")
 
   def getAvailableLocales(): Array[Locale] = Array(US, CANADA)
 
@@ -13,6 +18,9 @@ object Locale {
   def setDefault(newLocale: Locale): Unit = {
     defaultLocale = Some(newLocale)
   }
+
+  def forLanguageTag(languageTag: String): Locale = LocaleRegistry
+    .forLanguageTag(languageTag).getOrElse(EMPTY)
 }
 
 class Locale(language: String, country: String, variant: String) {
