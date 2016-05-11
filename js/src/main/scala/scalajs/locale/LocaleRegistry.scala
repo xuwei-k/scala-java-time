@@ -38,11 +38,26 @@ object LocaleRegistry {
     val number: CLDRNumber
   }
 
-  def forLanguageTag(languageTag: String): Option[Locale] = {
+  /**
+    * Attempts to give a Locale for the given tag if avaibale
+    */
+  def localeForLanguageTag(languageTag: String): Option[Locale] = {
+    // TODO Support alternative tags for the same locale
     locales.get(languageTag).map(_.locale)
   }
 
-  def resetDatabase(): Unit = {
+  /**
+    * Attempts to give a Locale for the given tag if avaibale
+    */
+  def decimalFormatSymbol(locale: Locale): Option[DecimalFormatSymbols] = {
+    // TODO Support alternative tags for the same locale
+    locales.find(_._2.locale == locale).flatMap(_._2.decimalFormatSymbol)
+  }
+
+  /**
+    * Cleans the registry, useful for testing
+    */
+  def resetRegistry(): Unit = {
     locales = Map.empty
   }
 
