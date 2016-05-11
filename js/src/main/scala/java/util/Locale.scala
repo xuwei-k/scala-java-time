@@ -1,6 +1,6 @@
 package java.util
 
-import scala.scalajs.js.LocaleRegistry
+import scala.scalajs.locale.LocaleRegistry
 
 object Locale {
 

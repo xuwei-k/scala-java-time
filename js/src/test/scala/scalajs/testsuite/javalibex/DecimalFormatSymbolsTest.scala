@@ -1,9 +1,12 @@
-package java.util
+package scalajs.testsuite.javalibex
 
 import java.text.DecimalFormatSymbols
+import java.util.Locale
 
-import org.junit.Assert._
 import org.junit.{Before, Test}
+import org.junit.Assert.assertTrue
+
+import scala.scalajs.locale.LocaleRegistry
 
 class DecimalFormatSymbolsTest extends LocaleTestData {
   @Before def reset(): Unit = {
@@ -15,9 +18,9 @@ class DecimalFormatSymbolsTest extends LocaleTestData {
     LocaleRegistry.installLocale(enUS)
     val dfs = DecimalFormatSymbols.getInstance(Locale.forLanguageTag("en_US"))
 
-    assertEquals(dfs.getDecimalSeparator, '.')
-    assertEquals(dfs.getMinusSign, '-')
-    assertEquals(dfs.getZeroDigit, '0')
+    assertTrue(dfs.getDecimalSeparator == '.')
+    assertTrue(dfs.getMinusSign == '-')
+    assertTrue(dfs.getZeroDigit == '0')
   }
 
 }

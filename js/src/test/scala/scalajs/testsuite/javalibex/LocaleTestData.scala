@@ -1,5 +1,8 @@
-package java.util
+package scalajs.testsuite.javalibex
 
+/**
+  * Created by cquiroz on 5/11/16.
+  */
 trait LocaleTestData {
   // Taken from Intl.js
   val enUS =

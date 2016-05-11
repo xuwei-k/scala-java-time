@@ -1,11 +1,30 @@
 package java.text
 
-import org.threeten.bp.format.DecimalStyle
+import java.util.Locale
 
+import scala.scalajs.locale.LocaleRegistry
 
-class DecimalFormatSymbols private(zeroDigit: Char, positiveSign: Char, negativeSign: Char, decimalSeparator: Char) {
-  def getZeroDigit: Char        = zeroDigit
-  def getPositiveSign: Char     = positiveSign
-  def getMinusSign: Char        = negativeSign
-  def getDecimalSeparator: Char = decimalSeparator
+object DecimalFormatSymbols {
+  def getAvailableLocales():Array[Locale] = Array.empty
+  def getInstance(locale: Locale):DecimalFormatSymbols =
+    LocaleRegistry.decimalFormatSymbol(locale).getOrElse(throw new IllegalArgumentException("Unknown locale"))
+}
+
+class DecimalFormatSymbols() {
+  private[this] var zeroDigit: Option[Char] = None
+  private[this] var minusSign: Option[Char] = None
+  private[this] var decimalSeparator: Option[Char] = None
+
+  def getZeroDigit(): Char        = zeroDigit.getOrElse(0)
+  def getMinusSign(): Char        = minusSign.getOrElse(0)
+  def getDecimalSeparator(): Char = decimalSeparator.getOrElse(0)
+
+  def setZeroDigit(zeroDigit: Char):Unit =
+    this.zeroDigit = Some(zeroDigit)
+  def setMinusSign(minusSign: Char):Unit =
+    this.minusSign = Some(minusSign)
+  def setDecimalSeparator(decimalSeparator: Char):Unit =
+    this.decimalSeparator = Some(decimalSeparator)
+
+  // TODO Complete the rest of the public methods
 }

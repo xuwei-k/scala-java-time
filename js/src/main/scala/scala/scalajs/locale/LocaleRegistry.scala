@@ -1,4 +1,4 @@
-package scala.scalajs.js
+package scala.scalajs.locale
 
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -65,7 +65,7 @@ object LocaleRegistry {
     // TODO Support all the options for unicode, including variants, numeric regions, etc
     val simpleLocaleRegex = "([a-zA-Z]{2,3})[-_]([a-zA-Z]{2})?.*".r
 
-    val localeJson = JSON.parse(json).asInstanceOf[CLDR]
+    val localeJson = js.JSON.parse(json).asInstanceOf[CLDR]
 
     // Read basic locale data
     val localeName = localeJson.locale.toString
