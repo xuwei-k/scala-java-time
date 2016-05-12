@@ -32,9 +32,10 @@ object LocaleRegistry {
 
   case class LocaleCldr(locale: Locale, decimalFormatSymbol: Option[DecimalFormatSymbols])
 
-  private var locales: Map[String, LDML] = Map(
+  private val defaultLocales: Map[String, LDML] = Map(
     en_US.languageTag -> en_US
   )
+  private var locales: Map[String, LDML] = Map.empty
 
   // TODO verify how stable is the CLDR json
   @ScalaJSDefined
@@ -59,7 +60,7 @@ object LocaleRegistry {
     */
   def localeForLanguageTag(languageTag: String): Option[Locale] = {
     // TODO Support alternative tags for the same locale
-    locales.get(languageTag).map(_.toLocale)
+    (defaultLocales ++ locales).get(languageTag).map(_.toLocale)
   }
 
   /**

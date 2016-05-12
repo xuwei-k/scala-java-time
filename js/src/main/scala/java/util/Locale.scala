@@ -5,7 +5,7 @@ import scala.scalajs.locale.LocaleRegistry
 object Locale {
 
   private var defaultLocale: Option[Locale] = None
-  val US: Locale    = new Locale("en", "US", "")
+  val US: Locale     = LocaleRegistry.en_US.toLocale
   val CANADA: Locale    = new Locale("en", "CA", "")
 
   private val EMPTY: Locale = new Locale("", "", "")
@@ -23,11 +23,27 @@ object Locale {
     .localeForLanguageTag(languageTag).getOrElse(EMPTY)
 }
 
-class Locale(language: String, country: String, variant: String) {
-  def getCountry(): String = Option(country).getOrElse("")
-  def getLanguage(): String = Option(language).getOrElse("")
-  def getVariant(): String = Option(variant).getOrElse("")
+class Locale(private val language: String, private val country: String, private val variant: String) {
+  // Required by the javadocs
+  if (language == null || country == null || variant == null) {
+    throw new NullPointerException("Null argument to constructor not allowed")
+  }
+
+  // Additional constructors
+  def this(language: String, country: String) = this(language, country, "")
+  def this(language: String) = this(language, "", "")
+
+  def getLanguage(): String = language
+  def getCountry(): String = country
+  def getVariant(): String = variant
   def getScript(): String = ""
 
   // TODO Add other methods on the public interface
+
+  override def equals(x: Any):Boolean = x match {
+    case l: Locale =>
+      language == l.language && country == l.country && variant == l.variant
+    case _         =>
+      false
+  }
 }
