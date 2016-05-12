@@ -6,10 +6,35 @@ import java.util.Locale
 import scala.scalajs.js
 import scala.scalajs.js.annotation.ScalaJSDefined
 
+/**
+  * Interface describing LDNL
+  */
+object ldml {
+
+  case class LDMLLocale(language: String, territory: Option[String], variant: Option[String], script: Option[String])
+  case class LDML(locale: LDMLLocale) {
+    // TODO support script and extensions
+    def languageTag: String = locale.language + locale.territory.fold("")(t => s"-$t") + locale.variant.fold("")(v => s"-$v") + locale.script.fold("")(s => s"#$s")
+
+    def scalaSafeName: String = locale.language + locale.territory.fold("")(t => s"_$t") + locale.variant.fold("")(v => s"_$v") + locale.script.fold("")(s => s"_$s")
+
+    def toLocale: Locale =
+      new Locale(locale.language, locale.territory.getOrElse(""), locale.variant.getOrElse(""))
+  }
+
+}
+
 object LocaleRegistry {
+  import ldml._
+
+  // The spec requires some locales by default
+  val en_US: LDML = LDML(LDMLLocale("en", Some("US"), None, None))
+
   case class LocaleCldr(locale: Locale, decimalFormatSymbol: Option[DecimalFormatSymbols])
 
-  private var locales: Map[String, LocaleCldr] = Map.empty
+  private var locales: Map[String, LDML] = Map(
+    en_US.languageTag -> en_US
+  )
 
   // TODO verify how stable is the CLDR json
   @ScalaJSDefined
@@ -30,51 +55,39 @@ object LocaleRegistry {
   }
 
   /**
-    * Interface describing the json structure expected
-    */
-  @ScalaJSDefined
-  trait CLDR extends js.Object {
-    val locale: String
-    val number: CLDRNumber
-  }
-
-  /**
     * Attempts to give a Locale for the given tag if avaibale
     */
   def localeForLanguageTag(languageTag: String): Option[Locale] = {
     // TODO Support alternative tags for the same locale
-    locales.get(languageTag).map(_.locale)
+    locales.get(languageTag).map(_.toLocale)
   }
 
   /**
     * Attempts to give a Locale for the given tag if avaibale
     */
-  def decimalFormatSymbol(locale: Locale): Option[DecimalFormatSymbols] = {
-    // TODO Support alternative tags for the same locale
-    locales.find(_._2.locale == locale).flatMap(_._2.decimalFormatSymbol)
-  }
+  def decimalFormatSymbol(locale: Locale): Option[DecimalFormatSymbols] = ???
 
   /**
     * Cleans the registry, useful for testing
     */
   def resetRegistry(): Unit = {
-    locales = Map.empty
+    //locales = Map.empty
   }
 
   def installLocale(json: String): Unit = {
     // TODO Support all the options for unicode, including variants, numeric regions, etc
     val simpleLocaleRegex = "([a-zA-Z]{2,3})[-_]([a-zA-Z]{2})?.*".r
 
-    val localeJson = js.JSON.parse(json).asInstanceOf[CLDR]
+    /*val localeJson = js.JSON.parse(json).asInstanceOf[CLDR]
 
     // Read basic locale data
     val localeName = localeJson.locale.toString
     val locale = localeName match {
       case simpleLocaleRegex(lang, region) => Some(new Locale(lang, region, ""))
       case _                               => None
-    }
+    }*/
 
-    val dfs = if (localeJson.number.nu.contains("latn")) {
+    /*val dfs = if (localeJson.number.nu.contains("latn")) {
       // Uses latin numbers
       val zeroSign = '0'
       val decimal = localeJson.number.symbols.latn.decimal.charAt(0)
@@ -87,11 +100,11 @@ object LocaleRegistry {
       Some(decimalFormatSymbol)
     } else {
       None
-    }
+    }*/
 
-    locale.foreach {l =>
+    /*locale.foreach {l =>
       locales = locales + (localeName -> LocaleCldr(l, dfs)) + (localeName.replaceAll("-", "_") -> LocaleCldr(l, dfs))
-    }
+    }*/
 
   }
 }

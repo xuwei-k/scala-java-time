@@ -27,6 +27,7 @@ class Locale(language: String, country: String, variant: String) {
   def getCountry(): String = Option(country).getOrElse("")
   def getLanguage(): String = Option(language).getOrElse("")
   def getVariant(): String = Option(variant).getOrElse("")
+  def getScript(): String = ""
 
   // TODO Add other methods on the public interface
 }
