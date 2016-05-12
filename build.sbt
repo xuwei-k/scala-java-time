@@ -30,8 +30,7 @@ lazy val threetenbpCross = crossProject.crossType(CrossType.Full).in(file("."))
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.0.0-M15" % "test",
-      "junit" % "junit" % "4.12" % "test",
-      "com.novocode" % "junit-interface" % "0.11" % "test",
+      "com.novocode" % "junit-interface" % "0.9" % "test",
       "org.testng" % "testng" % "6.9.10" % "test"
     )
   )
