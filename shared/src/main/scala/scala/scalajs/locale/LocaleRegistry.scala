@@ -3,9 +3,6 @@ package scala.scalajs.locale
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.ScalaJSDefined
-
 /**
   * Interface describing LDNL
   */
@@ -36,24 +33,6 @@ object LocaleRegistry {
     en_US.languageTag -> en_US
   )
   private var locales: Map[String, LDML] = Map.empty
-
-  // TODO verify how stable is the CLDR json
-  @ScalaJSDefined
-  trait CLDRNumberLatnSymbols extends js.Object {
-    val decimal: String
-    val minusSign: String
-  }
-
-  @ScalaJSDefined
-  trait CLDRNumberSymbols extends js.Object {
-    val latn: CLDRNumberLatnSymbols
-  }
-
-  @ScalaJSDefined
-  trait CLDRNumber extends js.Object {
-    val nu: Array[String]
-    val symbols: CLDRNumberSymbols
-  }
 
   /**
     * Attempts to give a Locale for the given tag if avaibale

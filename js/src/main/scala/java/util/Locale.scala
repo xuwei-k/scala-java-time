@@ -5,8 +5,9 @@ import scala.scalajs.locale.LocaleRegistry
 object Locale {
 
   private var defaultLocale: Option[Locale] = None
-  val US: Locale     = LocaleRegistry.en_US.toLocale
-  val CANADA: Locale    = new Locale("en", "CA", "")
+  val US: Locale      = LocaleRegistry.en_US.toLocale
+  val ENGLISH: Locale = LocaleRegistry.en_US.toLocale
+  val CANADA: Locale  = new Locale("en", "CA", "")
 
   private val EMPTY: Locale = new Locale("", "", "")
 
@@ -39,6 +40,7 @@ class Locale(private val language: String, private val country: String, private 
   def getScript(): String = ""
 
   // TODO Add other methods on the public interface
+  def getUnicodeLocaleType(key: String):String = ???
 
   override def equals(x: Any):Boolean = x match {
     case l: Locale =>
