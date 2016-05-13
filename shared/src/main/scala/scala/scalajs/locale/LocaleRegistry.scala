@@ -27,46 +27,46 @@ object LocaleRegistry {
   // The spec requires some locales by default
 
   // Auto generated on code, don't change
-  val en_CA: LDML      = LDML(LDMLLocale("en", Some("CA"), None, None))
-  val fr_CA: LDML      = LDML(LDMLLocale("fr", Some("CA"), None, None))
-  val zh_CN_Hans: LDML = LDML(LDMLLocale("zh", Some("CN"), None, Some("Hans")))
-  val zh: LDML         = LDML(LDMLLocale("zh", None, None, None))
   val en: LDML         = LDML(LDMLLocale("en", None, None, None))
-  val fr_FR: LDML      = LDML(LDMLLocale("fr", Some("FR"), None, None))
   val fr: LDML         = LDML(LDMLLocale("fr", None, None, None))
   val de: LDML         = LDML(LDMLLocale("de", None, None, None))
-  val de_DE: LDML      = LDML(LDMLLocale("de", Some("DE"), None, None))
   val it: LDML         = LDML(LDMLLocale("it", None, None, None))
+  val ja: LDML         = LDML(LDMLLocale("ja", None, None, None))
+  val ko: LDML         = LDML(LDMLLocale("ko", None, None, None))
+  val zh: LDML         = LDML(LDMLLocale("zh", None, None, None))
+  val zh_CN_Hans: LDML = LDML(LDMLLocale("zh", Some("CN"), None, Some("Hans")))
+  val zh_TW_Hant: LDML = LDML(LDMLLocale("zh", Some("TW"), None, Some("Hant")))
+  val fr_FR: LDML      = LDML(LDMLLocale("fr", Some("FR"), None, None))
+  val de_DE: LDML      = LDML(LDMLLocale("de", Some("DE"), None, None))
   val it_IT: LDML      = LDML(LDMLLocale("it", Some("IT"), None, None))
   val ja_JP: LDML      = LDML(LDMLLocale("ja", Some("JP"), None, None))
-  val ja: LDML         = LDML(LDMLLocale("ja", None, None, None))
   val ko_KR: LDML      = LDML(LDMLLocale("ko", Some("KR"), None, None))
-  val ko: LDML         = LDML(LDMLLocale("ko", None, None, None))
-  val zh_TW_Hant: LDML = LDML(LDMLLocale("zh", Some("TW"), None, Some("Hant")))
   val en_GB: LDML      = LDML(LDMLLocale("en", Some("GB"), None, None))
   val en_US: LDML      = LDML(LDMLLocale("en", Some("US"), None, None))
+  val en_CA: LDML      = LDML(LDMLLocale("en", Some("CA"), None, None))
+  val fr_CA: LDML      = LDML(LDMLLocale("fr", Some("CA"), None, None))
 
   case class LocaleCldr(locale: Locale, decimalFormatSymbol: Option[DecimalFormatSymbols])
 
   private val defaultLocales: Map[String, LDML] = Map(
-    en_CA.languageTag -> en_CA,
-    fr_CA.languageTag -> fr_CA,
-    zh_CN_Hans.languageTag -> zh_CN_Hans,
-    zh.languageTag -> zh,
     en.languageTag -> en,
-    fr_FR.languageTag -> fr_FR,
     fr.languageTag -> fr,
     de.languageTag -> de,
-    de_DE.languageTag -> de_DE,
     it.languageTag -> it,
+    ja.languageTag -> ja,
+    ko.languageTag -> ko,
+    zh.languageTag -> zh,
+    zh_CN_Hans.languageTag -> zh_CN_Hans,
+    zh_TW_Hant.languageTag -> zh_TW_Hant,
+    fr_FR.languageTag -> fr_FR,
+    de_DE.languageTag -> de_DE,
     it_IT.languageTag -> it_IT,
     ja_JP.languageTag -> ja_JP,
-    ja.languageTag -> ja,
     ko_KR.languageTag -> ko_KR,
-    ko.languageTag -> ko,
-    zh_TW_Hant.languageTag -> zh_TW_Hant,
     en_GB.languageTag -> en_GB,
-    en_US.languageTag -> en_US
+    en_US.languageTag -> en_US,
+    en_CA.languageTag -> en_CA,
+    fr_CA.languageTag -> fr_CA
   )
   private var locales: Map[String, LDML] = Map.empty
 

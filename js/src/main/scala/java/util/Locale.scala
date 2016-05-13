@@ -6,28 +6,28 @@ object Locale {
 
   private var defaultLocale: Option[Locale] = None
 
-  val CANADA: Locale              = LocaleRegistry.en_CA.toLocale
-  val CANADA_FRENCH: Locale       = LocaleRegistry.fr_CA.toLocale
-  val CHINA: Locale               = LocaleRegistry.zh_CN_Hans.toLocale
-  val CHINESE: Locale             = LocaleRegistry.zh.toLocale
   val ENGLISH: Locale             = LocaleRegistry.en.toLocale
-  val FRANCE: Locale              = LocaleRegistry.fr_FR.toLocale
   val FRENCH: Locale              = LocaleRegistry.fr.toLocale
   val GERMAN: Locale              = LocaleRegistry.de.toLocale
-  val GERMANY: Locale             = LocaleRegistry.de_DE.toLocale
   val ITALIAN: Locale             = LocaleRegistry.it.toLocale
+  val JAPANESE: Locale            = LocaleRegistry.ja.toLocale
+  val KOREAN: Locale              = LocaleRegistry.ko.toLocale
+  val CHINESE: Locale             = LocaleRegistry.zh.toLocale
+  val SIMPLIFIED_CHINESE: Locale  = LocaleRegistry.zh_CN_Hans.toLocale
+  val TRADITIONAL_CHINESE: Locale = LocaleRegistry.zh_TW_Hant.toLocale
+  val FRANCE: Locale              = LocaleRegistry.fr_FR.toLocale
+  val GERMANY: Locale             = LocaleRegistry.de_DE.toLocale
   val ITALY: Locale               = LocaleRegistry.it_IT.toLocale
   val JAPAN: Locale               = LocaleRegistry.ja_JP.toLocale
-  val JAPANESE: Locale            = LocaleRegistry.ja.toLocale
   val KOREA: Locale               = LocaleRegistry.ko_KR.toLocale
-  val KOREAN: Locale              = LocaleRegistry.ko.toLocale
+  val CHINA: Locale               = LocaleRegistry.zh_CN_Hans.toLocale
   val PRC: Locale                 = LocaleRegistry.zh_CN_Hans.toLocale
-  val ROOT: Locale                = new Locale("", "", "")
-  val SIMPLIFIED_CHINESE: Locale  = CHINA
   val TAIWAN: Locale              = LocaleRegistry.zh_TW_Hant.toLocale
-  val TRADITIONAL_CHINESE: Locale = TAIWAN
   val UK: Locale                  = LocaleRegistry.en_GB.toLocale
   val US: Locale                  = LocaleRegistry.en_US.toLocale
+  val CANADA: Locale              = LocaleRegistry.en_CA.toLocale
+  val CANADA_FRENCH: Locale       = LocaleRegistry.fr_CA.toLocale
+  val ROOT: Locale                = new Locale("", "", "")
 
   val PRIVATE_USE_EXTENSION: Char = 'x'
   val UNICODE_LOCALE_EXTENSION: Char = 'u'
