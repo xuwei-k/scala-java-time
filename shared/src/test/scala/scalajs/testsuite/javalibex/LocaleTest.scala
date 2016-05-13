@@ -236,7 +236,6 @@ class LocaleTest {
     expectThrows(classOf[NullPointerException], Locale.getDefault(null))
   }
 
-  // Unlike the JVM, the Js backend cannot give a default locale
   @Test def test_set_default_locale(): Unit = {
     Locale.setDefault(Locale.CANADA_FRENCH)
     assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
@@ -248,5 +247,12 @@ class LocaleTest {
     assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
     assertEquals(Locale.CHINESE, Locale.getDefault(Locale.Category.DISPLAY))
   }
+
+  @Test def test_get_available_locales(): Unit = {
+    assertTrue(Locale.getAvailableLocales.contains(Locale.CHINESE))
+    assertTrue(Locale.getAvailableLocales.contains(Locale.ENGLISH))
+    assertTrue(Locale.getAvailableLocales.contains(Locale.ITALY))
+  }
+
 
 }

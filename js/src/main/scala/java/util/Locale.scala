@@ -52,26 +52,15 @@ object Locale {
     }
   }
 
-  def getAvailableLocales(): Array[Locale] = Array(US, CANADA)
+  def getAvailableLocales(): Array[Locale] = LocaleRegistry.availableLocales.toArray
 
-  def getDefault(): Locale = defaultLocale
-    .getOrElse(throw new IllegalStateException("No default locale set"))
+  def getDefault(): Locale = LocaleRegistry.default
 
-  def getDefault(category: Category): Locale = {
-    if (category == null) throw new NullPointerException("Argument cannot be null")
-    else defaultPerCategory.get(category).flatten
-      .getOrElse(throw new IllegalStateException(s"No default locale set for category $category"))
-  }
+  def getDefault(category: Category): Locale = LocaleRegistry.default(category)
 
-  def setDefault(newLocale: Locale): Unit = {
-    defaultLocale = Some(newLocale)
-    defaultPerCategory = Category.values().map(_ -> Some(newLocale)).toMap
-  }
+  def setDefault(newLocale: Locale): Unit = LocaleRegistry.setDefault(newLocale)
 
-  def setDefault(category: Category, newLocale: Locale): Unit = {
-    if (category == null || newLocale == null) throw new NullPointerException("Argument cannot be null")
-    else defaultPerCategory = defaultPerCategory + (category -> Some(newLocale))
-  }
+  def setDefault(category: Category, newLocale: Locale): Unit = LocaleRegistry.setDefault(category, newLocale)
 
   def forLanguageTag(languageTag: String): Locale = LocaleRegistry
     .localeForLanguageTag(languageTag).getOrElse(ROOT)

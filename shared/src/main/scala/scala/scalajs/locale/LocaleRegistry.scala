@@ -3,6 +3,8 @@ package scala.scalajs.locale
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
+import scala.collection.Map
+
 /**
   * Interface describing LDNL
   */
@@ -23,6 +25,10 @@ object ldml {
 
 object LocaleRegistry {
   import ldml._
+
+  private var defaultLocale: Option[Locale] = None
+  private var defaultPerCategory: Map[Locale.Category, Option[Locale]] =
+    Locale.Category.values().map(_ -> None).toMap
 
   // The spec requires some locales by default
 
@@ -68,7 +74,27 @@ object LocaleRegistry {
     en_CA.languageTag -> en_CA,
     fr_CA.languageTag -> fr_CA
   )
+
   private var locales: Map[String, LDML] = Map.empty
+
+  def default: Locale = defaultLocale
+    .getOrElse(throw new IllegalStateException("No default locale set"))
+
+  def default(category: Locale.Category): Locale = {
+    if (category == null) throw new NullPointerException("Argument cannot be null")
+    else defaultPerCategory.get(category).flatten
+      .getOrElse(throw new IllegalStateException(s"No default locale set for category $category"))
+  }
+
+  def setDefault(newLocale: Locale): Unit = {
+    defaultLocale = Some(newLocale)
+    defaultPerCategory = Locale.Category.values().map(_ -> Some(newLocale)).toMap
+  }
+
+  def setDefault(category: Locale.Category, newLocale: Locale): Unit = {
+    if (category == null || newLocale == null) throw new NullPointerException("Argument cannot be null")
+    else defaultPerCategory = defaultPerCategory + (category -> Some(newLocale))
+  }
 
   /**
     * Attempts to give a Locale for the given tag if avaibale
@@ -77,6 +103,8 @@ object LocaleRegistry {
     // TODO Support alternative tags for the same locale
     (defaultLocales ++ locales).get(languageTag).map(_.toLocale)
   }
+
+  def availableLocales:Iterable[Locale] = (defaultLocales ++ locales).map(_._2.toLocale)
 
   /**
     * Attempts to give a Locale for the given tag if avaibale
@@ -87,6 +115,9 @@ object LocaleRegistry {
     * Cleans the registry, useful for testing
     */
   def resetRegistry(): Unit = {
+    defaultLocale = None
+    defaultPerCategory =
+        Locale.Category.values().map(_ -> None).toMap
     //locales = Map.empty
   }
 
