@@ -2,11 +2,12 @@ package scalajs.testsuite.javalibex
 
 import java.util.Locale
 
-import org.junit.{Before, Ignore, Test}
+import org.junit.{Before, Test}
 import org.junit.Assert._
 
 import scala.scalajs.locale.LocaleRegistry
 import scalajs.testsuite.utils.AssertThrows.expectThrows
+import scalajs.testsuite.utils.Platform
 
 class LocaleTest {
   @Before def reset(): Unit = {
@@ -15,8 +16,9 @@ class LocaleTest {
   }
 
   // Unlike the JVM, the Js backend cannot give a default locale
-  @Ignore @Test def test_no_default_locale(): Unit = {
-    expectThrows(classOf[IllegalStateException], Locale.getDefault)
+  @Test def test_no_default_locale(): Unit = {
+    if (!Platform.executingInJVM)
+      expectThrows(classOf[IllegalStateException], Locale.getDefault)
   }
 
   @Test def test_null_constructor(): Unit = {
