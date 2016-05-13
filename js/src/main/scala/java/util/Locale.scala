@@ -32,6 +32,22 @@ object Locale {
   val PRIVATE_USE_EXTENSION: Char = 'x'
   val UNICODE_LOCALE_EXTENSION: Char = 'u'
 
+  final class Category private (name: String, ordinal: Int)
+    extends Enum[Category](name, ordinal)
+
+  object Category {
+    val DISPLAY = new Category("DISPLAY", 0)
+    val FORMAT  = new Category("FORMAT", 1)
+
+    private val categories = Array(DISPLAY, FORMAT)
+
+    def values(): Array[Category] = categories
+
+    def valueOf(name: String): Category = categories.find(_.name == name).getOrElse {
+      throw if (name == null) new NullPointerException("Argument cannot be null")
+            else new IllegalArgumentException(s"No such category: $name")
+    }
+  }
 
   def getAvailableLocales(): Array[Locale] = Array(US, CANADA)
 
