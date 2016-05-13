@@ -15,12 +15,6 @@ class LocaleTest {
     LocaleRegistry.resetRegistry()
   }
 
-  // Unlike the JVM, the Js backend cannot give a default locale
-  @Test def test_no_default_locale(): Unit = {
-    if (!Platform.executingInJVM)
-      expectThrows(classOf[IllegalStateException], Locale.getDefault)
-  }
-
   @Test def test_null_constructor(): Unit = {
     expectThrows(classOf[NullPointerException], new Locale(null))
     expectThrows(classOf[NullPointerException], new Locale("", null))
@@ -224,6 +218,35 @@ class LocaleTest {
   @Test def test_chinese_equivalences(): Unit = {
     assertEquals(Locale.SIMPLIFIED_CHINESE, Locale.CHINA)
     assertEquals(Locale.TRADITIONAL_CHINESE, Locale.TAIWAN)
+  }
+
+  // Unlike the JVM, the Js backend cannot give a default locale
+  @Test def test_no_default_locale(): Unit = {
+    if (!Platform.executingInJVM) {
+      expectThrows(classOf[IllegalStateException], Locale.getDefault)
+    }
+  }
+
+  // Unlike the JVM, the Js backend cannot give a default locale
+  @Test def test_no_default_locale_per_category(): Unit = {
+    if (!Platform.executingInJVM) {
+      expectThrows(classOf[IllegalStateException], Locale.getDefault(Locale.Category.DISPLAY))
+      expectThrows(classOf[IllegalStateException], Locale.getDefault(Locale.Category.FORMAT))
+    }
+    expectThrows(classOf[NullPointerException], Locale.getDefault(null))
+  }
+
+  // Unlike the JVM, the Js backend cannot give a default locale
+  @Test def test_set_default_locale(): Unit = {
+    Locale.setDefault(Locale.CANADA_FRENCH)
+    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
+    // As a side effect this sets the defaults for each category
+    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault(Locale.Category.DISPLAY))
+    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault(Locale.Category.FORMAT))
+
+    Locale.setDefault(Locale.Category.DISPLAY, Locale.CHINESE)
+    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
+    assertEquals(Locale.CHINESE, Locale.getDefault(Locale.Category.DISPLAY))
   }
 
 }
