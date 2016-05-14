@@ -254,5 +254,11 @@ class LocaleTest {
     assertTrue(Locale.getAvailableLocales.contains(Locale.ITALY))
   }
 
+  @Test def test_get_iso_codes(): Unit = {
+    // The data from CLDR gives a different amount of countries and languages than the JVM
+    assertTrue((if (Platform.executingInJVM) 250 else 245) == Locale.getISOCountries.length)
+    assertTrue((if (Platform.executingInJVM) 188 else 122)== Locale.getISOLanguages.length)
+  }
+
 
 }

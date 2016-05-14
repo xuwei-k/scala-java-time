@@ -1,13 +1,10 @@
 package java.util
 
 import scala.scalajs.locale.LocaleRegistry
+import scala.scalajs.locale.ldml.isocodes
 import scala.collection.{Map => SMap}
 
 object Locale {
-
-  private var defaultLocale: Option[Locale] = None
-  private var defaultPerCategory: SMap[Category, Option[Locale]] =
-    Category.values().map(_ -> None).toMap
 
   val ENGLISH: Locale             = LocaleRegistry.en.toLocale
   val FRENCH: Locale              = LocaleRegistry.fr.toLocale
@@ -61,6 +58,10 @@ object Locale {
   def setDefault(newLocale: Locale): Unit = LocaleRegistry.setDefault(newLocale)
 
   def setDefault(category: Category, newLocale: Locale): Unit = LocaleRegistry.setDefault(category, newLocale)
+
+  def getISOCountries():Array[String] = isocodes.isoCountries.toArray
+
+  def getISOLanguages():Array[String] = isocodes.isoLanguages.toArray
 
   def forLanguageTag(languageTag: String): Locale = LocaleRegistry
     .localeForLanguageTag(languageTag).getOrElse(ROOT)
