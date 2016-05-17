@@ -3,7 +3,7 @@ package scalajs.testsuite.javalibex
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-import org.junit.{Before, Test}
+import org.junit.{Before, Ignore, Test}
 import org.junit.Assert.assertTrue
 
 import scala.scalajs.locale.LocaleRegistry
@@ -14,7 +14,7 @@ class DecimalFormatSymbolsTest extends LocaleTestData {
     LocaleRegistry.resetRegistry()
   }
 
-  @Test def test_decimal_format_symborn_en_US(): Unit = {
+  @Ignore @Test def test_decimal_format_symborn_en_US(): Unit = {
     LocaleRegistry.installLocale(enUS)
     val dfs = DecimalFormatSymbols.getInstance(Locale.forLanguageTag("en_US"))
 

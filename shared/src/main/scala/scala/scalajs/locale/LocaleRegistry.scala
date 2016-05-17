@@ -15,7 +15,7 @@ object LocaleRegistry {
 
   // The spec requires some locales by default
 
-  // Auto generated on code, don't change
+  // Auto generated code, don't change
   val en: LDML         = LDML(LDMLLocale("en", None, None, None))
   val fr: LDML         = LDML(LDMLLocale("fr", None, None, None))
   val de: LDML         = LDML(LDMLLocale("de", None, None, None))
