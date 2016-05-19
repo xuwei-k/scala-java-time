@@ -255,29 +255,45 @@ class Locale private (private[this] val language: String,
   private[this] val country: String,
   private[this] val variant: String,
   private[this] val script: Option[String],
-  private[this] val extensions:SMap[Char, String],
+  private[this] val _extensions:SMap[Char, String],
   private[this] val unicodeExtensions:SMap[String, String],
   private[this] val unicodeAttributes:SSet[String]) {
 
+  // Handle 2 special cases jp_JP_JP and th_TH_TH
+  private[this] val extensions =
+    if ((language, country, variant) == ("ja", "JP", "JP")) {
+      _extensions + (Locale.UNICODE_LOCALE_EXTENSION -> "ca-japanese")
+    } else if ((language, country, variant) == ("th", "TH", "TH")) {
+      _extensions + (Locale.UNICODE_LOCALE_EXTENSION -> "nu-thai")
+    } else {
+      _extensions
+    }
+
   def this(language: String, country: String, variant: String) =
-    this(language, country, variant, None, SMap.empty, SMap.empty, SSet.empty)
+    this(language, country, variant, None, SMap.empty,
+    SMap.empty, SSet.empty)
 
   // Required by the javadocs
   if (language == null || country == null || variant == null) {
     throw new NullPointerException("Null argument to constructor not allowed")
   }
 
+  // special classes
+
   // Additional constructors
   def this(language: String, country: String) = this(language, country, "")
+
   def this(language: String) = this(language, "", "")
 
-  def getLanguage(): String = language
+  def getLanguage(): String = language.toLowerCase
 
   def getScript(): String = script.getOrElse("")
 
-  def getCountry(): String = country
+  def getCountry(): String = country.toUpperCase
 
   def getVariant(): String = variant
+
+  def hasExtensions(): Boolean = extensions.nonEmpty
 
   def getExtension(key: Char): String = {
     if (key == Locale.UNICODE_LOCALE_EXTENSION && unicodeExtensions.nonEmpty) {
@@ -304,10 +320,10 @@ class Locale private (private[this] val language: String,
 
   private def isEqual(l: Locale):Boolean = {
     language == l.getLanguage && country == l.getCountry &&
-    variant == l.getVariant && script.contains(l.getScript) &&
+    variant == l.getVariant && script.forall(_ == l.getScript) &&
     extensions.forall { case (k, v) => l.getExtension(k) == v } &&
     unicodeExtensions.forall { case (k, v) => l.getUnicodeLocaleType(k) == v } &&
-    unicodeAttributes == l.getUnicodeLocaleAttributes
+    unicodeAttributes == l.getUnicodeLocaleAttributes.asScala
   }
 
   override def equals(x: Any):Boolean = x match {

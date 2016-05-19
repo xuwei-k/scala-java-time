@@ -21,6 +21,29 @@ class LocaleTest {
     expectThrows(classOf[NullPointerException], new Locale("", "", null))
   }
 
+  @Test def test_constructor(): Unit = {
+    assertEquals("en", new Locale("en", "US").getLanguage)
+    assertEquals("US", new Locale("en", "US").getCountry)
+    assertEquals("POSIX", new Locale("en", "US", "POSIX").getVariant)
+
+    // No syntactic checks
+    assertEquals("abcdef", new Locale("ABCDEF", "longcountryname").getLanguage)
+    assertEquals("LONGCOUNTRYNAME",
+      new Locale("abcdef", "longcountryname").getCountry)
+  }
+
+  @Test def test_special_cases(): Unit = {
+    assertEquals("ja", new Locale("ja", "JP", "JP").getLanguage)
+    assertEquals("JP", new Locale("ja", "JP", "JP").getCountry)
+    assertEquals("JP", new Locale("ja", "JP", "JP").getVariant)
+    assertEquals("ca-japanese", new Locale("ja", "JP", "JP").getExtension('u'))
+
+    assertEquals("th", new Locale("th", "TH", "TH").getLanguage)
+    assertEquals("TH", new Locale("th", "TH", "TH").getCountry)
+    assertEquals("TH", new Locale("th", "TH", "TH").getVariant)
+    assertEquals("nu-thai", new Locale("th", "TH", "TH").getExtension('u'))
+  }
+
   @Test def test_default_ENGLISH(): Unit = {
     assertEquals("en", Locale.forLanguageTag("en").getLanguage)
     assertEquals("", Locale.forLanguageTag("en").getCountry)
@@ -230,8 +253,10 @@ class LocaleTest {
   // Unlike the JVM, the Js backend cannot give a default locale
   @Test def test_no_default_locale_per_category(): Unit = {
     if (!Platform.executingInJVM) {
-      expectThrows(classOf[IllegalStateException], Locale.getDefault(Locale.Category.DISPLAY))
-      expectThrows(classOf[IllegalStateException], Locale.getDefault(Locale.Category.FORMAT))
+      expectThrows(classOf[IllegalStateException],
+        Locale.getDefault(Locale.Category.DISPLAY))
+      expectThrows(classOf[IllegalStateException],
+        Locale.getDefault(Locale.Category.FORMAT))
     }
     expectThrows(classOf[NullPointerException], Locale.getDefault(null))
   }
@@ -240,8 +265,10 @@ class LocaleTest {
     Locale.setDefault(Locale.CANADA_FRENCH)
     assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
     // As a side effect this sets the defaults for each category
-    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault(Locale.Category.DISPLAY))
-    assertEquals(Locale.CANADA_FRENCH, Locale.getDefault(Locale.Category.FORMAT))
+    assertEquals(Locale.CANADA_FRENCH,
+      Locale.getDefault(Locale.Category.DISPLAY))
+    assertEquals(Locale.CANADA_FRENCH,
+      Locale.getDefault(Locale.Category.FORMAT))
 
     Locale.setDefault(Locale.Category.DISPLAY, Locale.CHINESE)
     assertEquals(Locale.CANADA_FRENCH, Locale.getDefault)
@@ -255,9 +282,21 @@ class LocaleTest {
   }
 
   @Test def test_get_iso_codes(): Unit = {
-    // The data from CLDR gives a different amount of countries and languages than the JVM
-    assertTrue((if (Platform.executingInJVM) 250 else 245) == Locale.getISOCountries.length)
-    assertTrue((if (Platform.executingInJVM) 188 else 122)== Locale.getISOLanguages.length)
+    // The data from CLDR gives a different amount of countries and
+    // languages than the JVM
+    val countriesCount = if (Platform.executingInJVM) 250 else 245
+    val languagesCount = if (Platform.executingInJVM) 188 else 122
+    assertTrue(countriesCount == Locale.getISOCountries.length)
+    assertTrue(languagesCount == Locale.getISOLanguages.length)
+  }
+
+  @Test def test_has_extensions(): Unit = {
+    // You can only add extensions with Locale.Builder
+    val b1 = new Locale.Builder()
+    val locale = b1.setExtension('a', "ca-japanese").build
+    assertTrue(locale.hasExtensions)
+
+    assertFalse(new Locale("en", "US").hasExtensions)
   }
 
 
