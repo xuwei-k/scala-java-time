@@ -297,7 +297,69 @@ class LocaleTest {
     assertTrue(locale.hasExtensions)
 
     assertFalse(new Locale("en", "US").hasExtensions)
+    // Special cases
+    assertTrue(new Locale("ja", "JP", "JP").hasExtensions)
+
+    // Unicode extensions
+    val b2 = new Locale.Builder()
+    val locale2 = b2.setUnicodeLocaleKeyword("nu", "thai").build
+    assertTrue(locale2.hasExtensions)
   }
 
+  @Test def test_strip_extensions(): Unit = {
+    // You can only add extensions with Locale.Builder
+    val b1 = new Locale.Builder()
+    val locale = b1.setExtension('a', "ca-japanese").build
+    assertFalse(locale.stripExtensions.hasExtensions)
+
+    // Special cases
+    assertFalse(new Locale("ja", "JP", "JP").stripExtensions().hasExtensions)
+    assertFalse(new Locale("th", "TH", "TH").stripExtensions().hasExtensions)
+  }
+
+  @Test def test_to_string(): Unit = {
+    // Examples from javadocs
+    val l1 = new Locale.Builder().setLanguage("en").build
+    assertEquals("en", l1.toString)
+    val l2 = new Locale.Builder().setLanguage("de").setRegion("DE").build
+    assertEquals("de_DE", l2.toString)
+    val l3 = new Locale.Builder().setRegion("GB").build
+    assertEquals("_GB", l3.toString)
+    val l4 = new Locale("en", "US", "WIN")
+    assertEquals("en_US_WIN", l4.toString)
+    val l5 = new Locale.Builder().setLanguage("de").setVariant("POSIX").build
+    assertEquals("de__POSIX", l5.toString)
+    val l6 = new Locale.Builder().setLanguage("zh").setRegion("CN").setScript("Hans").build
+    assertEquals("zh_CN_#Hans", l6.toString)
+    val l7 = new Locale.Builder().setLanguage("zh").setRegion("TW").setScript("Hant").setExtension('x', "java").build
+    assertEquals("zh_TW_#Hant_x-java", l7.toString)
+    val l8 = new Locale("th", "TH", "TH")
+    assertEquals("th_TH_TH_#u-nu-thai", l8.toString)
+    val l9 = new Locale("", "", "POSIX")
+    assertEquals("", l9.toString)
+  }
+
+  @Test def test_to_language_tag(): Unit = {
+    // Examples from javadocs
+    val l1 = new Locale.Builder().setLanguage("en").build
+    assertEquals("en", l1.toLanguageTag)
+    val l2 = new Locale.Builder().setLanguage("de").setRegion("DE").build
+    assertEquals("de-DE", l2.toLanguageTag)
+    val l3 = new Locale.Builder().setRegion("GB").build
+    assertEquals("und-GB", l3.toLanguageTag)
+    val l4 = new Locale("en", "US", "WIN")
+    assertEquals("en-US-x-lvariant-WIN", l4.toLanguageTag)
+    val l5 = new Locale.Builder().setLanguage("de").setVariant("POSIX").build
+    assertEquals("de-POSIX", l5.toLanguageTag)
+    val l6 = new Locale.Builder().setLanguage("zh").setRegion("CN").setScript("Hans").build
+    assertEquals("zh-Hans-CN", l6.toLanguageTag)
+    val l7 = new Locale.Builder().setLanguage("zh").setRegion("TW").setScript("Hant").setExtension('x', "java").build
+    assertEquals("zh-Hant-TW-x-java", l7.toLanguageTag)
+    val l8 = new Locale("th", "TH", "TH")
+    assertEquals("th-TH-u-nu-thai-x-lvariant-TH", l8.toLanguageTag)
+    val l9 = new Locale("en", "US", "Oracle_JDK_Standard_Edition")
+    assertEquals("en-US-Oracle-x-lvariant-JDK-Standard-Edition", l9.toLanguageTag)
+
+  }
 
 }
