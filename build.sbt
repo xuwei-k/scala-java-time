@@ -1,6 +1,5 @@
 import org.scalajs.sbtplugin.ScalaJSJUnitPlugin
-import org.scalajs.sbtplugin.cross.CrossProject
-import sbt.{TestFramework, Tests}
+import sbt._
 
 parallelExecution in ThisBuild := false
 
