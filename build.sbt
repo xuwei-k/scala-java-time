@@ -1,4 +1,6 @@
+import org.scalajs.sbtplugin.ScalaJSJUnitPlugin
 import org.scalajs.sbtplugin.cross.CrossProject
+import sbt.{TestFramework, Tests}
 
 parallelExecution in ThisBuild := false
 
@@ -12,30 +14,36 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   crossScalaVersions := Seq("2.11.8"),
   publishArtifact in (Compile, packageDoc) := false,
-  publishArtifact in packageDoc := false
+  publishArtifact in packageDoc := false,
+  publish := {},
+  publishLocal := {}
 )
 
-lazy val threetenbpRoot = project.in(file("."))
-  .aggregate(threetenbp, threetenbpJS)
-  .settings(
-    scalaVersion := "2.11.8",
-    publish := {},
-    publishLocal := {},
-    crossScalaVersions := Seq("2.11.8")
-  )
-
-
 lazy val threetenbpCross = crossProject.crossType(CrossType.Full).in(file("."))
+  .jsConfigure(_.enablePlugins(ScalaJSJUnitPlugin))
+
+lazy val threetenbp = threetenbpCross.jvm
+  .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.0.0-M15" % "test",
-      "junit" % "junit" % "4.12" % "test",
+      "com.novocode" % "junit-interface" % "0.9" % "test",
       "org.testng" % "testng" % "6.9.10" % "test"
     )
   )
 
-lazy val threetenbp = threetenbpCross.jvm
-  .settings(commonSettings: _*)
 lazy val threetenbpJS = threetenbpCross.js
   .settings(commonSettings: _*)
+  .settings(
+    scalaJSUseRhino := false,
+    resolvers +=
+      "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+    testOptions +=
+      Tests.Argument(TestFramework("com.novocode.junit.JUnitFramework"),
+        "-v", "-a"),
+    libraryDependencies ++= Seq(
+      "com.github.cquiroz" %%% "scalajs-locales" % "0.1.0-SNAPSHOT",
+      "org.scalatest" %%% "scalatest" % "3.0.0-M15" % "test",
+      "com.novocode" % "junit-interface" % "0.9" % "test")
+  )
 

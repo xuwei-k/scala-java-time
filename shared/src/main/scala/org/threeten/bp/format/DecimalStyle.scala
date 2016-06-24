@@ -32,9 +32,11 @@
 package org.threeten.bp.format
 
 import java.text.DecimalFormatSymbols
-import java.util.{Objects, Arrays, Locale}
+import java.util.{Objects, Locale}
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+
+import scala.collection.JavaConverters._
 
 /** Localized symbols used in date and time formatting.
   *
@@ -61,7 +63,7 @@ object DecimalStyle {
     */
   def getAvailableLocales: java.util.Set[Locale] = {
     val l: Array[Locale] = DecimalFormatSymbols.getAvailableLocales
-    new java.util.HashSet[Locale](Arrays.asList(l: _*))
+    new java.util.HashSet[Locale](l.toList.asJavaCollection)
   }
 
   /** Obtains symbols for the default locale.
