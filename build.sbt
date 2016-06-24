@@ -1,4 +1,5 @@
-import org.scalajs.sbtplugin.cross.CrossProject
+import org.scalajs.sbtplugin.ScalaJSJUnitPlugin
+import sbt._
 
 parallelExecution in ThisBuild := false
 
@@ -27,13 +28,23 @@ lazy val threetenbpRoot = project.in(file("."))
     crossScalaVersions := crossScalaVer
   )
 
-
 lazy val threetenbpCross = crossProject.crossType(CrossType.Full).in(file("."))
+  .jsConfigure(_.enablePlugins(ScalaJSJUnitPlugin))
+  .settings(commonSettings: _*)
   .settings(
+    testOptions +=
+      Tests.Argument(TestFramework("com.novocode.junit.JUnitFramework"), "-v", "-a")
+  ).jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.0.0-RC4" % "test",
-      "junit" % "junit" % "4.12" % "test",
-      "org.testng" % "testng" % "6.9.10" % "test"
+      "org.scalatest" %%% "scalatest" % "3.0.0-M15" % "test",
+      "org.testng" % "testng" % "6.9.10" % "test",
+      "com.novocode" % "junit-interface" % "0.9" % "test"
+    )
+  ).jsSettings(
+    testOptions +=
+      Tests.Argument(TestFramework("com.novocode.junit.JUnitFramework"), "-v", "-a"),
+    libraryDependencies ++= Seq(
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.1.0+29"
     )
   )
 
