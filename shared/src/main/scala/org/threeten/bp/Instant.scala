@@ -417,7 +417,6 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
         case NANO_OF_SECOND  => nanos
         case MICRO_OF_SECOND => nanos / 1000
         case MILLI_OF_SECOND => nanos / Instant.NANOS_PER_MILLI
-        case INSTANT_SECONDS => INSTANT_SECONDS.checkValidIntValue(seconds)
         case _               => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
       }
     else
