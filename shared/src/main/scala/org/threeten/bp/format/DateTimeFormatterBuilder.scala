@@ -1345,14 +1345,13 @@ object DateTimeFormatterBuilder {
         buf.append(zone.getId)
         return true
       }
-      val epochSec: java.lang.Long = context.getTemporal.getLong(INSTANT_SECONDS)
-      var instant: Instant = null
-      if (epochSec != null)
-        instant = Instant.ofEpochSecond(epochSec)
-      else
-        instant = Instant.ofEpochSecond(-200L * 365 * 86400)
+      val temporal = context.getTemporal
+      var daylight: Boolean = false
+      if (temporal.isSupported(INSTANT_SECONDS)) {
+        val instant: Instant = Instant.ofEpochSecond(temporal.getLong(INSTANT_SECONDS))
+        daylight = zone.getRules.isDaylightSavings(instant)
+      }
       val tz: TimeZone = TimeZone.getTimeZone(zone.getId)
-      val daylight: Boolean = zone.getRules.isDaylightSavings(instant)
       val tzstyle: Int = if (textStyle.asNormal eq TextStyle.FULL) TimeZone.LONG else TimeZone.SHORT
       val text: String = tz.getDisplayName(daylight, tzstyle, context.getLocale)
       buf.append(text)
