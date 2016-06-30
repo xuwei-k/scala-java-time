@@ -281,7 +281,7 @@ object ChronoField {
     * This field is strictly defined to have the same meaning in all calendar systems.
     * This is necessary to ensure interoperability between calendars.
     */
-  val EPOCH_DAY = new ChronoField("EpochDay", 20, DAYS, FOREVER, ValueRange.of((Year.MIN_VALUE * 365.25).toLong, (Year.MAX_VALUE * 365.25).toLong))
+  val EPOCH_DAY = new ChronoField("EpochDay", 20, DAYS, FOREVER, ValueRange.of(-365243219162L, 365241780471L))
   /** The aligned week within a month.
     *
     * This represents concept of the count of weeks within the period of a month

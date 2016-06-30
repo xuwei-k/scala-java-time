@@ -204,6 +204,7 @@ object LocalDate {
     * @throws DateTimeException if the epoch days exceeds the supported date range
     */
   def ofEpochDay(epochDay: Long): LocalDate = {
+    EPOCH_DAY.checkValidValue(epochDay)
     var zeroDay: Long = epochDay + DAYS_0000_TO_1970
     zeroDay -= 60
     var adjust: Long = 0
