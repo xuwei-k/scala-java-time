@@ -1,27 +1,46 @@
 
-## Scala ThreeTen
-JSR-310 provided a new date and time library for Java SE 8.
-This project ports the original reference implementation (before it was contributed to OpenJDK) from Java to Scala.
-
-This GitHub repository is a fork of that originally used to create JSR-310.
-That repository used the same BSD 3-clause license as this repository.
+## Scala Java-Time
 
 [![Build Status](https://travis-ci.org/soc/threetenbp.svg?branch=master)](https://travis-ci.org/soc/threetenbp)
+
+This project provides an implementation of the `java.time` package, a date and time library that was added in Java 8.
+The implementation is based on the original BSD-licensed reference implementation (before it was contributed to OpenJDK).
 
 #### Building
 This project builds using sbt.
 Run `sbt test` to run the test suite.
 
-#### Status & Contributing
-We are currently working on supporting formatting and calculations using a timezone database in JavaScript.
+#### Status
 
- - The formatting uses a lot of JDK classes, which we might not want to reimplement in Scala.js.
+Most parts of this library work perfectly fine with Scala.js in the browser.
+Locale, formatting and timezone support is limited and providing these missing pieces are the current focus of this project.
+@cquiroz is currently working on implementing locale support.
+
+#### Contributing
+
+We welcome all contributions, including ideas, suggestions, bug reports, bug fixes and code!
+We are especially interested in contributions that tackle the following issues:
+
+ - *Support for formatting:* Formatting uses a lot of JDK classes, which we might not want to reimplement in Scala.js.
    We might be able to use the new `Intl` Web API.
- - The timezone information is read from a binary blob, which won't work in the browser.
+ - *Support for timezones:* The timezone information is read from a binary blob, which won't work in the browser.
    We will have a look at other projects like moment.js and decide whether we want to use the same format, or come up with our own.
 
-Have a look at the [issues](https://github.com/soc/threetenbp/issues) to find something to work on!
-Ideas, suggestions, contributions and bug reports are all welcome!
+Have a look at the [issues](https://github.com/soc/threetenbp/issues) to find something to work on! Let us know if you need help!
+
+#### Plans
+
+##### 2.0
+
+We will keep releasing milestone builds while work on the remaining bits and pieces to support 100% of this library on Scala.js is ongoing (most parts work fine already).
+
+The last milestone will rename the package name from `org.threeten.bp` to `java.time`.
+
+A stable release of 2.0 will be published after a (hopefully) short RC phase.
+
+##### 3.0
+
+As soon as Scala-Native provides cross-compilation capabilities we will investigate what's necessary to compile this library to native code.
 
 #### Time-zone data
 The time-zone database is stored as a pre-compiled dat file that is included in the built jar.
