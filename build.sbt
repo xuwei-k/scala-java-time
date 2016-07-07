@@ -4,7 +4,7 @@ parallelExecution in ThisBuild := false
 
 name := "threetenbp"
 organization := "org.threeten"
-version := "1.3.3-SNAPSHOT"
+version := "2.0-M1-SNAPSHOT"
 isSnapshot := true
 
 val scalaVer = "2.11.8"
