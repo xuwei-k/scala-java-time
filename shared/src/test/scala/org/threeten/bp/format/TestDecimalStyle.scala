@@ -31,14 +31,14 @@
  */
 package org.threeten.bp.format
 
-import org.scalatest.testng.TestNGSuite
-import org.testng.Assert.assertEquals
+import org.junit.Test
+import org.junit.Assert._
+
 import java.util.Locale
-import java.util.Set
-import org.testng.annotations.Test
+
 
 /** Test DecimalStyle. */
-@Test class TestDecimalStyle extends TestNGSuite {
+class TestDecimalStyle {
   @Test def test_getAvailableLocales(): Unit = {
     val locales: java.util.Set[Locale] = DecimalStyle.getAvailableLocales
     assertEquals(locales.size > 0, true)
