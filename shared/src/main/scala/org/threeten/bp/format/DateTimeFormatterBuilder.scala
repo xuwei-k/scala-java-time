@@ -477,7 +477,7 @@ object DateTimeFormatterBuilder {
       if (str.length > maxWidth)
         throw new DateTimeException(s"Field $field cannot be printed as the value $value exceeds the maximum print width of $maxWidth")
       str = symbols.convertNumberToI18N(str)
-      println(value)
+
       if (value >= 0) {
         signStyle match {
           case EXCEEDS_PAD =>

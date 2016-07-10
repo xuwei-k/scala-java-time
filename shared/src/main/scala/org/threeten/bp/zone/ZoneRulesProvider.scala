@@ -151,8 +151,6 @@ object ZoneRulesProvider {
   private def registerProvider0(provider: ZoneRulesProvider): Unit = {
     import scala.collection.JavaConversions._
     for (zoneId <- provider.provideZoneIds) {
-      println(provider)
-      println(zoneId)
       Objects.requireNonNull(zoneId, "zoneId")
       val old: ZoneRulesProvider = ZONES.putIfAbsent(zoneId, provider)
       if (old != null)
