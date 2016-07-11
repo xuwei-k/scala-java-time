@@ -39,7 +39,13 @@ lazy val threetenbpCross = crossProject.crossType(CrossType.Full).in(file("."))
       "org.scalatest" %%% "scalatest"       % "3.0.0-RC4" % "test",
       "com.novocode"  %   "junit-interface" % "0.9"       % "test",
       "org.testng"    %   "testng"          % "6.9.10"    % "test"
-    )
+    ),
+    // Fork the JVM test to ensure that the custom flags are set
+    fork in Test := true,
+    baseDirectory in Test := baseDirectory.value.getParentFile,
+    // Use CLDR provider for locales
+    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
+    javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR")
   ).jsSettings(
     libraryDependencies += "com.github.cquiroz" %%% "scala-java-locales" % "0.1.0+29"
   )
