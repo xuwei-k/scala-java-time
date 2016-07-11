@@ -1,13 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml?>
 
 <document>
   <properties>
     <title>Changes</title>
-    <author>Stephen Colebourne</author>
+    <author>Simon Ochsenreither (Scala port)</author>
+    <author>Stephen Colebourne (Java version)</author>
   </properties>
   <body>
 
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M2" date="future (not published yet)" description="v2.0.0-M2">
+      <action dev="soc" type="remove" >
+        Remove superfluous, duplicated implementations in chrono.{...}Era.
+      </action>
+      <action dev="soc" type="remove" >
+        Remove dependencies on sun.util.calendar.*.
+      </action>
+      <action dev="soc" type="update" >
+        Update build configuration for upcoming publication.
+      </action>
+      <action dev="soc" type="add" >
+        Add stubs for TimeZone, Calendar, GregorianCalendar.
+      </action>
+      <action dev="soc" type="fix" >
+        Use JVM's CLDR data for locales and work around differences.
+      </action>
+      <action dev="cquiroz" type="add" >
+        Add dependency on scala-java-locales to support locale-dependent operations.
+      </action>
+    </release>
+    <release version="2.0.0-M1" date="2016-07-09 (not published)" description="v2.0.0-M1">
+      <action dev="soc" type="fix" >
+        Replace Java code with Scala code.
+      </action>
+    </release>
     <release version="1.3.2" date="SNAPSHOT" description="v1.3.2">
       <action dev="jodastephen" type="fix" >
         Graceful fallback when printing time-zone name.
