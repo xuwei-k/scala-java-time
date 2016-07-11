@@ -31,22 +31,11 @@
  */
 package org.threeten.bp.chrono
 
-import org.threeten.bp.temporal.ChronoField.ERA
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
-import java.util.Locale
+
 import org.threeten.bp.DateTimeException
-import org.threeten.bp.format.DateTimeFormatterBuilder
-import org.threeten.bp.format.TextStyle
-import org.threeten.bp.temporal.ChronoField
-import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.Temporal
-import org.threeten.bp.temporal.TemporalField
-import org.threeten.bp.temporal.TemporalQueries
-import org.threeten.bp.temporal.TemporalQuery
-import org.threeten.bp.temporal.UnsupportedTemporalTypeException
-import org.threeten.bp.temporal.ValueRange
 
 object ThaiBuddhistEra {
   /** The singleton instance for the era before the current one, 'Before Buddhist Era',
@@ -100,41 +89,6 @@ final class ThaiBuddhistEra(name: String, ordinal: Int) extends Enum[ThaiBuddhis
     * @return the era value, from 0 (BEFORE_BE) to 1 (BE)
     */
   def getValue: Int = ordinal
-
-  override def isSupported(field: TemporalField): Boolean =
-    if (field.isInstanceOf[ChronoField]) field eq ERA
-    else field != null && field.isSupportedBy(this)
-
-  override def range(field: TemporalField): ValueRange =
-    if (field eq ERA) field.range
-    else if (field.isInstanceOf[ChronoField]) throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-    else field.rangeRefinedBy(this)
-
-  override def get(field: TemporalField): Int =
-    if (field eq ERA) getValue
-    else range(field).checkValidIntValue(getLong(field), field)
-
-  override def getLong(field: TemporalField): Long =
-    if (field eq ERA) getValue
-    else if (field.isInstanceOf[ChronoField]) throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-    else field.getFrom(this)
-
-  override def adjustInto(temporal: Temporal): Temporal = temporal.`with`(ERA, getValue)
-
-  override def query[R >: Null](query: TemporalQuery[R]): R =
-    query match {
-      case TemporalQueries.precision  => ChronoUnit.ERAS.asInstanceOf[R]
-      case TemporalQueries.chronology
-         | TemporalQueries.zone
-         | TemporalQueries.zoneId
-         | TemporalQueries.offset
-         | TemporalQueries.localDate
-         | TemporalQueries.localTime  => null
-      case _                          => query.queryFrom (this)
-    }
-
-  override def getDisplayName(style: TextStyle, locale: Locale): String =
-    new DateTimeFormatterBuilder().appendText(ERA, style).toFormatter(locale).format(this)
 
   private def writeReplace: AnyRef = new Ser(Ser.THAIBUDDHIST_ERA_TYPE, this)
 

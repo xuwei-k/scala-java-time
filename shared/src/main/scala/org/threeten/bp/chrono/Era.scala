@@ -104,7 +104,14 @@ trait Era extends TemporalAccessor with TemporalAdjuster {
   def adjustInto(temporal: Temporal): Temporal = temporal.`with`(ERA, getValue)
 
   override def query[R >: Null](query: TemporalQuery[R]): R =
-    if (query eq TemporalQueries.precision) ChronoUnit.ERAS.asInstanceOf[R]
-    else if ((query eq TemporalQueries.chronology) || (query eq TemporalQueries.zone) || (query eq TemporalQueries.zoneId) || (query eq TemporalQueries.offset) || (query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime)) null
-    else query.queryFrom(this)
+    query match {
+      case TemporalQueries.precision  => ChronoUnit.ERAS.asInstanceOf[R]
+      case TemporalQueries.chronology
+         | TemporalQueries.zone
+         | TemporalQueries.zoneId
+         | TemporalQueries.offset
+         | TemporalQueries.localDate
+         | TemporalQueries.localTime  => null
+      case _                          => query.queryFrom(this)
+    }
 }
