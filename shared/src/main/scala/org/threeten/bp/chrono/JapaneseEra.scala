@@ -52,10 +52,10 @@ object JapaneseEra {
   private[chrono] val ERA_NAMES: Array[String] = Array("Meiji", "Taisho", "Showa", "Heisei")
   private[chrono] val ERA_ABBREVIATIONS: Array[String] = Array("M", "T", "S", "H")
 
-  /** The singleton instance for the 'Meiji' era (1868-09-08 - 1912-07-29)
+  /** The singleton instance for the 'Meiji' era (1868-01-01 - 1912-07-29)
     * which has the value -1.
     */
-  val MEIJI: JapaneseEra = new JapaneseEra(-1, LocalDate.of(1868, 9, 8))
+  val MEIJI: JapaneseEra = new JapaneseEra(-1, LocalDate.of(1868, 1, 1))
   /** The singleton instance for the 'Taisho' era (1912-07-30 - 1926-12-24)
     * which has the value 0.
     */
