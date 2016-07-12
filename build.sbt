@@ -6,7 +6,7 @@ val crossScalaVer = Seq(scalaVer, "2.12.0-M5")
 
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
-  version      := "2.0.0-M1-SNAPSHOT",
+  version      := "2.0.0-M1",
   organization := "io.github.soc",
   homepage     := Some(url("https://github.com/soc/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -15,8 +15,6 @@ lazy val commonSettings = Seq(
   scalaVersion       := scalaVer,
   crossScalaVersions := crossScalaVer,
 
-  publishArtifact in (Compile, packageDoc) := false,
-  publishArtifact in packageDoc := false,
   publishArtifact in Test := false,
   publishMavenStyle := true,
   publishTo := {
@@ -75,18 +73,21 @@ lazy val pomData =
       <id>soc</id>
       <name>Simon Ochsenreither</name>
       <url>https://github.com/soc</url>
-      <role>Current developer (Scala port)</role>
+      <roles>
+        <role>Project Lead (current Scala version)</role>
+      </roles>
     </developer>
     <developer>
       <id>jodastephen</id>
       <name>Stephen Colebourne</name>
       <url>https://github.com/jodastephen</url>
-      <role>Original developer (Java version)</role>
+      <roles>
+        <role>Project Lead (original Java implementation)</role>
+      </roles>
    </developer>
   </developers>
   <contributors>
     <contributor>
-      <id>cquiroz</id>
       <name>Carlos Quiroz</name>
       <url>https://github.com/cquiroz/</url>
     </contributor>
