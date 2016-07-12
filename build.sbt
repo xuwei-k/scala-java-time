@@ -58,7 +58,7 @@ lazy val scalajavatimeCross = crossProject.crossType(CrossType.Full).in(file("."
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
     javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR")
   ).jsSettings(
-    libraryDependencies += "com.github.cquiroz" %%% "scala-java-locales" % "0.1.1+29"
+    libraryDependencies += "com.github.cquiroz" %%% "scala-java-locales" % "0.2.0+29"
   )
 
 lazy val scalajavatimeJVM = scalajavatimeCross.jvm.settings(commonSettings: _*)
