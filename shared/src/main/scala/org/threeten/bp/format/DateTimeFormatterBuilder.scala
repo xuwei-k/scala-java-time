@@ -31,23 +31,14 @@
  */
 package org.threeten.bp.format
 
-import org.threeten.bp.format.DateTimeFormatterBuilder.ZoneIdPrinterParser.SubstringTree
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
-import org.threeten.bp.temporal.ChronoField.INSTANT_SECONDS
-import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
-import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.threeten.bp.temporal.ChronoField.YEAR
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util._
+import java.util.{Collections, Comparator, Locale, MissingResourceException, Objects, ResourceBundle, TimeZone}
 import java.lang.StringBuilder
+
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -57,6 +48,15 @@ import org.threeten.bp.ZoneOffset
 import org.threeten.bp.chrono.ChronoLocalDate
 import org.threeten.bp.chrono.Chronology
 import org.threeten.bp.temporal.ChronoField
+import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
+import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
+import org.threeten.bp.temporal.ChronoField.INSTANT_SECONDS
+import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
+import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
+import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
+import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
+import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
+import org.threeten.bp.temporal.ChronoField.YEAR
 import org.threeten.bp.temporal.IsoFields
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
@@ -66,6 +66,7 @@ import org.threeten.bp.temporal.ValueRange
 import org.threeten.bp.temporal.WeekFields
 import org.threeten.bp.zone.ZoneRulesProvider
 import org.threeten.bp.format.SignStyle._
+import org.threeten.bp.format.DateTimeFormatterBuilder.ZoneIdPrinterParser.SubstringTree
 
 import scala.annotation.tailrec
 
@@ -1325,7 +1326,7 @@ object DateTimeFormatterBuilder {
   /** Prints or parses a zone ID. */
   private[format] object ZoneTextPrinterParser {
     /** The text style to output. */
-    private val LENGTH_COMPARATOR: Comparator[String] =
+    private val LENGTH_COMPARATOR: Ordering[String] =
       (str1: String, str2: String) => {
         var cmp: Int = str2.length - str1.length
         if (cmp == 0)
@@ -1359,20 +1360,27 @@ object DateTimeFormatterBuilder {
     }
 
     def parse(context: DateTimeParseContext, text: CharSequence, position: Int): Int = {
-      val ids: java.util.Map[String, String] = new java.util.TreeMap[String, String](ZoneTextPrinterParser.LENGTH_COMPARATOR)
-      import scala.collection.JavaConversions._
-      for (id <- ZoneId.getAvailableZoneIds) {
-        ids.put(id, id)
+      // TODO:
+      //    1. Consider whether we should keep the Java-based implementation on the JVM
+      //       and provide this alternative implementation only on other platforms?
+      //    2. We need to write tests for this. I flipped LENGTH_COMPARATOR and no test broke.
+      import scala.collection.mutable.{ Map => MutableMap }
+      import scala.collection.immutable.TreeMap
+      val ids = MutableMap[String, String]()
+      val idIterator = ZoneId.getAvailableZoneIds.iterator()
+      while (idIterator.hasNext) {
+        val id = idIterator.next()
+        ids(id) = id
         val tz: TimeZone = TimeZone.getTimeZone(id)
         val tzstyle: Int = if (textStyle.asNormal eq TextStyle.FULL) TimeZone.LONG else TimeZone.SHORT
-        ids.put(tz.getDisplayName(false, tzstyle, context.getLocale), id)
-        ids.put(tz.getDisplayName(true, tzstyle, context.getLocale), id)
+        ids(tz.getDisplayName(false, tzstyle, context.getLocale)) = id
+        ids(tz.getDisplayName(true, tzstyle, context.getLocale)) = id
       }
-      import scala.collection.JavaConversions._
-      for (entry <- ids.entrySet) {
-        val name: String = entry.getKey
+      val orderedIds = TreeMap(ids.toArray: _*)(ZoneTextPrinterParser.LENGTH_COMPARATOR)
+      orderedIds.foreach { case (key, value) =>
+        val name: String = key
         if (context.subSequenceEquals(text, position, name, 0, name.length)) {
-          context.setParsed(ZoneId.of(entry.getValue))
+          context.setParsed(ZoneId.of(value))
           return position + name.length
         }
       }
