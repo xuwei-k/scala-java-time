@@ -48,15 +48,6 @@ import org.threeten.bp.ZoneOffset
 import org.threeten.bp.chrono.ChronoLocalDate
 import org.threeten.bp.chrono.Chronology
 import org.threeten.bp.temporal.ChronoField
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
-import org.threeten.bp.temporal.ChronoField.INSTANT_SECONDS
-import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
-import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.threeten.bp.temporal.ChronoField.YEAR
 import org.threeten.bp.temporal.IsoFields
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
@@ -65,7 +56,6 @@ import org.threeten.bp.temporal.TemporalQuery
 import org.threeten.bp.temporal.ValueRange
 import org.threeten.bp.temporal.WeekFields
 import org.threeten.bp.zone.ZoneRulesProvider
-import org.threeten.bp.format.SignStyle._
 import org.threeten.bp.format.DateTimeFormatterBuilder.ZoneIdPrinterParser.SubstringTree
 
 import scala.annotation.tailrec
@@ -479,6 +469,7 @@ object DateTimeFormatterBuilder {
         throw new DateTimeException(s"Field $field cannot be printed as the value $value exceeds the maximum print width of $maxWidth")
       str = symbols.convertNumberToI18N(str)
 
+      import SignStyle._
       if (value >= 0) {
         signStyle match {
           case EXCEEDS_PAD =>
@@ -977,14 +968,14 @@ object DateTimeFormatterBuilder {
   private[format] final class InstantPrinterParser private[format](private val fractionalDigits: Int) extends DateTimePrinterParser {
 
     def print(context: DateTimePrintContext, buf: StringBuilder): Boolean = {
-      val inSecs: java.lang.Long = context.getValue(INSTANT_SECONDS)
+      val inSecs: java.lang.Long = context.getValue(ChronoField.INSTANT_SECONDS)
       var inNanos: Long = 0L
-      if (context.getTemporal.isSupported(NANO_OF_SECOND))
-        inNanos = context.getTemporal.getLong(NANO_OF_SECOND)
+      if (context.getTemporal.isSupported(ChronoField.NANO_OF_SECOND))
+        inNanos = context.getTemporal.getLong(ChronoField.NANO_OF_SECOND)
       if (inSecs == null)
         return false
       val inSec: Long = inSecs
-      var inNano: Int = NANO_OF_SECOND.checkValidIntValue(inNanos)
+      var inNano: Int = ChronoField.NANO_OF_SECOND.checkValidIntValue(inNanos)
       if (inSec >= -InstantPrinterParser.SECONDS_0000_TO_1970) {
         val zeroSecs: Long = inSec - InstantPrinterParser.SECONDS_PER_10000_YEARS + InstantPrinterParser.SECONDS_0000_TO_1970
         val hi: Long = Math.floorDiv(zeroSecs, InstantPrinterParser.SECONDS_PER_10000_YEARS) + 1
@@ -1045,17 +1036,21 @@ object DateTimeFormatterBuilder {
       val newContext: DateTimeParseContext = context.copy
       val minDigits: Int = if (fractionalDigits < 0) 0 else fractionalDigits
       val maxDigits: Int = if (fractionalDigits < 0) 9 else fractionalDigits
-      val parser: DateTimeFormatterBuilder.CompositePrinterParser = new DateTimeFormatterBuilder().append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T').appendValue(HOUR_OF_DAY, 2).appendLiteral(':').appendValue(MINUTE_OF_HOUR, 2).appendLiteral(':').appendValue(SECOND_OF_MINUTE, 2).appendFraction(NANO_OF_SECOND, minDigits, maxDigits, true).appendLiteral('Z').toFormatter.toPrinterParser(false)
+      val parser: DateTimeFormatterBuilder.CompositePrinterParser =
+        new DateTimeFormatterBuilder()
+          .append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral('T')
+          .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+          .appendFraction(ChronoField.NANO_OF_SECOND, minDigits, maxDigits, true).appendLiteral('Z').toFormatter.toPrinterParser(false)
       val pos: Int = parser.parse(newContext, text, position)
       if (pos < 0)
         return pos
-      val yearParsed: Long = newContext.getParsed(YEAR)
-      val month: Int = newContext.getParsed(MONTH_OF_YEAR).intValue
-      val day: Int = newContext.getParsed(DAY_OF_MONTH).intValue
-      var hour: Int = newContext.getParsed(HOUR_OF_DAY).intValue
-      val min: Int = newContext.getParsed(MINUTE_OF_HOUR).intValue
-      val secVal: java.lang.Long = newContext.getParsed(SECOND_OF_MINUTE)
-      val nanoVal: java.lang.Long = newContext.getParsed(NANO_OF_SECOND)
+      val yearParsed: Long = newContext.getParsed(ChronoField.YEAR)
+      val month: Int = newContext.getParsed(ChronoField.MONTH_OF_YEAR).intValue
+      val day: Int = newContext.getParsed(ChronoField.DAY_OF_MONTH).intValue
+      var hour: Int = newContext.getParsed(ChronoField.HOUR_OF_DAY).intValue
+      val min: Int = newContext.getParsed(ChronoField.MINUTE_OF_HOUR).intValue
+      val secVal: java.lang.Long = newContext.getParsed(ChronoField.SECOND_OF_MINUTE)
+      val nanoVal: java.lang.Long = newContext.getParsed(ChronoField.NANO_OF_SECOND)
       var sec: Int = if (secVal != null) secVal.intValue else 0
       val nano: Int = if (nanoVal != null) nanoVal.intValue else 0
       val year: Int = yearParsed.toInt % 10000
@@ -1078,8 +1073,8 @@ object DateTimeFormatterBuilder {
         case ex: RuntimeException => return ~position
       }
       var successPos: Int = pos
-      successPos = context.setParsedField(INSTANT_SECONDS, instantSecs, position, successPos)
-      context.setParsedField(NANO_OF_SECOND, nano, position, successPos)
+      successPos = context.setParsedField(ChronoField.INSTANT_SECONDS, instantSecs, position, successPos)
+      context.setParsedField(ChronoField.NANO_OF_SECOND, nano, position, successPos)
     }
 
     override def toString: String = "Instant()"
@@ -1113,7 +1108,7 @@ object DateTimeFormatterBuilder {
     }
 
     def print(context: DateTimePrintContext, buf: StringBuilder): Boolean = {
-      val offsetSecs: java.lang.Long = context.getValue(OFFSET_SECONDS)
+      val offsetSecs: java.lang.Long = context.getValue(ChronoField.OFFSET_SECONDS)
       if (offsetSecs == null) {
         return false
       }
@@ -1149,7 +1144,7 @@ object DateTimeFormatterBuilder {
       val noOffsetLen: Int = noOffsetText.length
       if (noOffsetLen == 0) {
         if (position == length) {
-          return context.setParsedField(OFFSET_SECONDS, 0, position, position)
+          return context.setParsedField(ChronoField.OFFSET_SECONDS, 0, position, position)
         }
       }
       else {
@@ -1157,7 +1152,7 @@ object DateTimeFormatterBuilder {
           return ~position
         }
         if (context.subSequenceEquals(text, position, noOffsetText, 0, noOffsetLen)) {
-          return context.setParsedField(OFFSET_SECONDS, 0, position, position + noOffsetLen)
+          return context.setParsedField(ChronoField.OFFSET_SECONDS, 0, position, position + noOffsetLen)
         }
       }
       val sign: Char = text.charAt(position)
@@ -1167,11 +1162,11 @@ object DateTimeFormatterBuilder {
         array(0) = position + 1
         if (!(parseNumber(array, 1, text, true) || parseNumber(array, 2, text, `type` >= 3) || parseNumber(array, 3, text, false))) {
           val offsetSecs: Long = negative * (array(1) * 3600L + array(2) * 60L + array(3))
-          return context.setParsedField(OFFSET_SECONDS, offsetSecs, position, array(0))
+          return context.setParsedField(ChronoField.OFFSET_SECONDS, offsetSecs, position, array(0))
         }
       }
       if (noOffsetLen == 0) {
-        return context.setParsedField(OFFSET_SECONDS, 0, position, position + noOffsetLen)
+        return context.setParsedField(ChronoField.OFFSET_SECONDS, 0, position, position + noOffsetLen)
       }
       ~position
     }
@@ -1224,7 +1219,7 @@ object DateTimeFormatterBuilder {
   private[format] final class LocalizedOffsetPrinterParser(private val style: TextStyle) extends DateTimePrinterParser {
 
     def print(context: DateTimePrintContext, buf: StringBuilder): Boolean = {
-      val offsetSecs: java.lang.Long = context.getValue(OFFSET_SECONDS)
+      val offsetSecs: java.lang.Long = context.getValue(ChronoField.OFFSET_SECONDS)
       if (offsetSecs == null) {
         return false
       }
@@ -1258,10 +1253,10 @@ object DateTimeFormatterBuilder {
         return new OffsetIdPrinterParser("", "+HH:MM:ss").parse(context, text, _position)
       val end: Int = text.length
       if (_position == end)
-        return context.setParsedField(OFFSET_SECONDS, 0, _position, _position)
+        return context.setParsedField(ChronoField.OFFSET_SECONDS, 0, _position, _position)
       val sign: Char = text.charAt(_position)
       if (sign != '+' && sign != '-')
-        return context.setParsedField(OFFSET_SECONDS, 0, _position, _position)
+        return context.setParsedField(ChronoField.OFFSET_SECONDS, 0, _position, _position)
       val negative: Int = if (sign == '-') -1 else 1
       if (_position == end)
         return ~_position
@@ -1282,7 +1277,7 @@ object DateTimeFormatterBuilder {
       }
       if (_position == end || text.charAt(_position) != ':') {
         val offset: Int = negative * 3600 * hour
-        return context.setParsedField(OFFSET_SECONDS, offset, _position, _position)
+        return context.setParsedField(ChronoField.OFFSET_SECONDS, offset, _position, _position)
       }
       _position += 1
       if (_position > end - 2)
@@ -1301,7 +1296,7 @@ object DateTimeFormatterBuilder {
         return ~_position
       if (_position == end || text.charAt(_position) != ':') {
         val offset: Int = negative * (3600 * hour + 60 * min)
-        return context.setParsedField(OFFSET_SECONDS, offset, _position, _position)
+        return context.setParsedField(ChronoField.OFFSET_SECONDS, offset, _position, _position)
       }
       _position += 1
       if (_position > end - 2)
@@ -1319,7 +1314,7 @@ object DateTimeFormatterBuilder {
       if (sec > 59)
         return ~_position
       val offset: Int = negative * (3600 * hour + 60 * min + sec)
-      context.setParsedField(OFFSET_SECONDS, offset, _position, _position)
+      context.setParsedField(ChronoField.OFFSET_SECONDS, offset, _position, _position)
     }
   }
 
@@ -1348,8 +1343,8 @@ object DateTimeFormatterBuilder {
       }
       val temporal = context.getTemporal
       var daylight: Boolean = false
-      if (temporal.isSupported(INSTANT_SECONDS)) {
-        val instant: Instant = Instant.ofEpochSecond(temporal.getLong(INSTANT_SECONDS))
+      if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
+        val instant: Instant = Instant.ofEpochSecond(temporal.getLong(ChronoField.INSTANT_SECONDS))
         daylight = zone.getRules.isDaylightSavings(instant)
       }
       val tz: TimeZone = TimeZone.getTimeZone(zone.getId)
@@ -1506,7 +1501,7 @@ object DateTimeFormatterBuilder {
         val endPos: Int = OffsetIdPrinterParser.INSTANCE_ID.parse(newContext, text, position)
         if (endPos < 0)
           return endPos
-        val offset: Int = newContext.getParsed(OFFSET_SECONDS).longValue.asInstanceOf[Int]
+        val offset: Int = newContext.getParsed(ChronoField.OFFSET_SECONDS).longValue.toInt
         val zone: ZoneId = ZoneOffset.ofTotalSeconds(offset)
         context.setParsed(zone)
         return endPos
@@ -1590,7 +1585,7 @@ object DateTimeFormatterBuilder {
         context.setParsed(ZoneId.ofOffset(prefix, ZoneOffset.UTC))
         return position
       }
-      val offsetSecs: Int = newContext.getParsed(OFFSET_SECONDS).longValue.asInstanceOf[Int]
+      val offsetSecs: Int = newContext.getParsed(ChronoField.OFFSET_SECONDS).longValue.toInt
       val offset: ZoneOffset = ZoneOffset.ofTotalSeconds(offsetSecs)
       context.setParsed(ZoneId.ofOffset(prefix, offset))
       endPos
@@ -3106,7 +3101,7 @@ final class DateTimeFormatterBuilder private(private val parent: DateTimeFormatt
             throw new IllegalArgumentException(s"Too many pattern letters: $cur")
         }
       case 'S' =>
-        appendFraction(NANO_OF_SECOND, count, count, false)
+        appendFraction(ChronoField.NANO_OF_SECOND, count, count, false)
       case 'F' =>
         if (count == 1)
           appendValue(field)
