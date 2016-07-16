@@ -365,7 +365,7 @@ object TestLocalDate {
 
     {
       var i: Int = 1
-      while (i < 365) {
+      while (i <= 365) {
         {
           assertEquals(LocalDate.ofYearDay(2007, i), date)
           date = next(date)
@@ -383,7 +383,7 @@ object TestLocalDate {
 
     {
       var i: Int = 1
-      while (i < 366) {
+      while (i <= 366) {
         {
           assertEquals(LocalDate.ofYearDay(2008, i), date)
           date = next(date)
