@@ -188,8 +188,8 @@ final class JapaneseEra private(private val eraValue: Int, @(transient @field) p
     */
   private[chrono] def startDate: LocalDate = since
 
-  /** Returns the start date of the era.
-    * @return the start date
+  /** Returns the end date of the era.
+    * @return the end date
     */
   private[chrono] def endDate: LocalDate = {
     val ordinal: Int = JapaneseEra.ordinal(eraValue)
