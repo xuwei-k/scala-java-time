@@ -1373,7 +1373,7 @@ final class HijrahDate private (private val gregorianEpochDay: Long) extends Chr
       case chronoField: ChronoField =>
         chronoField match {
           case DAY_OF_WEEK                  => dayOfWeek.getValue
-          case ALIGNED_DAY_OF_WEEK_IN_MONTH => ((dayOfWeek.getValue - 1) % 7) + 1
+          case ALIGNED_DAY_OF_WEEK_IN_MONTH => ((dayOfMonth - 1) % 7) + 1
           case ALIGNED_DAY_OF_WEEK_IN_YEAR  => ((dayOfYear - 1) % 7) + 1
           case DAY_OF_MONTH                 => this.dayOfMonth
           case DAY_OF_YEAR                  => this.dayOfYear
