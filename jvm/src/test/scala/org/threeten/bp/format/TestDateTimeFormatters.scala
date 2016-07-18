@@ -31,6 +31,7 @@
  */
 package org.threeten.bp.format
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertTrue
 import org.testng.Assert.fail
@@ -68,7 +69,7 @@ import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalQuery
 
 /** Test DateTimeFormatters. */
-@Test object TestDateTimeFormatters {
+object TestDateTimeFormatters {
 
   private[format] class MockAccessor extends TemporalAccessor {
     private[format] var fields: java.util.Map[TemporalField, Long] = new java.util.HashMap[TemporalField, Long]
@@ -156,7 +157,7 @@ import org.threeten.bp.temporal.TemporalQuery
 
 }
 
-@Test class TestDateTimeFormatters {
+@Test class TestDateTimeFormatters extends TestNGSuite {
   @BeforeMethod def setUp(): Unit = {
   }
 
