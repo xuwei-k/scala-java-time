@@ -72,7 +72,7 @@ import org.threeten.bp.temporal.TemporalQuery
 object TestDateTimeFormatters {
 
   private[format] class MockAccessor extends TemporalAccessor {
-    private[format] var fields: java.util.Map[TemporalField, Long] = new java.util.HashMap[TemporalField, Long]
+    private[format] var fields: java.util.Map[TemporalField, java.lang.Long] = new java.util.HashMap[TemporalField, java.lang.Long]
     private[format] var zoneId: ZoneId = null
 
     private[format] def setFields(dt: LocalDate): Unit = {
