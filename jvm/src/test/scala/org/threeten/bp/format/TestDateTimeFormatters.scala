@@ -35,24 +35,13 @@ import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertTrue
 import org.testng.Assert.fail
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
-import org.threeten.bp.temporal.ChronoField.DAY_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
-import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
-import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.threeten.bp.temporal.ChronoField.YEAR
-import java.text.ParsePosition
-import java.util.HashMap
-import java.util.Iterator
-import java.util.Locale
-import java.util.Map
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
+
+import java.text.ParsePosition
+import java.util.Locale
+
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -67,6 +56,16 @@ import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalQuery
+import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
+import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
+import org.threeten.bp.temporal.ChronoField.DAY_OF_YEAR
+import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
+import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
+import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
+import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
+import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
+import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
+import org.threeten.bp.temporal.ChronoField.YEAR
 
 /** Test DateTimeFormatters. */
 object TestDateTimeFormatters {
@@ -103,38 +102,28 @@ object TestDateTimeFormatters {
       }
     }
 
-    private[format] def setOffset(offsetId: String): Unit = {
-      if (offsetId != null) {
+    private[format] def setOffset(offsetId: String): Unit =
+      if (offsetId != null)
         this.fields.put(OFFSET_SECONDS, ZoneOffset.of(offsetId).getTotalSeconds.toLong)
-      }
-    }
 
-    private[format] def setZone(zoneId: String): Unit = {
-      if (zoneId != null) {
+    private[format] def setZone(zoneId: String): Unit =
+      if (zoneId != null)
         this.zoneId = ZoneId.of(zoneId)
-      }
-    }
 
-    def isSupported(field: TemporalField): Boolean = {
-      fields.containsKey(field)
-    }
+    def isSupported(field: TemporalField): Boolean = fields.containsKey(field)
 
-    def getLong(field: TemporalField): Long = {
-      try {
-        fields.get(field)
-      }
+    def getLong(field: TemporalField): Long =
+      try fields.get(field)
       catch {
         case ex: NullPointerException =>
           throw new DateTimeException("Field missing: " + field)
       }
-    }
 
-    @SuppressWarnings(Array("unchecked")) override def query[R >: Null](query: TemporalQuery[R]): R = {
-      if (query eq TemporalQueries.zoneId) {
-        return zoneId.asInstanceOf[R]
-      }
-      super.query(query)
-    }
+    @SuppressWarnings(Array("unchecked")) override def query[R >: Null](query: TemporalQuery[R]): R =
+      if (query eq TemporalQueries.zoneId)
+        zoneId.asInstanceOf[R]
+      else
+        super.query(query)
 
     override def toString: String = fields + (if (zoneId != null) " " + zoneId else "")
   }
@@ -150,20 +139,17 @@ object TestDateTimeFormatters {
       fieldValues.put(field2, value2)
     }
 
-    private[format] def add(offset: ZoneOffset): Unit = {
+    private[format] def add(offset: ZoneOffset): Unit =
       fieldValues.put(OFFSET_SECONDS, offset.getTotalSeconds.toLong)
-    }
   }
 
 }
 
 @Test class TestDateTimeFormatters extends TestNGSuite {
-  @BeforeMethod def setUp(): Unit = {
-  }
+  @BeforeMethod def setUp(): Unit = {}
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_print_nullCalendrical(): Unit = {
+  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_print_nullCalendrical(): Unit =
     DateTimeFormatter.ISO_DATE.format(null.asInstanceOf[TemporalAccessor])
-  }
 
   @Test def test_pattern_String(): Unit = {
     val test: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
@@ -171,13 +157,11 @@ object TestDateTimeFormatters {
     assertEquals(test.getLocale, Locale.getDefault)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_pattern_String_invalid(): Unit = {
+  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_pattern_String_invalid(): Unit =
     DateTimeFormatter.ofPattern("p")
-  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_String_null(): Unit = {
+  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_String_null(): Unit =
     DateTimeFormatter.ofPattern(null)
-  }
 
   @Test def test_pattern_StringLocale(): Unit = {
     val test: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK)
@@ -185,21 +169,17 @@ object TestDateTimeFormatters {
     assertEquals(test.getLocale, Locale.UK)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_pattern_StringLocale_invalid(): Unit = {
+  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_pattern_StringLocale_invalid(): Unit =
     DateTimeFormatter.ofPattern("p", Locale.UK)
-  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_StringLocale_nullPattern(): Unit = {
+  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_StringLocale_nullPattern(): Unit =
     DateTimeFormatter.ofPattern(null, Locale.UK)
-  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_StringLocale_nullLocale(): Unit = {
+  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_pattern_StringLocale_nullLocale(): Unit =
     DateTimeFormatter.ofPattern("yyyy", null)
-  }
 
-  @DataProvider(name = "sample_isoLocalDate") private[format] def provider_sample_isoLocalDate: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoLocalDate") private[format] def provider_sample_isoLocalDate: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, classOf[DateTimeException]), Array(null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, null, "2008-06-30", null), Array(2008, 6, 30, "+01:00", null, "2008-06-30", null), Array(2008, 6, 30, "+01:00", "Europe/Paris", "2008-06-30", null), Array(2008, 6, 30, null, "Europe/Paris", "2008-06-30", null), Array(123456, 6, 30, null, null, "+123456-06-30", null))
-  }
 
   @Test(dataProvider = "sample_isoLocalDate") def test_print_isoLocalDate(year: Integer, month: Integer, day: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, null, null, null, null, offsetId, zoneId)
@@ -213,7 +193,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -236,9 +216,8 @@ object TestDateTimeFormatters {
     assertParseMatch(DateTimeFormatter.ISO_LOCAL_DATE.parseUnresolved("+1000000000-08-06", new ParsePosition(0)), expected)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_parse_isoLocalDate_1000000000_failedCreate(): Unit = {
+  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_parse_isoLocalDate_1000000000_failedCreate(): Unit =
     LocalDate.parse("+1000000000-08-06")
-  }
 
   @Test def test_parse_isoLocalDate_M999999999(): Unit = {
     val expected: TestDateTimeFormatters.Expected = createDate(-999999999, 8, 6)
@@ -251,13 +230,11 @@ object TestDateTimeFormatters {
     assertParseMatch(DateTimeFormatter.ISO_LOCAL_DATE.parseUnresolved("-1000000000-08-06", new ParsePosition(0)), expected)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_parse_isoLocalDate_M1000000000_failedCreate(): Unit = {
+  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_parse_isoLocalDate_M1000000000_failedCreate(): Unit =
     LocalDate.parse("-1000000000-08-06")
-  }
 
-  @DataProvider(name = "sample_isoOffsetDate") private[format] def provider_sample_isoOffsetDate: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoOffsetDate") private[format] def provider_sample_isoOffsetDate: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, classOf[DateTimeException]), Array(null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, "+01:00", null, "2008-06-30+01:00", null), Array(2008, 6, 30, "+01:00", "Europe/Paris", "2008-06-30+01:00", null), Array(2008, 6, 30, null, "Europe/Paris", null, classOf[DateTimeException]), Array(123456, 6, 30, "+01:00", null, "+123456-06-30+01:00", null))
-  }
 
   @Test(dataProvider = "sample_isoOffsetDate") def test_print_isoOffsetDate(year: Integer, month: Integer, day: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, null, null, null, null, offsetId, zoneId)
@@ -271,7 +248,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -284,9 +261,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoDate") private[format] def provider_sample_isoDate: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoDate") private[format] def provider_sample_isoDate: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, classOf[DateTimeException]), Array(null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, null, "2008-06-30", null), Array(2008, 6, 30, "+01:00", null, "2008-06-30+01:00", null), Array(2008, 6, 30, "+01:00", "Europe/Paris", "2008-06-30+01:00", null), Array(2008, 6, 30, null, "Europe/Paris", "2008-06-30", null), Array(123456, 6, 30, "+01:00", "Europe/Paris", "+123456-06-30+01:00", null))
-  }
 
   @Test(dataProvider = "sample_isoDate") def test_print_isoDate(year: Integer, month: Integer, day: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, null, null, null, null, offsetId, zoneId)
@@ -300,7 +276,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -315,9 +291,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoLocalTime") private[format] def provider_sample_isoLocalTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoLocalTime") private[format] def provider_sample_isoLocalTime: Array[Array[Any]] =
     Array[Array[Any]](Array(11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 1, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, null, null, null, null, "11:05", null), Array(11, 5, 30, null, null, null, "11:05:30", null), Array(11, 5, 30, 500000000, null, null, "11:05:30.5", null), Array(11, 5, 30, 1, null, null, "11:05:30.000000001", null), Array(11, 5, null, null, "+01:00", null, "11:05", null), Array(11, 5, 30, null, "+01:00", null, "11:05:30", null), Array(11, 5, 30, 500000000, "+01:00", null, "11:05:30.5", null), Array(11, 5, 30, 1, "+01:00", null, "11:05:30.000000001", null), Array(11, 5, null, null, "+01:00", "Europe/Paris", "11:05", null), Array(11, 5, 30, null, "+01:00", "Europe/Paris", "11:05:30", null), Array(11, 5, 30, 500000000, "+01:00", "Europe/Paris", "11:05:30.5", null), Array(11, 5, 30, 1, "+01:00", "Europe/Paris", "11:05:30.000000001", null), Array(11, 5, null, null, null, "Europe/Paris", "11:05", null), Array(11, 5, 30, null, null, "Europe/Paris", "11:05:30", null), Array(11, 5, 30, 500000000, null, "Europe/Paris", "11:05:30.5", null), Array(11, 5, 30, 1, null, "Europe/Paris", "11:05:30.000000001", null))
-  }
 
   @Test(dataProvider = "sample_isoLocalTime") def test_print_isoLocalTime(hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(null, null, null, hour, min, sec, nano, offsetId, zoneId)
@@ -331,7 +306,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -343,9 +318,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoOffsetTime") private[format] def provider_sample_isoOffsetTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoOffsetTime") private[format] def provider_sample_isoOffsetTime: Array[Array[Any]] =
     Array[Array[Any]](Array(11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 1, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(11, 5, 30, null, null, null, null, classOf[DateTimeException]), Array(11, 5, 30, 500000000, null, null, null, classOf[DateTimeException]), Array(11, 5, 30, 1, null, null, null, classOf[DateTimeException]), Array(11, 5, null, null, "+01:00", null, "11:05+01:00", null), Array(11, 5, 30, null, "+01:00", null, "11:05:30+01:00", null), Array(11, 5, 30, 500000000, "+01:00", null, "11:05:30.5+01:00", null), Array(11, 5, 30, 1, "+01:00", null, "11:05:30.000000001+01:00", null), Array(11, 5, null, null, "+01:00", "Europe/Paris", "11:05+01:00", null), Array(11, 5, 30, null, "+01:00", "Europe/Paris", "11:05:30+01:00", null), Array(11, 5, 30, 500000000, "+01:00", "Europe/Paris", "11:05:30.5+01:00", null), Array(11, 5, 30, 1, "+01:00", "Europe/Paris", "11:05:30.000000001+01:00", null), Array(11, 5, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, 30, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, 30, 500000000, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, 30, 1, null, "Europe/Paris", null, classOf[DateTimeException]))
-  }
 
   @Test(dataProvider = "sample_isoOffsetTime") def test_print_isoOffsetTime(hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(null, null, null, hour, min, sec, nano, offsetId, zoneId)
@@ -359,7 +333,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -372,9 +346,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoTime") private[format] def provider_sample_isoTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoTime") private[format] def provider_sample_isoTime: Array[Array[Any]] =
     Array[Array[Any]](Array(11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 1, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(11, 5, null, null, null, null, "11:05", null), Array(11, 5, 30, null, null, null, "11:05:30", null), Array(11, 5, 30, 500000000, null, null, "11:05:30.5", null), Array(11, 5, 30, 1, null, null, "11:05:30.000000001", null), Array(11, 5, null, null, "+01:00", null, "11:05+01:00", null), Array(11, 5, 30, null, "+01:00", null, "11:05:30+01:00", null), Array(11, 5, 30, 500000000, "+01:00", null, "11:05:30.5+01:00", null), Array(11, 5, 30, 1, "+01:00", null, "11:05:30.000000001+01:00", null), Array(11, 5, null, null, "+01:00", "Europe/Paris", "11:05+01:00", null), Array(11, 5, 30, null, "+01:00", "Europe/Paris", "11:05:30+01:00", null), Array(11, 5, 30, 500000000, "+01:00", "Europe/Paris", "11:05:30.5+01:00", null), Array(11, 5, 30, 1, "+01:00", "Europe/Paris", "11:05:30.000000001+01:00", null), Array(11, 5, null, null, null, "Europe/Paris", "11:05", null), Array(11, 5, 30, null, null, "Europe/Paris", "11:05:30", null), Array(11, 5, 30, 500000000, null, "Europe/Paris", "11:05:30.5", null), Array(11, 5, 30, 1, null, "Europe/Paris", "11:05:30.000000001", null))
-  }
 
   @Test(dataProvider = "sample_isoTime") def test_print_isoTime(hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(null, null, null, hour, min, sec, nano, offsetId, zoneId)
@@ -388,7 +361,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -403,9 +376,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoLocalDateTime") private[format] def provider_sample_isoLocalDateTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoLocalDateTime") private[format] def provider_sample_isoLocalDateTime: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, null, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, null, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, null, null, "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, null, null, "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, null, null, "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, null, null, "2008-06-30T11:05:30.000000001", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", null, "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", null, "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", null, "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", null, "2008-06-30T11:05:30.000000001", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", "Europe/Paris", "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", "Europe/Paris", "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.000000001", null), Array(2008, 6, 30, 11, 5, null, null, null, "Europe/Paris", "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, null, "Europe/Paris", "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, null, "Europe/Paris", "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, null, "Europe/Paris", "2008-06-30T11:05:30.000000001", null), Array(123456, 6, 30, 11, 5, null, null, null, null, "+123456-06-30T11:05", null))
-  }
 
   @Test(dataProvider = "sample_isoLocalDateTime") def test_print_isoLocalDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, hour, min, sec, nano, offsetId, zoneId)
@@ -419,7 +391,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -431,9 +403,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoOffsetDateTime") private[format] def provider_sample_isoOffsetDateTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoOffsetDateTime") private[format] def provider_sample_isoOffsetDateTime: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, null, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, null, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 500000000, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 1, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, "+01:00", null, "2008-06-30T11:05+01:00", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", null, "2008-06-30T11:05:30+01:00", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", null, "2008-06-30T11:05:30.5+01:00", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", null, "2008-06-30T11:05:30.000000001+01:00", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", "Europe/Paris", "2008-06-30T11:05+01:00", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", "Europe/Paris", "2008-06-30T11:05:30+01:00", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.5+01:00", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.000000001+01:00", null), Array(2008, 6, 30, 11, 5, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 500000000, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 1, null, "Europe/Paris", null, classOf[DateTimeException]), Array(123456, 6, 30, 11, 5, null, null, "+01:00", null, "+123456-06-30T11:05+01:00", null))
-  }
 
   @Test(dataProvider = "sample_isoOffsetDateTime") def test_print_isoOffsetDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, hour, min, sec, nano, offsetId, zoneId)
@@ -447,7 +418,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -464,7 +435,7 @@ object TestDateTimeFormatters {
     Array[Array[Any]](Array(2008, null, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, null, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, null, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 500000000, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 1, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, "+01:00", null, "2008-06-30T11:05+01:00", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", null, "2008-06-30T11:05:30+01:00", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", null, "2008-06-30T11:05:30.5+01:00", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", null, "2008-06-30T11:05:30.000000001+01:00", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", "+01:00", "2008-06-30T11:05+01:00", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", "+01:00", "2008-06-30T11:05:30+01:00", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", "+01:00", "2008-06-30T11:05:30.5+01:00", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", "+01:00", "2008-06-30T11:05:30.000000001+01:00", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", "Europe/Paris", "2008-06-30T11:05+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", "Europe/Paris", "2008-06-30T11:05:30+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.5+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.000000001+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 500000000, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, 30, 1, null, "Europe/Paris", null, classOf[DateTimeException]), Array(123456, 6, 30, 11, 5, null, null, "+01:00", "Europe/Paris", "+123456-06-30T11:05+01:00[Europe/Paris]", null))
   }
 
-  @Test(dataProvider = "sample_isoZonedDateTime") def test_print_isoZonedDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
+  @Test(dataProvider = "sample_isoZonedDateTime") def test_print_isoZonedDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_ <: DateTimeException]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, hour, min, sec, nano, offsetId, zoneId)
     if (expectedEx == null) {
       assertEquals(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(test), expected)
@@ -476,7 +447,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -494,9 +465,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @DataProvider(name = "sample_isoDateTime") private[format] def provider_sample_isoDateTime: Array[Array[Any]] = {
+  @DataProvider(name = "sample_isoDateTime") private[format] def provider_sample_isoDateTime: Array[Array[Any]] =
     Array[Array[Any]](Array(2008, null, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, null, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, 30, null, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, "+01:00", null, null, classOf[DateTimeException]), Array(null, null, null, null, null, null, null, null, "Europe/Paris", null, classOf[DateTimeException]), Array(2008, 6, 30, 11, null, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, null, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, null, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, null, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(null, 6, 30, 11, 5, null, null, null, null, null, classOf[DateTimeException]), Array(2008, 6, 30, 11, 5, null, null, null, null, "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, null, null, "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, null, null, "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, null, null, "2008-06-30T11:05:30.000000001", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", null, "2008-06-30T11:05+01:00", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", null, "2008-06-30T11:05:30+01:00", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", null, "2008-06-30T11:05:30.5+01:00", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", null, "2008-06-30T11:05:30.000000001+01:00", null), Array(2008, 6, 30, 11, 5, null, null, "+01:00", "Europe/Paris", "2008-06-30T11:05+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, null, "+01:00", "Europe/Paris", "2008-06-30T11:05:30+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, 500000000, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.5+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, 30, 1, "+01:00", "Europe/Paris", "2008-06-30T11:05:30.000000001+01:00[Europe/Paris]", null), Array(2008, 6, 30, 11, 5, null, null, null, "Europe/Paris", "2008-06-30T11:05", null), Array(2008, 6, 30, 11, 5, 30, null, null, "Europe/Paris", "2008-06-30T11:05:30", null), Array(2008, 6, 30, 11, 5, 30, 500000000, null, "Europe/Paris", "2008-06-30T11:05:30.5", null), Array(2008, 6, 30, 11, 5, 30, 1, null, "Europe/Paris", "2008-06-30T11:05:30.000000001", null), Array(123456, 6, 30, 11, 5, null, null, null, null, "+123456-06-30T11:05", null))
-  }
 
   @Test(dataProvider = "sample_isoDateTime") def test_print_isoDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String, expected: String, expectedEx: Class[_]): Unit = {
     val test: TemporalAccessor = buildAccessor(year, month, day, hour, min, sec, nano, offsetId, zoneId)
@@ -510,7 +480,7 @@ object TestDateTimeFormatters {
       }
       catch {
         case ex: Exception =>
-          assertTrue(expectedEx.isInstance(ex))
+          assertTrue(expectedEx.isInstance(ex), s"Thrown $ex not instance of $expectedEx!")
       }
     }
   }
@@ -661,9 +631,8 @@ object TestDateTimeFormatters {
     }
   }
 
-  @Test(dataProvider = "weekDate") def test_print_isoWeekDate(test: TemporalAccessor, expected: String): Unit = {
+  @Test(dataProvider = "weekDate") def test_print_isoWeekDate(test: TemporalAccessor, expected: String): Unit =
     assertEquals(DateTimeFormatter.ISO_WEEK_DATE.format(test), expected)
-  }
 
   @Test def test_print_isoWeekDate_zoned_largeYear(): Unit = {
     val test: TemporalAccessor = buildAccessor(LocalDateTime.of(123456, 6, 3, 11, 5, 30), "Z", null)
@@ -692,9 +661,8 @@ object TestDateTimeFormatters {
     assertEquals(parsed.get(DAY_OF_WEEK), 5)
   }
 
-  @DataProvider(name = "rfc") private[format] def data_rfc: Array[Array[AnyRef]] = {
+  @DataProvider(name = "rfc") private[format] def data_rfc: Array[Array[AnyRef]] =
     Array[Array[AnyRef]](Array(LocalDateTime.of(2008, 6, 3, 11, 5, 30), "Z", "Tue, 3 Jun 2008 11:05:30 GMT"), Array(LocalDateTime.of(2008, 6, 30, 11, 5, 30), "Z", "Mon, 30 Jun 2008 11:05:30 GMT"), Array(LocalDateTime.of(2008, 6, 3, 11, 5, 30), "+02:00", "Tue, 3 Jun 2008 11:05:30 +0200"), Array(LocalDateTime.of(2008, 6, 30, 11, 5, 30), "-03:00", "Mon, 30 Jun 2008 11:05:30 -0300"))
-  }
 
   @Test(dataProvider = "rfc") def test_print_rfc1123(base: LocalDateTime, offsetId: String, expected: String): Unit = {
     val test: TemporalAccessor = buildAccessor(base, offsetId, null)
@@ -713,84 +681,63 @@ object TestDateTimeFormatters {
 
   private def createDate(year: Integer, month: Integer, day: Integer): TestDateTimeFormatters.Expected = {
     val test: TestDateTimeFormatters.Expected = new TestDateTimeFormatters.Expected
-    if (year != null) {
+    if (year != null)
       test.fieldValues.put(YEAR, year.toLong)
-    }
-    if (month != null) {
+    if (month != null)
       test.fieldValues.put(MONTH_OF_YEAR, month.toLong)
-    }
-    if (day != null) {
+    if (day != null)
       test.fieldValues.put(DAY_OF_MONTH, day.toLong)
-    }
     test
   }
 
   private def createTime(hour: Integer, min: Integer, sec: Integer, nano: Integer): TestDateTimeFormatters.Expected = {
     val test: TestDateTimeFormatters.Expected = new TestDateTimeFormatters.Expected
-    if (hour != null) {
+    if (hour != null)
       test.fieldValues.put(HOUR_OF_DAY, hour.toLong)
-    }
-    if (min != null) {
+    if (min != null)
       test.fieldValues.put(MINUTE_OF_HOUR, min.toLong)
-    }
-    if (sec != null) {
+    if (sec != null)
       test.fieldValues.put(SECOND_OF_MINUTE, sec.toLong)
-    }
-    if (nano != null) {
+    if (nano != null)
       test.fieldValues.put(NANO_OF_SECOND, nano.toLong)
-    }
     test
   }
 
   private def createDateTime(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer): TestDateTimeFormatters.Expected = {
     val test: TestDateTimeFormatters.Expected = new TestDateTimeFormatters.Expected
-    if (year != null) {
+    if (year != null)
       test.fieldValues.put(YEAR, year.toLong)
-    }
-    if (month != null) {
+    if (month != null)
       test.fieldValues.put(MONTH_OF_YEAR, month.toLong)
-    }
-    if (day != null) {
+    if (day != null)
       test.fieldValues.put(DAY_OF_MONTH, day.toLong)
-    }
-    if (hour != null) {
+    if (hour != null)
       test.fieldValues.put(HOUR_OF_DAY, hour.toLong)
-    }
-    if (min != null) {
+    if (min != null)
       test.fieldValues.put(MINUTE_OF_HOUR, min.toLong)
-    }
-    if (sec != null) {
+    if (sec != null)
       test.fieldValues.put(SECOND_OF_MINUTE, sec.toLong)
-    }
-    if (nano != null) {
+    if (nano != null)
       test.fieldValues.put(NANO_OF_SECOND, nano.toLong)
-    }
     test
   }
 
   private def buildAccessor(year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, sec: Integer, nano: Integer, offsetId: String, zoneId: String): TemporalAccessor = {
     val mock: TestDateTimeFormatters.MockAccessor = new TestDateTimeFormatters.MockAccessor
-    if (year != null) {
+    if (year != null)
       mock.fields.put(YEAR, year.toLong)
-    }
-    if (month != null) {
+    if (month != null)
       mock.fields.put(MONTH_OF_YEAR, month.toLong)
-    }
-    if (day != null) {
+    if (day != null)
       mock.fields.put(DAY_OF_MONTH, day.toLong)
-    }
-    if (hour != null) {
+    if (hour != null)
       mock.fields.put(HOUR_OF_DAY, hour.toLong)
-    }
-    if (min != null) {
+    if (min != null)
       mock.fields.put(MINUTE_OF_HOUR, min.toLong)
-    }
-    if (sec != null) {
+    if (sec != null)
       mock.fields.put(SECOND_OF_MINUTE, sec.toLong)
-    }
-    if (nano != null) {
+    if (nano != null)
       mock.fields.put(NANO_OF_SECOND, nano.toLong)
-    }
     mock.setOffset(offsetId)
     mock.setZone(zoneId)
     mock
@@ -813,12 +760,10 @@ object TestDateTimeFormatters {
   }
 
   private def buildCalendrical(expected: TestDateTimeFormatters.Expected, offsetId: String, zoneId: String): Unit = {
-    if (offsetId != null) {
+    if (offsetId != null)
       expected.add(ZoneOffset.of(offsetId))
-    }
-    if (zoneId != null) {
+    if (zoneId != null)
       expected.zone = ZoneId.of(zoneId)
-    }
   }
 
   private def assertParseMatch(parsed: TemporalAccessor, expected: TestDateTimeFormatters.Expected): Unit = {

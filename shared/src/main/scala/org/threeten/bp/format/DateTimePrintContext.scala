@@ -31,9 +31,8 @@
  */
 package org.threeten.bp.format
 
-import org.threeten.bp.temporal.ChronoField.EPOCH_DAY
-import org.threeten.bp.temporal.ChronoField.INSTANT_SECONDS
 import java.util.{Objects, Locale}
+
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -69,7 +68,7 @@ private object DateTimePrintContext {
     val effectiveChrono: Chronology = if (overrideChrono != null) overrideChrono else temporalChrono
     val effectiveZone: ZoneId = if (overrideZone != null) overrideZone else temporalZone
     if (overrideZone != null) {
-      if (temporal.isSupported(INSTANT_SECONDS)) {
+      if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
         val chrono: Chronology = if (effectiveChrono != null) effectiveChrono else IsoChronology.INSTANCE
         return chrono.zonedDateTime(Instant.from(temporal), overrideZone)
       }
@@ -80,7 +79,7 @@ private object DateTimePrintContext {
     }
     var effectiveDate: ChronoLocalDate = null
     if (overrideChrono != null) {
-      if (temporal.isSupported(EPOCH_DAY)) {
+      if (temporal.isSupported(ChronoField.EPOCH_DAY)) {
         effectiveDate = effectiveChrono.date(temporal)
       }
       else {
