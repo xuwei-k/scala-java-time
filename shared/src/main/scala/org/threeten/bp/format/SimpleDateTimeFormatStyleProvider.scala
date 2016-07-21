@@ -36,11 +36,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+
 import org.threeten.bp.chrono.Chronology
 
 private object SimpleDateTimeFormatStyleProvider {
   /** Cache of formatters. */
-  private val FORMATTER_CACHE: ConcurrentMap[String, AnyRef] = new ConcurrentHashMap[String, AnyRef](16, 0.75f, 2)
+  private val FORMATTER_CACHE: ConcurrentMap[String, DateTimeFormatter] = new ConcurrentHashMap(16, 0.75f, 2)
 }
 
 /** The Service Provider Implementation to obtain date-time formatters for a style.
@@ -54,33 +55,26 @@ final class SimpleDateTimeFormatStyleProvider extends DateTimeFormatStyleProvide
   override def getAvailableLocales: Array[Locale] = DateFormat.getAvailableLocales
 
   def getFormatter(dateStyle: FormatStyle, timeStyle: FormatStyle, chrono: Chronology, locale: Locale): DateTimeFormatter = {
-    if (dateStyle == null && timeStyle == null)
-      throw new IllegalArgumentException("Date and Time style must not both be null")
     val key: String = chrono.getId + '|' + locale.toString + '|' + dateStyle + timeStyle
-    val cached: AnyRef = SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.get(key)
-    if (cached != null) {
-      if (cached == "")
-        throw new IllegalArgumentException("Unable to convert DateFormat to DateTimeFormatter")
-      return cached.asInstanceOf[DateTimeFormatter]
-    }
-    var dateFormat: DateFormat = null
-    if (dateStyle != null) {
-      if (timeStyle != null)
-        dateFormat = DateFormat.getDateTimeInstance(convertStyle(dateStyle), convertStyle(timeStyle), locale)
-      else
-        dateFormat = DateFormat.getDateInstance(convertStyle(dateStyle), locale)
-    }
-    else {
-      dateFormat = DateFormat.getTimeInstance(convertStyle(timeStyle), locale)
-    }
-    if (dateFormat.isInstanceOf[SimpleDateFormat]) {
-      val pattern: String = dateFormat.asInstanceOf[SimpleDateFormat].toPattern
-      val formatter: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern(pattern).toFormatter(locale)
-      SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, formatter)
-      return formatter
-    }
-    SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, "")
-    throw new IllegalArgumentException("Unable to convert DateFormat to DateTimeFormatter")
+    val cached: Option[DateTimeFormatter] = Option(SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.get(key))
+    cached.fold {
+      val dateFormat =
+        (dateStyle, timeStyle) match {
+          case (null, null) => throw new IllegalArgumentException("Date and Time style must not both be null")
+          case (null, ts) => DateFormat.getTimeInstance(convertStyle(timeStyle), locale)
+          case (ds, null) => DateFormat.getDateInstance(convertStyle(dateStyle), locale)
+          case (ds, ts) => DateFormat.getDateTimeInstance(convertStyle(dateStyle), convertStyle(timeStyle), locale)
+        }
+      dateFormat match {
+        case format: SimpleDateFormat =>
+          val pattern = format.toPattern
+          val formatter = new DateTimeFormatterBuilder().appendPattern(pattern).toFormatter(locale)
+          SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, formatter)
+          formatter
+        case _ =>
+          throw new IllegalArgumentException("Unable to convert DateFormat to DateTimeFormatter")
+      }
+    }(identity)
   }
 
   /** Converts the enum style to the old format style.
