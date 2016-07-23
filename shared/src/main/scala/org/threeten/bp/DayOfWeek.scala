@@ -31,12 +31,12 @@
  */
 package org.threeten.bp
 
-import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
-import org.threeten.bp.temporal.ChronoUnit.DAYS
 import java.util.Locale
+
 import org.threeten.bp.format.DateTimeFormatterBuilder
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.ChronoField
+import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
 import org.threeten.bp.temporal.Temporal
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalAdjuster
@@ -332,7 +332,7 @@ final class DayOfWeek(name: String, ordinal: Int) extends Enum[DayOfWeek](name, 
     */
   override def query[R >: Null](query: TemporalQuery[R]): R =
     if (query eq TemporalQueries.precision)
-      DAYS.asInstanceOf[R]
+      temporal.ChronoUnit.DAYS.asInstanceOf[R]
     else if ((query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime) || (query eq TemporalQueries.chronology) || (query eq TemporalQueries.zone) || (query eq TemporalQueries.zoneId) || (query eq TemporalQueries.offset))
       null
     else

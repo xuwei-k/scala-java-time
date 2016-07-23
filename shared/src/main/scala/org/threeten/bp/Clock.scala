@@ -225,10 +225,10 @@ object Clock {
   def offset(baseClock: Clock, offsetDuration: Duration): Clock = {
     Objects.requireNonNull(baseClock, "baseClock")
     Objects.requireNonNull(offsetDuration, "offsetDuration")
-    if (offsetDuration == Duration.ZERO) {
-      return baseClock
-    }
-    new Clock.OffsetClock(baseClock, offsetDuration)
+    if (offsetDuration == Duration.ZERO)
+      baseClock
+    else
+      new Clock.OffsetClock(baseClock, offsetDuration)
   }
 
   /** Implementation of a clock that always returns the latest time from

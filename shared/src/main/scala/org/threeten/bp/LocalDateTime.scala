@@ -32,6 +32,13 @@
 package org.threeten.bp
 
 import java.util.Objects
+import java.io.DataInput
+import java.io.DataOutput
+import java.io.IOException
+import java.io.InvalidObjectException
+import java.io.ObjectStreamException
+import java.io.Serializable
+
 import org.threeten.bp.LocalTime.HOURS_PER_DAY
 import org.threeten.bp.LocalTime.MICROS_PER_DAY
 import org.threeten.bp.LocalTime.MILLIS_PER_DAY
@@ -41,12 +48,6 @@ import org.threeten.bp.LocalTime.NANOS_PER_HOUR
 import org.threeten.bp.LocalTime.NANOS_PER_MINUTE
 import org.threeten.bp.LocalTime.NANOS_PER_SECOND
 import org.threeten.bp.LocalTime.SECONDS_PER_DAY
-import java.io.DataInput
-import java.io.DataOutput
-import java.io.IOException
-import java.io.InvalidObjectException
-import java.io.ObjectStreamException
-import java.io.Serializable
 import org.threeten.bp.chrono.ChronoLocalDate
 import org.threeten.bp.chrono.ChronoLocalDateTime
 import org.threeten.bp.format.DateTimeFormatter

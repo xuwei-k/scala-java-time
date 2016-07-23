@@ -32,10 +32,16 @@ lazy val scalajavatimeRoot = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
   .settings(
     scalaVersion := scalaVer,
-    publish := {},
-    publishLocal := {},
-    publishArtifact := false,
-    crossScalaVersions := crossScalaVer
+    crossScalaVersions := crossScalaVer,
+    // No, SBT, we don't want any artifacts for root.
+    // No, not even an empty jar.
+    // Invoking Cthulhu:
+    packageBin in Global := file(""),
+    packagedArtifacts    := Map(),
+    publish              := {},
+    publishLocal         := {},
+    publishArtifact      := false,
+    Keys.`package`       := file("")
   )
 
 lazy val scalajavatimeCross = crossProject.crossType(CrossType.Full).in(file("."))
@@ -56,12 +62,16 @@ lazy val scalajavatimeCross = crossProject.crossType(CrossType.Full).in(file("."
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
     javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR")
   ).jsSettings(
-    libraryDependencies += "com.github.cquiroz" %%% "scala-java-locales" % "0.2.0+29"
+    jsDependencies += RuntimeDOM,
+    libraryDependencies ++= Seq(
+      "org.scala-js"       %%% "scalajs-dom"        % "0.9.0",
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.2.0+29"
+    )
   )
 
-lazy val scalajavatimeJVM = scalajavatimeCross.jvm.settings(commonSettings: _*)
+lazy val scalajavatimeJVM = scalajavatimeCross.jvm
 
-lazy val scalajavatimeJS  = scalajavatimeCross.js.settings(commonSettings: _*)
+lazy val scalajavatimeJS  = scalajavatimeCross.js
 
 lazy val pomData =
   <scm>

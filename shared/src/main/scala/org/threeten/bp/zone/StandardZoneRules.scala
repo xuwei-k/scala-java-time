@@ -198,12 +198,10 @@ final class StandardZoneRules private(private val standardTransitions: Array[Lon
                                       private val wallOffsets: Array[ZoneOffset],
                                       private val lastRules: Array[ZoneOffsetTransitionRule],
                                       private val savingsLocalTransitions: Array[LocalDateTime]) extends ZoneRules with Serializable {
-  /** The map of recent transitions.
-    */
+  /** The map of recent transitions. */
   private val lastRulesCache: ConcurrentMap[Integer, Array[ZoneOffsetTransition]] = new ConcurrentHashMap[Integer, Array[ZoneOffsetTransition]]
 
-  /** Creates an instance.
-    */
+  /** Creates an instance. */
   /* // Can't be implemented with Scala's constructor rules. Replaced with apply factory method.
   private[zone] def this(baseStandardOffset: ZoneOffset,
                          baseWallOffset: ZoneOffset,

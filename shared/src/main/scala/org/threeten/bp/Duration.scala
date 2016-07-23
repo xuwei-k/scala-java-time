@@ -31,15 +31,6 @@
  */
 package org.threeten.bp
 
-import org.threeten.bp.LocalTime.SECONDS_PER_DAY
-import org.threeten.bp.LocalTime.SECONDS_PER_HOUR
-import org.threeten.bp.LocalTime.SECONDS_PER_MINUTE
-import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
-import org.threeten.bp.temporal.ChronoUnit.NANOS
-import org.threeten.bp.temporal.ChronoUnit.MICROS
-import org.threeten.bp.temporal.ChronoUnit.MILLIS
-import org.threeten.bp.temporal.ChronoUnit.SECONDS
-import org.threeten.bp.temporal.ChronoUnit.DAYS
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
@@ -52,8 +43,18 @@ import java.math.RoundingMode
 import java.util.{Objects, Arrays, Collections}
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+import org.threeten.bp.LocalTime.SECONDS_PER_DAY
+import org.threeten.bp.LocalTime.SECONDS_PER_HOUR
+import org.threeten.bp.LocalTime.SECONDS_PER_MINUTE
 import org.threeten.bp.format.DateTimeParseException
+import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
 import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.temporal.ChronoUnit.NANOS
+import org.threeten.bp.temporal.ChronoUnit.MICROS
+import org.threeten.bp.temporal.ChronoUnit.MILLIS
+import org.threeten.bp.temporal.ChronoUnit.SECONDS
+import org.threeten.bp.temporal.ChronoUnit.DAYS
 import org.threeten.bp.temporal.Temporal
 import org.threeten.bp.temporal.TemporalAmount
 import org.threeten.bp.temporal.TemporalUnit

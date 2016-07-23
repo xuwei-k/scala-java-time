@@ -32,7 +32,19 @@
 package org.threeten.bp
 
 import java.util.Objects
-import org.threeten.bp.LocalTime.SECONDS_PER_DAY
+import java.io.DataInput
+import java.io.DataOutput
+import java.io.IOException
+import java.io.InvalidObjectException
+import java.io.ObjectStreamException
+import java.io.Serializable
+
+import org.threeten.bp.chrono.ChronoLocalDate
+import org.threeten.bp.chrono.Era
+import org.threeten.bp.chrono.IsoChronology
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DateTimeParseException
+import org.threeten.bp.temporal.ChronoField
 import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH
 import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR
 import org.threeten.bp.temporal.ChronoField.ALIGNED_WEEK_OF_MONTH
@@ -46,18 +58,6 @@ import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
 import org.threeten.bp.temporal.ChronoField.PROLEPTIC_MONTH
 import org.threeten.bp.temporal.ChronoField.YEAR
 import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
-import java.io.DataInput
-import java.io.DataOutput
-import java.io.IOException
-import java.io.InvalidObjectException
-import java.io.ObjectStreamException
-import java.io.Serializable
-import org.threeten.bp.chrono.ChronoLocalDate
-import org.threeten.bp.chrono.Era
-import org.threeten.bp.chrono.IsoChronology
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
-import org.threeten.bp.temporal.ChronoField
 import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.Temporal
 import org.threeten.bp.temporal.TemporalAccessor
@@ -130,7 +130,7 @@ object LocalDate {
     val now: Instant = clock.instant
     val offset: ZoneOffset = clock.getZone.getRules.getOffset(now)
     val epochSec: Long = now.getEpochSecond + offset.getTotalSeconds
-    val epochDay: Long = Math.floorDiv(epochSec, SECONDS_PER_DAY)
+    val epochDay: Long = Math.floorDiv(epochSec, LocalTime.SECONDS_PER_DAY)
     LocalDate.ofEpochDay(epochDay)
   }
 

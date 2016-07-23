@@ -32,6 +32,16 @@
 package org.threeten.bp
 
 import java.util.Objects
+import java.io.DataInput
+import java.io.DataOutput
+import java.io.IOException
+import java.io.InvalidObjectException
+import java.io.ObjectStreamException
+import java.io.Serializable
+
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DateTimeParseException
+import org.threeten.bp.temporal.ChronoField
 import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
 import org.threeten.bp.temporal.ChronoField.MICRO_OF_DAY
 import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
@@ -39,16 +49,6 @@ import org.threeten.bp.temporal.ChronoField.NANO_OF_DAY
 import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_DAY
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.threeten.bp.temporal.ChronoUnit.NANOS
-import java.io.DataInput
-import java.io.DataOutput
-import java.io.IOException
-import java.io.InvalidObjectException
-import java.io.ObjectStreamException
-import java.io.Serializable
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
-import org.threeten.bp.temporal.ChronoField
 import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.Temporal
 import org.threeten.bp.temporal.TemporalAccessor
@@ -1035,7 +1035,7 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     */
   override def query[R >: Null](query: TemporalQuery[R]): R =
     query match {
-      case TemporalQueries.precision  => NANOS.asInstanceOf[R]
+      case TemporalQueries.precision  => ChronoUnit.NANOS.asInstanceOf[R]
       case TemporalQueries.localTime  => this.asInstanceOf[R]
       case TemporalQueries.chronology
          | TemporalQueries.zoneId

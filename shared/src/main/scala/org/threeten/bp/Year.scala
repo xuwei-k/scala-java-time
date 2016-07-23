@@ -32,20 +32,13 @@
 package org.threeten.bp
 
 import java.util.Objects
-import org.threeten.bp.temporal.ChronoField.ERA
-import org.threeten.bp.temporal.ChronoField.YEAR
-import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
-import org.threeten.bp.temporal.ChronoUnit.CENTURIES
-import org.threeten.bp.temporal.ChronoUnit.DECADES
-import org.threeten.bp.temporal.ChronoUnit.ERAS
-import org.threeten.bp.temporal.ChronoUnit.MILLENNIA
-import org.threeten.bp.temporal.ChronoUnit.YEARS
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
 import java.io.InvalidObjectException
 import java.io.ObjectStreamException
 import java.io.Serializable
+
 import org.threeten.bp.chrono.Chronology
 import org.threeten.bp.chrono.IsoChronology
 import org.threeten.bp.format.DateTimeFormatter
@@ -53,7 +46,15 @@ import org.threeten.bp.format.DateTimeFormatterBuilder
 import org.threeten.bp.format.DateTimeParseException
 import org.threeten.bp.format.SignStyle
 import org.threeten.bp.temporal.ChronoField
+import org.threeten.bp.temporal.ChronoField.ERA
+import org.threeten.bp.temporal.ChronoField.YEAR
+import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
 import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.temporal.ChronoUnit.CENTURIES
+import org.threeten.bp.temporal.ChronoUnit.DECADES
+import org.threeten.bp.temporal.ChronoUnit.ERAS
+import org.threeten.bp.temporal.ChronoUnit.MILLENNIA
+import org.threeten.bp.temporal.ChronoUnit.YEARS
 import org.threeten.bp.temporal.Temporal
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalAdjuster
