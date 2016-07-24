@@ -64,8 +64,9 @@ Run `sbt scalajavatimeCrossJVM/test` to run the test suite on the JVM and
 #### Status
 
 Most parts of this library work perfectly fine with Scala.js in the browser.
-Locale, formatting and timezone support is limited and providing these missing pieces are the current focus of this project.
-@cquiroz is currently working on implementing locale support.
+Locale and formatting support relies on [@cquiroz](https://github.com/cquiroz)' excellent **[scala-java-locales library](https://github.com/cquiroz/scala-java-locales)**.
+Timezone support is limited and providing the missing pieces is the current focus of this project.
+
 
 #### Contributing
 
