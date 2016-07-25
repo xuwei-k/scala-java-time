@@ -6,7 +6,7 @@ val crossScalaVer = Seq(scalaVer, "2.12.0-M5")
 
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
-  version      := "2.0.0-M2-SNAPSHOT",
+  version      := "2.0.0-M2",
   organization := "io.github.soc",
   homepage     := Some(url("https://github.com/soc/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -62,10 +62,8 @@ lazy val scalajavatimeCross = crossProject.crossType(CrossType.Full).in(file("."
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
     javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR")
   ).jsSettings(
-    jsDependencies += RuntimeDOM,
     libraryDependencies ++= Seq(
-      "org.scala-js"       %%% "scalajs-dom"        % "0.9.0",
-      "com.github.cquiroz" %%% "scala-java-locales" % "0.2.0+29"
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.0+29"
     )
   )
 

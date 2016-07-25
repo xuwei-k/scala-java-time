@@ -71,7 +71,7 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test OffsetTime. */
-@Test object TestOffsetTime {
+object TestOffsetTime {
   private val OFFSET_PONE: ZoneOffset = ZoneOffset.ofHours(1)
   private val OFFSET_PTWO: ZoneOffset = ZoneOffset.ofHours(2)
   private val DATE: LocalDate = LocalDate.of(2008, 12, 3)

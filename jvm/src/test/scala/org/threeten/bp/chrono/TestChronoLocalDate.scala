@@ -55,7 +55,7 @@ import org.threeten.bp.temporal.TemporalUnit
 import org.threeten.bp.temporal.ValueRange
 
 /** Test assertions that must be true for all built-in chronologies. */
-@Test object TestChronoLocalDate {
+object TestChronoLocalDate {
 
   /** FixedAdjusted returns a fixed DateTime in all adjustments.
     * Construct an adjuster with the DateTime that should be returned.

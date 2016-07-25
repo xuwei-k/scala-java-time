@@ -31,6 +31,7 @@
  */
 package org.threeten.bp.chrono
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertFalse
 import org.testng.Assert.assertNotNull
@@ -49,7 +50,7 @@ import org.threeten.bp.temporal.ChronoField
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /** Test. */
-@Test class TestIsoChronology {
+@Test class TestIsoChronology extends TestNGSuite {
   @Test def test_chrono_byName(): Unit = {
     val c: Chronology = IsoChronology.INSTANCE
     val test: Chronology = Chronology.of("ISO")
@@ -80,9 +81,8 @@ import org.threeten.bp.temporal.TemporalAdjusters
     assertEquals(IsoChronology.INSTANCE.date(iso), isoDate)
   }
 
-  @DataProvider(name = "badDates") private[chrono] def data_badDates: Array[Array[Int]] = {
-    Array[Array[Int]](Array(2012, 0, 0), Array(2012, -1, 1), Array(2012, 0, 1), Array(2012, 14, 1), Array(2012, 15, 1), Array(2012, 1, -1), Array(2012, 1, 0), Array(2012, 1, 32), Array(2012, 12, -1), Array(2012, 12, 0), Array(2012, 12, 32))
-  }
+  @DataProvider(name = "badDates") private[chrono] def data_badDates: Array[Array[Any]] =
+    Array[Array[Any]](Array(2012, 0, 0), Array(2012, -1, 1), Array(2012, 0, 1), Array(2012, 14, 1), Array(2012, 15, 1), Array(2012, 1, -1), Array(2012, 1, 0), Array(2012, 1, 32), Array(2012, 12, -1), Array(2012, 12, 0), Array(2012, 12, 32))
 
   @Test(dataProvider = "badDates", expectedExceptions = Array(classOf[DateTimeException])) def test_badDates(year: Int, month: Int, dom: Int): Unit = {
     IsoChronology.INSTANCE.date(year, month, dom)

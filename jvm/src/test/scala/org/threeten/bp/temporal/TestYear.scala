@@ -47,7 +47,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.DateTimeParseException
 
 /** Test Year. */
-@Test object TestYear {
+object TestYear {
   private val TEST_2008: Year = Year.of(2008)
 }
 

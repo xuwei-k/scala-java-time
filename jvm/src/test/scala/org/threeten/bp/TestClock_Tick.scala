@@ -38,7 +38,7 @@ import java.io.IOException
 import org.testng.annotations.Test
 
 /** Test tick clock. */
-@Test object TestClock_Tick {
+object TestClock_Tick {
   private val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
   private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
   private val AMOUNT: Duration = Duration.ofSeconds(2)

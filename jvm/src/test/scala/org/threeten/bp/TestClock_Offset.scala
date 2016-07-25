@@ -38,7 +38,7 @@ import java.io.IOException
 import org.testng.annotations.Test
 
 /** Test offset clock. */
-@Test object TestClock_Offset {
+object TestClock_Offset {
   private val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
   private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
   private val INSTANT: Instant = LocalDateTime.of(2008, 6, 30, 11, 30, 10, 500).atZone(ZoneOffset.ofHours(2)).toInstant

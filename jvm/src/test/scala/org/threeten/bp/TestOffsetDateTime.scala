@@ -89,7 +89,7 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test OffsetDateTime. */
-@Test object TestOffsetDateTime {
+object TestOffsetDateTime {
   private val ZONE_PARIS: ZoneId = ZoneId.of("Europe/Paris")
   private val ZONE_GAZA: ZoneId = ZoneId.of("Asia/Gaza")
   private val OFFSET_PONE: ZoneOffset = ZoneOffset.ofHours(1)

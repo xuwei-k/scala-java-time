@@ -31,6 +31,7 @@
  */
 package org.threeten.bp
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertFalse
 import org.testng.Assert.assertNotNull
@@ -50,14 +51,14 @@ import org.threeten.bp.zone.ZoneRules
 import org.threeten.bp.zone.ZoneRulesException
 
 /** Test ZoneId. */
-@Test object TestZoneId {
+object TestZoneId {
   private val ZONE_PARIS: ZoneId = ZoneId.of("Europe/Paris")
   val LATEST_TZDB: String = "2010i"
   private val OVERLAP: Int = 2
   private val GAP: Int = 0
 }
 
-@Test class TestZoneId {
+@Test class TestZoneId extends TestNGSuite {
   def test_immutable(): Unit = {
     val cls: Class[ZoneId] = classOf[ZoneId]
     assertTrue(Modifier.isPublic(cls.getModifiers))

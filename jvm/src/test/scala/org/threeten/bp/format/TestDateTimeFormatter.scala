@@ -54,7 +54,7 @@ import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalQuery
 
 /** Test DateTimeFormatter. */
-@Test object TestDateTimeFormatter {
+object TestDateTimeFormatter {
   private val BASIC_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("'ONE'd")
   private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("'ONE'uuuu MM dd")
 }

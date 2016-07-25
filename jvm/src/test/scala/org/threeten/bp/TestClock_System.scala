@@ -39,7 +39,7 @@ import java.io.IOException
 import org.testng.annotations.Test
 
 /** Test system clock. */
-@Test object TestClock_System {
+object TestClock_System {
   private val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
   private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
 }

@@ -57,8 +57,7 @@ import org.threeten.bp.temporal.TemporalUnit
 import org.threeten.bp.temporal.ValueRange
 
 /** Test assertions that must be true for all built-in chronologies. */
-@SuppressWarnings(Array("rawtypes"))
-@Test object TestChronoLocalDateTime {
+object TestChronoLocalDateTime {
 
   /** FixedAdjusted returns a fixed DateTime in all adjustments.
     * Construct an adjuster with the DateTime that should be returned.
@@ -105,7 +104,7 @@ import org.threeten.bp.temporal.ValueRange
       throw new UnsupportedOperationException("Not supported yet.")
     }
 
-    @SuppressWarnings(Array("unchecked")) def addTo[R <: Temporal](dateTime: R, periodToAdd: Long): R = {
+    def addTo[R <: Temporal](dateTime: R, periodToAdd: Long): R = {
       this.dateTime.asInstanceOf[R]
     }
 
@@ -170,7 +169,6 @@ import org.threeten.bp.temporal.ValueRange
 
 }
 
-@SuppressWarnings(Array("rawtypes"))
 @Test class TestChronoLocalDateTime extends TestNGSuite {
   @DataProvider(name = "calendars") private[chrono] def data_of_calendars: Array[Array[Chronology]] = {
     Array[Array[Chronology]](Array(HijrahChronology.INSTANCE), Array(IsoChronology.INSTANCE), Array(JapaneseChronology.INSTANCE), Array(MinguoChronology.INSTANCE), Array(ThaiBuddhistChronology.INSTANCE))

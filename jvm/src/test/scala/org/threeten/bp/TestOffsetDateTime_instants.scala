@@ -31,17 +31,18 @@
  */
 package org.threeten.bp
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
 /** Test OffsetDateTime creation. */
-@Test object TestOffsetDateTime_instants {
+object TestOffsetDateTime_instants {
   private val OFFSET_PONE: ZoneOffset = ZoneOffset.ofHours(1)
   private val OFFSET_MAX: ZoneOffset = ZoneOffset.ofHours(18)
   private val OFFSET_MIN: ZoneOffset = ZoneOffset.ofHours(-18)
 }
 
-@Test class TestOffsetDateTime_instants {
+@Test class TestOffsetDateTime_instants extends TestNGSuite {
   @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_ofInstant_nullInstant(): Unit = {
     OffsetDateTime.ofInstant(null.asInstanceOf[Instant], TestOffsetDateTime_instants.OFFSET_PONE)
   }

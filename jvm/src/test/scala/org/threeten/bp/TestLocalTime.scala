@@ -87,7 +87,7 @@ import org.threeten.bp.temporal.TemporalUnit
 import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
 /** Test LocalTime. */
-@Test object TestLocalTime {
+object TestLocalTime {
   private val INVALID_UNITS: Array[TemporalUnit] =  {
     //val set: java.util.EnumSet[ChronoUnit] = EnumSet.range(WEEKS, FOREVER)
     //set.toArray(new Array[TemporalUnit](set.size)).asInstanceOf[Array[TemporalUnit]]
@@ -193,7 +193,7 @@ import org.threeten.bp.temporal.UnsupportedTemporalTypeException
     val zone: ZoneId = ZoneId.of("UTC+01:02:03")
     var expected: LocalTime = LocalTime.now(Clock.system(zone))
     var test: LocalTime = LocalTime.now(zone)
-    
+
     {
       var i: Int = 0
       while (i < 100) {
@@ -569,7 +569,7 @@ import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
   @Test def test_withHour_normal(): Unit = {
     var t: LocalTime = TEST_12_30_40_987654321
-    
+
     {
       var i: Int = 0
       while (i < 24) {
@@ -610,7 +610,7 @@ import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
   @Test def test_withMinute_normal(): Unit = {
     var t: LocalTime = TEST_12_30_40_987654321
-    
+
     {
       var i: Int = 0
       while (i < 60) {
@@ -651,7 +651,7 @@ import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
   @Test def test_withSecond_normal(): Unit = {
     var t: LocalTime = TEST_12_30_40_987654321
-    
+
     {
       var i: Int = 0
       while (i < 60) {

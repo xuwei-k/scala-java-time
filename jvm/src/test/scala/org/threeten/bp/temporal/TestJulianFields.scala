@@ -31,6 +31,7 @@
  */
 package org.threeten.bp.temporal
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
@@ -38,14 +39,14 @@ import org.testng.annotations.Test
 import org.threeten.bp.LocalDate
 
 /** Test. */
-@Test object TestJulianFields {
+object TestJulianFields {
   private val JAN01_1970: LocalDate = LocalDate.of(1970, 1, 1)
   private val DEC31_1969: LocalDate = LocalDate.of(1969, 12, 31)
   private val NOV12_1945: LocalDate = LocalDate.of(1945, 11, 12)
   private val JAN01_0001: LocalDate = LocalDate.of(1, 1, 1)
 }
 
-@Test class TestJulianFields {
+@Test class TestJulianFields extends TestNGSuite {
   @BeforeMethod def setUp(): Unit = {
   }
 

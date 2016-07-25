@@ -40,7 +40,7 @@ import org.testng.annotations.Test
 import org.threeten.bp.ZoneOffset
 
 /** Test ZoneRulesProvider. */
-@Test object TestZoneRulesProvider {
+object TestZoneRulesProvider {
 
   private[zone] class MockTempProvider extends ZoneRulesProvider {
     private[zone] final val rules: ZoneRules = ZoneOffset.of("+01:45").getRules

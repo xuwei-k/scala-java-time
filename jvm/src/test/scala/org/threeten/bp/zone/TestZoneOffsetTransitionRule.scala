@@ -44,7 +44,7 @@ import org.threeten.bp.ZoneOffset
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition
 
 /** Test ZoneOffsetTransitionRule. */
-@Test object TestZoneOffsetTransitionRule extends TestNGSuite {
+object TestZoneOffsetTransitionRule extends TestNGSuite {
   private val TIME_0100: LocalTime = LocalTime.of(1, 0)
   private val OFFSET_0200: ZoneOffset = ZoneOffset.ofHours(2)
   private val OFFSET_0300: ZoneOffset = ZoneOffset.ofHours(3)

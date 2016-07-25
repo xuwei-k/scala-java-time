@@ -46,7 +46,7 @@ import org.threeten.bp.temporal.TemporalField
 import scala.annotation.meta.setter
 
 /** Abstract PrinterParser test. */
-@Test object AbstractTestPrinterParser {
+object AbstractTestPrinterParser {
   private val EMPTY: TemporalAccessor = new TemporalAccessor() {
     def isSupported(field: TemporalField): Boolean = true
     def getLong(field: TemporalField): Long = throw new DateTimeException("Mock")

@@ -36,7 +36,7 @@ import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
 /** Test Clock. */
-@Test object TestClock {
+object TestClock {
 
   private[bp] class MockInstantClock private[bp](override val millis: Long, private[bp] val zone: ZoneId) extends Clock {
 

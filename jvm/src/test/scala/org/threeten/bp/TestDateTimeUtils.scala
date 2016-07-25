@@ -31,23 +31,25 @@
  */
 package org.threeten.bp
 
-import java.sql.Time
-import java.sql.Timestamp
-
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
+import org.testng.annotations.Test
+
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.TimeZone
-import org.testng.annotations.Test
+
+import java.sql.Time
+import java.sql.Timestamp
 
 /** Test. */
-@Test object TestDateTimeUtils {
+object TestDateTimeUtils {
   private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
   private val PARIS_TZ: TimeZone = TimeZone.getTimeZone("Europe/Paris")
 }
 
-@Test class TestDateTimeUtils {
+@Test class TestDateTimeUtils extends TestNGSuite {
   def test_toInstant_Date(): Unit = {
     val date: Date = new Date(123456)
     assertEquals(DateTimeUtils.toInstant(date), Instant.ofEpochMilli(123456))

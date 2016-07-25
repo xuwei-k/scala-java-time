@@ -43,7 +43,7 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test TextPrinterParser. */
-@Test object TestTextParser {
+object TestTextParser {
   private val PROVIDER: DateTimeTextProvider = DateTimeTextProvider.getInstance
 }
 

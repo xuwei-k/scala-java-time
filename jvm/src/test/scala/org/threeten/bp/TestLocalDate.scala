@@ -84,7 +84,7 @@ import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalUnit
 
 /** Test LocalDate. */
-@Test object TestLocalDate {
+object TestLocalDate {
   private val OFFSET_PONE: ZoneOffset = ZoneOffset.ofHours(1)
   private val ZONE_PARIS: ZoneId = ZoneId.of("Europe/Paris")
   private val ZONE_GAZA: ZoneId = ZoneId.of("Asia/Gaza")
@@ -446,7 +446,7 @@ import org.threeten.bp.temporal.TemporalUnit
     assertEquals(LocalDate.ofEpochDay(MAX_VALID_EPOCHDAYS), LocalDate.of(Year.MAX_VALUE, 12, 31))
     assertEquals(LocalDate.ofEpochDay(MIN_VALID_EPOCHDAYS), LocalDate.of(Year.MIN_VALUE, 1, 1))
     var test: LocalDate = LocalDate.of(0, 1, 1)
-    
+
     {
       var i: Long = date_0000_01_01
       while (i < 700000) {
@@ -461,7 +461,7 @@ import org.threeten.bp.temporal.TemporalUnit
       }
     }
     test = LocalDate.of(0, 1, 1)
-    
+
     {
       var i: Long = date_0000_01_01
       while (i > -2000000) {
@@ -620,7 +620,7 @@ import org.threeten.bp.temporal.TemporalUnit
   @Test(dataProvider = "sampleDates") def test_getDOY(y: Int, m: Int, d: Int): Unit = {
     val a: LocalDate = LocalDate.of(y, m, d)
     var total: Int = 0
-    
+
     {
       var i: Int = 1
       while (i < m) {
@@ -641,7 +641,7 @@ import org.threeten.bp.temporal.TemporalUnit
     var dow: DayOfWeek = DayOfWeek.MONDAY
     for (month <- Month.values) {
       val length: Int = month.length(false)
-      
+
       {
         var i: Int = 1
         while (i <= length) {
@@ -1518,7 +1518,7 @@ import org.threeten.bp.temporal.TemporalUnit
   @Test def test_toEpochDay(): Unit = {
     val date_0000_01_01: Long = -678941 - 40587
     var test: LocalDate = LocalDate.of(0, 1, 1)
-    
+
     {
       var i: Long = date_0000_01_01
       while (i < 700000) {
@@ -1533,7 +1533,7 @@ import org.threeten.bp.temporal.TemporalUnit
       }
     }
     test = LocalDate.of(0, 1, 1)
-    
+
     {
       var i: Long = date_0000_01_01
       while (i > -2000000) {
@@ -1564,7 +1564,7 @@ import org.threeten.bp.temporal.TemporalUnit
       while (i < localDates.length) {
         {
           val a: LocalDate = localDates(i)
-          
+
           {
             var j: Int = 0
             while (j < localDates.length) {

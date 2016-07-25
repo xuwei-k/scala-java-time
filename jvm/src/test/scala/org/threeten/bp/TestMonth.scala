@@ -52,7 +52,7 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test Month. */
-@Test object TestMonth {
+object TestMonth {
   private val MAX_LENGTH: Int = 12
 }
 

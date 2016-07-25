@@ -96,7 +96,7 @@ import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalUnit
 
 /** Test LocalDateTime. */
-@Test object TestLocalDateTime {
+object TestLocalDateTime {
   private val OFFSET_PONE: ZoneOffset = ZoneOffset.ofHours(1)
   private val OFFSET_PTWO: ZoneOffset = ZoneOffset.ofHours(2)
   private val OFFSET_MTWO: ZoneOffset = ZoneOffset.ofHours(-2)

@@ -31,6 +31,7 @@
  */
 package org.threeten.bp.chrono
 
+import org.scalatest.testng.TestNGSuite
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertFalse
 import org.testng.Assert.assertTrue
@@ -47,7 +48,7 @@ import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /** Test. */
-@Test class TestMinguoChronology {
+@Test class TestMinguoChronology extends TestNGSuite {
   @Test def test_chrono_byName(): Unit = {
     val c: Chronology = MinguoChronology.INSTANCE
     val test: Chronology = Chronology.of("Minguo")
@@ -94,8 +95,8 @@ import org.threeten.bp.temporal.TemporalAdjusters
     @SuppressWarnings(Array("unused")) val h4: ChronoZonedDateTime[_] = h3.atZone(ZoneOffset.UTC)
   }
 
-  @DataProvider(name = "badDates") private[chrono] def data_badDates: Array[Array[Int]] = {
-    Array[Array[Int]](Array(1912, 0, 0), Array(1912, -1, 1), Array(1912, 0, 1), Array(1912, 14, 1), Array(1912, 15, 1), Array(1912, 1, -1), Array(1912, 1, 0), Array(1912, 1, 32), Array(1912, 2, 29), Array(1912, 2, 30), Array(1912, 12, -1), Array(1912, 12, 0), Array(1912, 12, 32))
+  @DataProvider(name = "badDates") private[chrono] def data_badDates: Array[Array[Any]] = {
+    Array[Array[Any]](Array(1912, 0, 0), Array(1912, -1, 1), Array(1912, 0, 1), Array(1912, 14, 1), Array(1912, 15, 1), Array(1912, 1, -1), Array(1912, 1, 0), Array(1912, 1, 32), Array(1912, 2, 29), Array(1912, 2, 30), Array(1912, 12, -1), Array(1912, 12, 0), Array(1912, 12, 32))
   }
 
   @Test(dataProvider = "badDates", expectedExceptions = Array(classOf[DateTimeException])) def test_badDates(year: Int, month: Int, dom: Int): Unit = {

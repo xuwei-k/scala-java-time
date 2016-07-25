@@ -39,7 +39,7 @@ import org.threeten.bp.DateTimeException
 import org.threeten.bp.ZoneOffset
 
 /** Test ZoneOffsetPrinterParser. */
-@Test object TestZoneOffsetPrinter {
+object TestZoneOffsetPrinter {
   private val OFFSET_0130: ZoneOffset = ZoneOffset.of("+01:30")
 }
 

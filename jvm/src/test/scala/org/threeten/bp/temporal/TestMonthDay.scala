@@ -264,8 +264,8 @@ import org.threeten.bp.format.DateTimeParseException
     TEST_07_15.getLong(ChronoField.AMPM_OF_DAY)
   }
 
-  @DataProvider(name = "sampleDates") private[temporal] def provider_sampleDates: Array[Array[Int]] = {
-    Array[Array[Int]](Array(1, 1), Array(1, 31), Array(2, 1), Array(2, 28), Array(2, 29), Array(7, 4), Array(7, 5))
+  @DataProvider(name = "sampleDates") private[temporal] def provider_sampleDates: Array[Array[Any]] = {
+    Array[Array[Any]](Array(1, 1), Array(1, 31), Array(2, 1), Array(2, 28), Array(2, 29), Array(7, 4), Array(7, 5))
   }
 
   @Test(dataProvider = "sampleDates") def test_get(m: Int, d: Int): Unit = {

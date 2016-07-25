@@ -52,7 +52,7 @@ import org.threeten.bp.temporal.TemporalAdjusters
 import org.threeten.bp.temporal.ValueRange
 
 /** Test. */
-@Test object TestThaiBuddhistChronology {
+object TestThaiBuddhistChronology {
   private val YDIFF: Int = 543
 }
 
