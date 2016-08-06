@@ -667,8 +667,7 @@ trait Chronology extends Ordered[Chronology] {
     * @throws DateTimeException if the date cannot be resolved, typically
     *                           because of a conflict in the input data
     */
-  def resolveDate(fieldValues: java.util.Map[TemporalField, java.lang.Long], resolverStyle: ResolverStyle): ChronoLocalDate =
-    throw new UnsupportedOperationException("ThreeTen Backport does not support resolveDate")
+  def resolveDate(fieldValues: java.util.Map[TemporalField, java.lang.Long], resolverStyle: ResolverStyle): ChronoLocalDate
 
   /** Updates the map of field-values during resolution.
     *
