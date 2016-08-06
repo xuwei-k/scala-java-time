@@ -94,6 +94,14 @@ lazy val pomData =
       <url>https://github.com/cquiroz/</url>
     </contributor>
     <contributor>
+      <name>Javier Fernandez-Ivern</name>
+      <url>https://github.com/ivern</url>
+    </contributor>
+    <contributor>
+      <name>Martin Baker</name>
+      <url>https://github.com/kemokid</url>
+    </contributor>
+    <contributor>
       <name>Keith Harris</name>
       <url>https://github.com/keithharris</url>
     </contributor>
@@ -119,9 +127,5 @@ lazy val pomData =
     </contributor>
     <contributor>
       <name>Sherman Shen</name>
-    </contributor>
-    <contributor>
-      <name>Javier Fernandez-Ivern</name>
-      <url>https://github.com/ivern</url>
     </contributor>
   </contributors>

@@ -44,6 +44,7 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
 import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH
+import org.threeten.bp.temporal.ChronoField.ALIGNED_WEEK_OF_MONTH
 
 /** Test. */
 @Test class TestHijrahChronology {
@@ -78,8 +79,14 @@ import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH
 
   @Test
   def test_alignedDayOfWeekInMonth(): Unit = {
-    val date: HijrahDate = HijrahChronology.INSTANCE.date(1728, 10, 28);
-    assertEquals(date.getLong(ALIGNED_DAY_OF_WEEK_IN_MONTH), 7);
+    var dom = 1
+    while (dom <= 29) {
+      var date: HijrahDate = HijrahChronology.INSTANCE.date(1728, 10, dom)
+      assertEquals(date.getLong(ALIGNED_WEEK_OF_MONTH), ((dom - 1) / 7) + 1)
+      assertEquals(date.getLong(ALIGNED_DAY_OF_WEEK_IN_MONTH), ((dom - 1) % 7) + 1)
+      date = date.plusDays(1)
+      dom += 1
+    }
   }
 
   @Test def test_adjust1(): Unit = {
