@@ -277,7 +277,7 @@ final class DateTimeParseContext private[format](private var locale: Locale,
       while (callbacks.hasNext) {
         val objects = callbacks.next()
         val pp: DateTimeFormatterBuilder.ReducedPrinterParser = objects(0).asInstanceOf[DateTimeFormatterBuilder.ReducedPrinterParser]
-        pp.setValue(this, objects(1).asInstanceOf[Long], objects(2).asInstanceOf[Integer], objects(3).asInstanceOf[Integer])
+        pp.setValue(this, objects(1).asInstanceOf[java.lang.Long], objects(2).asInstanceOf[Integer], objects(3).asInstanceOf[Integer])
       }
     }
   }
