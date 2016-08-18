@@ -42,6 +42,7 @@ import org.threeten.bp.temporal.ChronoUnit.NANOS
 import org.threeten.bp.temporal.ChronoUnit.SECONDS
 import java.util.Arrays
 import java.util.Locale
+import java.lang.{Long => JLong}
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
@@ -251,13 +252,14 @@ object TestInstant {
   }
 
   @DataProvider(name = "MillisInstantNoNanos") private[bp] def provider_factory_millis_long: Array[Array[_ <: AnyRef]] = {
-    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0), Array[Integer](1, 0, 1000000), Array[Integer](2, 0, 2000000), Array[Integer](999, 0, 999000000), Array[Integer](1000, 1, 0), Array[Integer](1001, 1, 1000000), Array[Integer](-1, -1, 999000000), Array[Integer](-2, -1, 998000000), Array[Integer](-999, -1, 1000000), Array[Integer](-1000, -1, 0), Array[Integer](-1001, -2, 999000000))
+    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0), Array[Integer](1, 0, 1000000), Array[Integer](2, 0, 2000000), Array[Integer](999, 0, 999000000), Array[Integer](1000, 1, 0), Array[Integer](1001, 1, 1000000), Array[Integer](-1, -1, 999000000), Array[Integer](-2, -1, 998000000), Array[Integer](-999, -1, 1000000), Array[Integer](-1000, -1, 0), Array[Integer](-1001, -2, 999000000), Array[JLong](Long.MaxValue, Long.MaxValue / 1000, (Long.MaxValue % 1000) * 1000000L), Array[JLong](Long.MaxValue - 1, (Long.MaxValue - 1) / 1000, ((Long.MaxValue - 1) % 1000) * 1000000L), Array[JLong](Long.MinValue, (Long.MinValue / 1000) - 1, (Long.MinValue % 1000) * 1000000L + 1000000000L), Array[JLong][AnyRef](Long.MinValue + 1L, ((Long.MinValue + 1L) / 1000L) - 1L, ((Long.MinValue + 1L) % 1000L) * 1000000L + 1000000000L))
   }
 
   @Test(dataProvider = "MillisInstantNoNanos") def factory_millis_long(millis: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
     val t: Instant = Instant.ofEpochMilli(millis)
     assertEquals(t.getEpochSecond, expectedSeconds)
     assertEquals(t.getNano, expectedNanoOfSecond)
+    assertEquals(t.toEpochMilli, millis);
   }
 
   @DataProvider(name = "Parse") private[bp] def provider_factory_parse: Array[Array[Any]] = {
@@ -577,6 +579,16 @@ object TestInstant {
   @Test(expectedExceptions = Array(classOf[DateTimeException])) def minusNanos_long_overflowTooSmall(): Unit = {
     val i: Instant = Instant.ofEpochSecond(TestInstant.MIN_SECOND, 0)
     i.minusNanos(1)
+  }
+
+  @Test
+  def test_truncatedTo(): Unit = {
+      assertEquals(Instant.ofEpochSecond(2L, 1000000).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(2L))
+      assertEquals(Instant.ofEpochSecond(2L, -1000000).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(1L))
+      assertEquals(Instant.ofEpochSecond(0L, -1000000).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(-1L))
+      assertEquals(Instant.ofEpochSecond(-1L).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(-1L))
+      assertEquals(Instant.ofEpochSecond(-1L, -1000000).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(-2L))
+      assertEquals(Instant.ofEpochSecond(-2L).truncatedTo(ChronoUnit.SECONDS), Instant.ofEpochSecond(-2L))
   }
 
   @Test def test_toEpochMilli(): Unit = {
