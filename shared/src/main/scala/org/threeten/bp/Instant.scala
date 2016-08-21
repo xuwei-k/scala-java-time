@@ -594,7 +594,8 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
       throw new DateTimeException("Unit must divide into a standard day without remainder")
     }
     val nod: Long = (seconds % LocalTime.SECONDS_PER_DAY) * LocalTime.NANOS_PER_SECOND + nanos
-    val result: Long = (nod / dur) * dur
+    val result: Long = Math.floorDiv(nod, dur) * dur
+
     plusNanos(result - nod)
   }
 
