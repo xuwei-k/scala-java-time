@@ -76,6 +76,8 @@ object Instant {
   private val NANOS_PER_SECOND: Int = 1000000000
   /** Constant for nanos per milli. */
   private val NANOS_PER_MILLI: Int = 1000000
+  /** Constant for millis per sec. */
+  private val MILLIS_PER_SEC = 1000
 
   /** The minimum supported {@code Instant}, '-1000000000-01-01T00:00Z'.
     * This could be used by an application as a "far past" instant.
@@ -929,10 +931,20 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @return the number of milliseconds since the epoch of 1970-01-01T00:00:00Z
     * @throws ArithmeticException if numeric overflow occurs
     */
-  def toEpochMilli: Long = {
-    val millis: Long = Math.multiplyExact(seconds, 1000)
-    millis + nanos / Instant.NANOS_PER_MILLI
-  }
+  def toEpochMilli: Long =
+    if (seconds >= 0) {
+      val millis: Long = Math.multiplyExact(seconds, Instant.MILLIS_PER_SEC)
+      millis + nanos / Instant.NANOS_PER_MILLI
+    } else {
+      // prevent an overflow in seconds * 1000
+      // instead of going form the second farther away from 0
+      // going toward 0
+      // we go from the second closer to 0 away from 0
+      // that way we always stay in the valid long range
+      // seconds + 1 can not overflow because it is negative
+      val millis = Math.multiplyExact(seconds + 1, Instant.MILLIS_PER_SEC)
+      Math.subtractExact(millis, Instant.MILLIS_PER_SEC - nanos / Instant.NANOS_PER_MILLI)
+    }
 
   /** Compares this instant to the specified instant.
     *

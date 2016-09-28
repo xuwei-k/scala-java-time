@@ -613,7 +613,7 @@ object TestInstant {
   }
 
   @Test(expectedExceptions = Array(classOf[ArithmeticException])) def test_toEpochMilli_tooBigDueToNanos() {
-      Instant.ofEpochMilli(Long.MaxValue).plusMillis(1).toEpochMilli
+    Instant.ofEpochMilli(Long.MaxValue).plusMillis(1).toEpochMilli
   }
 
   @Test(expectedExceptions = Array(classOf[ArithmeticException])) def test_toEpochMilli_tooSmall(): Unit = {
