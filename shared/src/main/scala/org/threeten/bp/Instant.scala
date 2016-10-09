@@ -934,7 +934,7 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
   def toEpochMilli: Long =
     if (seconds >= 0) {
       val millis: Long = Math.multiplyExact(seconds, Instant.MILLIS_PER_SEC)
-      millis + nanos / Instant.NANOS_PER_MILLI
+      Math.addExact(millis, nanos / Instant.NANOS_PER_MILLI)
     } else {
       // prevent an overflow in seconds * 1000
       // instead of going form the second farther away from 0

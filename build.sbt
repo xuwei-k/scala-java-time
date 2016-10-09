@@ -178,6 +178,10 @@ lazy val pomData =
       <url>https://github.com/paplorinc</url>
     </contributor>
     <contributor>
+      <name>Philippe Marschall</name>
+      <url>https://github.com/marschall</url>
+    </contributor>
+    <contributor>
       <name>Michael Nascimento Santos</name>
       <url>https://github.com/sjmisterm</url>
     </contributor>
