@@ -251,12 +251,12 @@ object TestInstant {
     Instant.ofEpochSecond(Long.MaxValue, Long.MaxValue)
   }
 
-  @DataProvider(name = "MillisInstantNoNanos") private[bp] def provider_factory_millis_long: Array[Array[_ <: AnyRef]] = {
-    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0), Array[Integer](1, 0, 1000000), Array[Integer](2, 0, 2000000), Array[Integer](999, 0, 999000000), Array[Integer](1000, 1, 0), Array[Integer](1001, 1, 1000000), Array[Integer](-1, -1, 999000000), Array[Integer](-2, -1, 998000000), Array[Integer](-999, -1, 1000000), Array[Integer](-1000, -1, 0), Array[Integer](-1001, -2, 999000000), Array[Number](Long.MaxValue, Long.MaxValue / 1000, ((Long.MaxValue % 1000) * 1000000).toInt), Array[Number](Long.MaxValue - 1, (Long.MaxValue - 1) / 1000, (((Long.MaxValue - 1) % 1000) * 1000000L).toInt)/*, Array[Number](Long.MinValue, (Long.MinValue / 1000) - 1, ((Long.MinValue % 1000) * 1000000L + 1000000000L)).toInt), Array[Number](Long.MinValue + 1L, ((Long.MinValue + 1L) / 1000L) - 1L, (((Long.MinValue + 1L) % 1000L) * 1000000L + 1000000000L).toInt)*/)
+  @DataProvider(name = "MillisInstantNoNanos") private[bp] def provider_factory_millis_long = {
+    Array[Array[_ <: AnyRef]](Array[Number](0, 0, 0, 0), Array[Number](0, 999999, 0, 999999), Array[Number](1, 0, 0, 1000000), Array[Number](1, 1, 0, 1000001), Array[Number](2, 0, 0, 2000000), Array[Number](999, 0, 0, 999000000), Array[Number](1000, 0, 1, 0), Array[Number](1001, 0, 1, 1000000), Array[Number](-1, 1, -1, 999000001), Array[Number](-1, 0, -1, 999000000), Array[Number](-2, 999999, -1, 998999999), Array[Number](-2, 0, -1, 998000000), Array[Number](-999, 0, -1, 1000000), Array[Number](-1000, 0, -1, 0), Array[Number](-1001, 0, -2, 999000000), Array[Number](Long.MaxValue, 0, Long.MaxValue / 1000, (Long.MaxValue % 1000).toInt * 1000000), Array[Number](Long.MaxValue - 1, 0, (Long.MaxValue - 1) / 1000, ((Long.MaxValue - 1) % 1000).toInt * 1000000), Array[Number](Long.MinValue, 0, (Long.MinValue / 1000) - 1, (Long.MinValue % 1000).toInt * 1000000 + 1000000000), Array[Number](Long.MinValue, 1, (Long.MinValue / 1000) - 1, (Long.MinValue % 1000).toInt * 1000000 + 1000000000 + 1), Array[Number](Long.MinValue + 1, 0, ((Long.MinValue + 1) / 1000) - 1, ((Long.MinValue + 1) % 1000).toInt * 1000000 + 1000000000), Array[Number](Long.MinValue + 1, 1, ((Long.MinValue + 1) / 1000) - 1, ((Long.MinValue + 1) % 1000).toInt * 1000000 + 1000000000 + 1))
   }
 
-  @Test(dataProvider = "MillisInstantNoNanos") def factory_millis_long(millis: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Instant = Instant.ofEpochMilli(millis)
+  @Test(dataProvider = "MillisInstantNoNanos") def factory_millis_long(millis: Long, nanos: Int, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
+    val t = Instant.ofEpochMilli(millis).plusNanos(nanos)
     assertEquals(t.getEpochSecond, expectedSeconds)
     assertEquals(t.getNano, expectedNanoOfSecond)
     assertEquals(t.toEpochMilli, millis);
@@ -612,8 +612,16 @@ object TestInstant {
     Instant.ofEpochSecond(Long.MaxValue / 1000 + 1).toEpochMilli
   }
 
+  @Test(expectedExceptions = Array(classOf[ArithmeticException])) def test_toEpochMilli_tooBigDueToNanos() {
+      Instant.ofEpochMilli(Long.MaxValue).plusMillis(1).toEpochMilli
+  }
+
   @Test(expectedExceptions = Array(classOf[ArithmeticException])) def test_toEpochMilli_tooSmall(): Unit = {
     Instant.ofEpochSecond(Long.MinValue / 1000 - 1).toEpochMilli
+  }
+
+  @Test(expectedExceptions = Array(classOf[ArithmeticException])) def test_toEpochMilli_tooSmallDueToNanos() {
+    Instant.ofEpochMilli(Long.MinValue).minusMillis(1).toEpochMilli
   }
 
   @Test def test_comparisons(): Unit = {
