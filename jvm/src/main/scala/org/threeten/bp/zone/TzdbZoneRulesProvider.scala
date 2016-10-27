@@ -91,7 +91,7 @@ private[zone] object TzdbZoneRulesProvider {
   */
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   /** All the regions that are available. */
-  private val regionIds: java.util.Set[String] = new CopyOnWriteArraySet[String]
+  private val regionIds: java.util.List[String] = new java.util.concurrent.CopyOnWriteArrayList[String]
   /** All the versions that are available. */
   private val versions: ConcurrentNavigableMap[String, TzdbZoneRulesProvider.Version] = new ConcurrentSkipListMap[String, TzdbZoneRulesProvider.Version]
   /** All the URLs that have been loaded.
