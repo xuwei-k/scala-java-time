@@ -3,11 +3,11 @@ import sbt._
 import io.github.soc.testng.{TestNGPlugin, TestNGScalaJSPlugin}
 
 val scalaVer = "2.11.8"
-val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0-M5")
+val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
-  version      := "2.0.0-M3",
+  version      := "2.0.0-M4",
   organization := "io.github.soc",
   homepage     := Some(url("https://github.com/soc/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -58,7 +58,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
     libraryDependencies ++= Seq(
-      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.0-cldr30"
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.1-cldr30"
     )
   )
 

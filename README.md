@@ -49,12 +49,12 @@ chrono.MinguoDate.now(fixedClock).toString       == "Minguo ROC 98-02-13"
 #### Usage
 
 The *scala-java-time* library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Scala 2.10, 2.11, and 2.12 (2.12.0-M5 and later) are supported.
+Scala 2.10, 2.11, and 2.12 are supported.
 
 To get started with SBT, add one (or both) of these dependencies:
 
-- `libraryDependencies += "io.github.soc" %%  "scala-java-time" % "2.0.0-M3"` (for Scala)
-- `libraryDependencies += "io.github.soc" %%% "scala-java-time" % "2.0.0-M3"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "io.github.soc" %%  "scala-java-time" % "2.0.0-M4"` (for Scala)
+- `libraryDependencies += "io.github.soc" %%% "scala-java-time" % "2.0.0-M4"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.

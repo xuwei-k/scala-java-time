@@ -7,8 +7,12 @@
     <author>Stephen Colebourne (Java version)</author>
   </properties>
   <body>
-
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M4" date="2016-11-06" description="v2.0.0-M4">
+      <action dev="cquiroz" type="update" >
+        Update locales version using CLDR 30
+      </action>
+    </release>
     <release version="2.0.0-M3" date="2016-08-09" description="v2.0.0-M3">
       <action dev="soc" type="update" >
         Cherry-pick fixes from upstream.

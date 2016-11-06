@@ -27,7 +27,8 @@ import org.testng.Assert.assertEquals
     val duration = Duration.between(date, tomorrow)
     assertEquals(duration.toMinutes, 1440L)
 
-    val instant = Instant.now(fixedClock)
+    val instant1 = Instant.now(fixedClock)
+    val instant2 = Instant.parse("2007-12-03T10:15:30.00Z")
 
     val period = Period.between(date.toLocalDate, tomorrow.toLocalDate)
     assertEquals(period.get(temporal.ChronoUnit.DAYS), 1L)
