@@ -112,7 +112,13 @@ object TestDateTimeFormatters {
     def isSupported(field: TemporalField): Boolean = fields.containsKey(field)
 
     def getLong(field: TemporalField): Long =
-      try fields.get(field)
+      try {
+        val result: java.lang.Long = fields.get(field)
+        if (result == null) { // This changed on scala 2.12.0 it is likely a regression on the implicit Long conversion
+          throw new NullPointerException()
+        }
+        result
+      }
       catch {
         case ex: NullPointerException =>
           throw new DateTimeException("Field missing: " + field)
