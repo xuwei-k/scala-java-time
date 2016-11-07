@@ -111,12 +111,13 @@ object TestDateTimeFormatters {
 
     def isSupported(field: TemporalField): Boolean = fields.containsKey(field)
 
-    def getLong(field: TemporalField): Long =
-      try fields.get(field)
-      catch {
-        case ex: NullPointerException =>
-          throw new DateTimeException("Field missing: " + field)
-      }
+    def getLong(field: TemporalField): Long = {
+      val long: java.lang.Long = fields.get(field)
+      if (long == null)
+        throw new DateTimeException(s"Field missing: $field")
+      else
+        long
+    }
 
     @SuppressWarnings(Array("unchecked")) override def query[R >: Null](query: TemporalQuery[R]): R =
       if (query eq TemporalQueries.zoneId)

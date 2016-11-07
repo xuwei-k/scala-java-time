@@ -8,6 +8,11 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M5" date="2016-11-08" description="v2.0.0-M5">
+      <action dev="cquiroz" type="fix" >
+        Fix #47: Test failures on TestDateTimeFormatters on Scala 2.12
+      </action>
+    </release>
     <release version="2.0.0-M4" date="2016-11-06" description="v2.0.0-M4">
       <action dev="cquiroz" type="update" >
         Update locales version using CLDR 30
