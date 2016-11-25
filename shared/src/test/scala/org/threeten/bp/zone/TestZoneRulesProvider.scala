@@ -34,12 +34,9 @@ package org.threeten.bp.zone
 import java.util
 import java.util.Comparator
 import java.util.Map.Entry
-
-import org.testng.Assert.assertEquals
-//import org.testng.Assert.assertNotNull
-import org.testng.Assert.assertTrue
 import java.util.Collections
-import org.testng.annotations.Test
+
+import org.scalatest.FunSuite
 import org.threeten.bp.ZoneOffset
 
 /** Test ZoneRulesProvider. */
@@ -119,62 +116,72 @@ object TestZoneRulesProvider {
 
 }
 
-@Test class TestZoneRulesProvider {
-  @Test def test_getAvailableGroupIds(): Unit = {
+class TestZoneRulesProvider extends FunSuite {
+  test("getAvailableGroupIds") {
     val zoneIds: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(zoneIds.contains("Europe/London"), true)
+    assert(zoneIds.contains("Europe/London"))
     zoneIds.clear()
-    assertEquals(zoneIds.size, 0)
+    assert(zoneIds.size == 0)
     val zoneIds2: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(zoneIds2.contains("Europe/London"), true)
+    assert(zoneIds2.contains("Europe/London"))
   }
 
-  /*
-  @Test def test_getRules_String(): Unit = {
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertTrue(rules != null)
-    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertEquals(rules2, rules)
+  test("getRules_String") {
+    pending
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    assert(rules != null)
+    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    assert(rules2 == rules)
   }
 
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_getRules_String_unknownId(): Unit = {
-    ZoneRulesProvider.getRules("Europe/Lon", false)
+  test("getRules_String_unknownId") {
+    assertThrows[ZoneRulesException] {
+      ZoneRulesProvider.getRules("Europe/Lon", forCaching = false)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getRules_String_null(): Unit = {
-    ZoneRulesProvider.getRules(null, false)
+  test("getRules_String_null") {
+    assertThrows[NullPointerException] {
+      ZoneRulesProvider.getRules(null, forCaching = false)
+    }
   }
 
-  @Test def test_getVersions_String(): Unit = {
+  test("getVersions_String") {
+    pending
     val versions: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
-    assertTrue(versions.size >= 1)
+    assert(versions.size >= 1)
     val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertEquals(versions.lastEntry.getValue, rules)
+    assert(versions.lastEntry.getValue == rules)
     val copy = new java.util.HashMap[String, ZoneRules](versions)
     versions.clear()
-    assertEquals(versions.size, 0)
+    assert(versions.size == 0)
     val versions2: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
-    assertEquals(versions2, copy)
-  }
-*  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_getVersions_String_unknownId(): Unit = {
-    ZoneRulesProvider.getVersions("Europe/Lon")
+    assert(versions2 == copy)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getVersions_String_null(): Unit = {
-    ZoneRulesProvider.getVersions(null)
-  }*/
-
-  @Test def test_refresh(): Unit = {
-    assertEquals(ZoneRulesProvider.refresh, false)
+  test("getVersions_String_unknownId") {
+    assertThrows[ZoneRulesException] {
+      ZoneRulesProvider.getVersions("Europe/Lon")
+    }
   }
 
-  @Test def test_registerProvider(): Unit = {
+  test("getVersions_String_null") {
+    assertThrows[NullPointerException] {
+      ZoneRulesProvider.getVersions(null)
+    }
+  }
+
+  test("refresh") {
+    assert(!ZoneRulesProvider.refresh)
+  }
+
+  test("registerProvider") {
     val pre: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(pre.contains("FooLocation"), false)
+    assert(!pre.contains("FooLocation"), false)
     ZoneRulesProvider.registerProvider(new TestZoneRulesProvider.MockTempProvider)
-    assertEquals(pre.contains("FooLocation"), false)
+    assert(!pre.contains("FooLocation"))
     val post: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(post.contains("FooLocation"), true)
-    assertEquals(ZoneRulesProvider.getRules("FooLocation", false), ZoneOffset.of("+01:45").getRules)
+    assert(post.contains("FooLocation"))
+    assert(ZoneRulesProvider.getRules("FooLocation", false) == ZoneOffset.of("+01:45").getRules)
   }
 }
