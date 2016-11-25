@@ -126,6 +126,12 @@ class TestZoneRulesProvider extends FunSuite {
     assert(zoneIds2.contains("Europe/London"))
   }
 
+  test("contains derived zone ids") {
+    val zoneIds: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
+    assert(zoneIds.contains("US/Hawaii"))
+    assert(zoneIds.contains("Pacific/Honolulu"))
+  }
+
   test("getRules_String") {
     pending
     val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
