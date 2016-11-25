@@ -1,11 +1,14 @@
 import sbt._
-
 import io.github.soc.testng.{TestNGPlugin, TestNGScalaJSPlugin}
+import TZDBTasks._
 
 enablePlugins(MicrositesPlugin)
 
 val scalaVer = "2.11.8"
 val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
+
+lazy val downloadFromZip: TaskKey[Unit] =
+  taskKey[Unit]("Download the tzdb tarball and extract it")
 
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
@@ -54,6 +57,27 @@ lazy val root = project.in(file("."))
     publishLocal         := {},
     Keys.`package`       := file(""))
 
+lazy val tzDbSettings = Seq(
+  downloadFromZip := {
+    val tzdbDir = ((resourceDirectory in Compile) / "tzdb").value
+    val tzdbTarball = ((resourceDirectory in Compile) / "tzdb.tar.gz").value
+    if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
+      println(s"tzdb data missing. downloading latest...")
+      IO.download(
+        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata2016i.tar.gz"),
+        tzdbTarball)
+      Unpack.gunzipTar(tzdbTarball, tzdbDir)
+      tzdbTarball.delete()
+    } else {
+      println("tzdb files already available")
+    }
+  },
+  compile in Compile := (compile in Compile).dependsOn(downloadFromZip).value,
+  sourceGenerators in Compile += Def.task {
+    generateTZDataSources((sourceManaged in Compile).value,
+      ((resourceDirectory in Compile) / "tzdb").value)
+  }.taskValue
+)
 /**
   * Copy source files and translate them to the java.time package
   */
@@ -91,6 +115,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   .jvmConfigure(_.enablePlugins(TestNGPlugin))
   .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
+  .jvmSettings(tzDbSettings: _*)
   .jvmSettings(
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value
@@ -105,6 +130,8 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
     javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR"),
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
+  ).jsSettings(
+    tzDbSettings: _*
   ).jsSettings(
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value
