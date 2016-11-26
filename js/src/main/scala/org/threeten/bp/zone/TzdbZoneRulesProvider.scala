@@ -1,6 +1,8 @@
 package org.threeten.bp.zone
 import java.util
 
+import org.threeten.bp.DateTimeException
+
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   import tzdb.tzdb._
   import scala.collection.JavaConverters._
@@ -16,7 +18,7 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
     * @return the unmodifiable set of region IDs being provided, not null
     * @throws ZoneRulesException if a problem occurs while providing the IDs
     */
-  override protected def provideZoneIds: util.Set[String] = new java.util.HashSet((allZones ++ zoneLinks.keySet).asJava)
+  override protected def provideZoneIds: util.Set[String] = new java.util.HashSet((allZones.keySet ++ zoneLinks.keySet).asJava)
 
   /** SPI method to get the rules for the zone ID.
     *
@@ -27,7 +29,10 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
     * @return the rules, not null
     * @throws java.time.DateTimeException if rules cannot be obtained
     */
-  override protected def provideRules(regionId: String, forCaching: Boolean): ZoneRules = ???
+  override protected def provideRules(regionId: String, forCaching: Boolean): ZoneRules = {
+    val actualRegion = zoneLinks.getOrElse(regionId, regionId)
+    allZones.get(actualRegion).fold(throw new DateTimeException(s"TimeZone Region $actualRegion unknown"))(identity)
+  }
 
   /** SPI method to get the history of rules for the zone ID.
     *
@@ -51,5 +56,7 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
     *         from oldest to newest, not null
     * @throws ZoneRulesException if history cannot be obtained for the zone ID
     */
-  override protected def provideVersions(zoneId: String): util.NavigableMap[String, ZoneRules] = ???
+  override protected def provideVersions(zoneId: String): util.NavigableMap[String, ZoneRules] = {
+    ???
+  }
 }

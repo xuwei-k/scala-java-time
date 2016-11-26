@@ -133,7 +133,6 @@ class TestZoneRulesProvider extends FunSuite {
   }
 
   test("getRules_String") {
-    pending
     val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
     assert(rules != null)
     val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)

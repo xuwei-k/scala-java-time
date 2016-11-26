@@ -143,7 +143,6 @@ object ZoneRules {
 /** @constructor Restricted constructor. */
 abstract class ZoneRules private[zone]() {
 
-
   /** Checks of the zone rules are fixed, such that the offset never varies.
     *
     * @return true if the time-zone is fixed and the offset never changes
