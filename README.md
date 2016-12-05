@@ -1,8 +1,8 @@
 
 ## Scala Java-Time
 
-[![Build Status](https://travis-ci.org/soc/scala-java-time.svg?branch=master)](https://travis-ci.org/soc/scala-java-time)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.soc/scala-java-time_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.soc/scala-java-time_2.11)
+[![Build Status](https://travis-ci.org/cquiroz/scala-java-time.svg?branch=master)](https://travis-ci.org/cquiroz/scala-java-time)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.cquiroz/scala-java-time_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.cquiroz/scala-java-time_2.11)
 [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
 
 This project provides an implementation of the `java.time` package, a date and time library that was added in Java 8.
@@ -53,8 +53,8 @@ Both Scala 2.11 and Scala 2.12 (2.12.0-M5 and later) are supported.
 
 To get started with SBT, add one (or both) of these dependencies:
 
-- `libraryDependencies += "io.github.soc" %   "scala-java-time" % "2.0.0-M1"` (for Scala)
-- `libraryDependencies += "io.github.soc" %%% "scala-java-time" % "2.0.0-M1"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "com.github.cquiroz" %   "scala-java-time" % "2.0.0-M5"` (for Scala)
+- `libraryDependencies += "com.github.cquiroz" %%% "scala-java-time" % "2.0.0-M5"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.
@@ -77,7 +77,7 @@ We are especially interested in contributions that tackle the following issues:
  - *Support for timezones:* The timezone information is read from a binary blob, which won't work in the browser.
    We will have a look at other projects like moment.js and decide whether we want to use the same format, or come up with our own.
 
-Have a look at the [issues](https://github.com/soc/scala-java-time/issues) to find something to work on! Let us know if you need help!
+Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) or [issues](https://github.com/soc/scala-java-time/issues) to find something to work on! Let us know if you need help!
 
 #### Plans
 
@@ -107,3 +107,7 @@ Pull requests with later versions of the dat file will be accepted.
 No. This project is derived from the Reference Implementation previously hosted on GitHub.
 That project had a BSD license, which has been preserved here.
 Thus, this project is a fork of the original code before entry to OpenJDK.
+
+##### What is the relation to [this](https://github.com/soc/scala-java-time/) project
+
+This is a fork from the original [project](https://github.com/soc/scala-java-time/) aim to complete the API to work on Scala.js 
