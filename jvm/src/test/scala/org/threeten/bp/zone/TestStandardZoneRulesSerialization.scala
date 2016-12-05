@@ -35,31 +35,35 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import org.scalatest.FunSuite
 import org.threeten.bp._
-import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition
 
-/** Test ZoneRules Serialization for fixed offset time-zones. */
-class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper {
-  private def make(offset: ZoneOffset): ZoneRules = {
-    offset.getRules
+class TestStandardZoneRulesSerialization  extends FunSuite with AssertionsHelper {
+  test("serialization_loaded") {
+    assertSerialization(europeLondon)
+    assertSerialization(europeParis)
+    assertSerialization(americaNewYork)
   }
 
-  private[zone] def data_rules: List[(ZoneRules, ZoneOffset)] = {
-    List((make(TestFixedZoneRules.OFFSET_PONE), TestFixedZoneRules.OFFSET_PONE), (make(TestFixedZoneRules.OFFSET_PTWO), TestFixedZoneRules.OFFSET_PTWO), (make(TestFixedZoneRules.OFFSET_M18), TestFixedZoneRules.OFFSET_M18))
+  private def assertSerialization(test: ZoneRules): Unit = {
+    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+    val out: ObjectOutputStream = new ObjectOutputStream(baos)
+    out.writeObject(test)
+    baos.close()
+    val bytes: Array[Byte] = baos.toByteArray
+    val bais: ByteArrayInputStream = new ByteArrayInputStream(bytes)
+    val in: ObjectInputStream = new ObjectInputStream(bais)
+    val result: ZoneRules = in.readObject.asInstanceOf[ZoneRules]
+    assertEquals(result, test)
   }
 
-  test("serialization(test: ZoneRules, expectedOffset: ZoneOffset)") {
-    data_rules.foreach { case (test: ZoneRules, expectedOffset: ZoneOffset) =>
-      val baos: ByteArrayOutputStream = new ByteArrayOutputStream
-      val out: ObjectOutputStream = new ObjectOutputStream(baos)
-      out.writeObject(test)
-      baos.close()
-      val bytes: Array[Byte] = baos.toByteArray
-      val bais: ByteArrayInputStream = new ByteArrayInputStream(bytes)
-      val in: ObjectInputStream = new ObjectInputStream(bais)
-      val result: ZoneRules = in.readObject.asInstanceOf[ZoneRules]
-      assertEquals(result, test)
-      assertEquals(result.getClass, test.getClass)
-    }
+  private def europeLondon: ZoneRules = {
+    ZoneId.of("Europe/London").getRules
   }
 
+  private def europeParis: ZoneRules = {
+    ZoneId.of("Europe/Paris").getRules
+  }
+
+  private def americaNewYork: ZoneRules = {
+    ZoneId.of("America/New_York").getRules
+  }
 }

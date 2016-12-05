@@ -44,7 +44,7 @@ object TestFixedZoneRules {
   val INSTANT: Instant = LDT.toInstant(OFFSET_PONE)
 }
 
-class TestFixedZoneRules extends FunSuite with TestHelper {
+class TestFixedZoneRules extends FunSuite with AssertionsHelper {
   private def make(offset: ZoneOffset): ZoneRules = {
     offset.getRules
   }
@@ -177,7 +177,7 @@ class TestFixedZoneRules extends FunSuite with TestHelper {
     assertEquals(a == b, false)
     assertEquals(b == a, false)
     assertEquals(b == b, true)
-    assertEquals(a.equals("Rubbish"), false)
+    assertNotEquals(a, "Rubbish")
     assertEquals(a == null, false)
     assertEquals(a.hashCode == a.hashCode, true)
     assertEquals(b.hashCode == b.hashCode, true)
