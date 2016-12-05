@@ -44,7 +44,7 @@ import org.threeten.bp.temporal.TemporalField
 
 /** Usability class for package. */
 class UsabilityBasic {
-  @Test def main(): Unit = {
+  def main(): Unit = {
     simpleCalendar()
     System.out.println("------")
     lookup()
