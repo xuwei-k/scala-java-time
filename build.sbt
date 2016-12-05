@@ -58,7 +58,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
     libraryDependencies ++= Seq(
-      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.1-cldr30"
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
     )
   )
 
