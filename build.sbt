@@ -8,8 +8,8 @@ val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   version      := "2.0.0-M5",
-  organization := "io.github.soc",
-  homepage     := Some(url("https://github.com/soc/scala-java-time")),
+  organization := "com.github.cquiroz",
+  homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
 
   scalaVersion       := scalaVer,
@@ -58,7 +58,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
     libraryDependencies ++= Seq(
-      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.1-cldr30"
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
     )
   )
 
@@ -67,16 +67,24 @@ lazy val scalajavatimeJS  = scalajavatime.js
 
 lazy val pomData =
   <scm>
-    <url>git@github.com:soc/scala-java-time.git</url>
-    <connection>scm:git:git@github.com:soc/scala-java-time.git</connection>
+    <url>git@github.com:cquiroz/scala-java-time.git</url>
+    <connection>scm:git:git@github.com:cquiroz/scala-java-time.git</connection>
   </scm>
   <developers>
+    <developer>
+      <id>cquiroz</id>
+      <name>Carlos Quiroz</name>
+      <url>https://github.com/cquiroz</url>
+      <roles>
+        <role>Project Lead (current Scala version)</role>
+      </roles>
+    </developer>
     <developer>
       <id>soc</id>
       <name>Simon Ochsenreither</name>
       <url>https://github.com/soc</url>
       <roles>
-        <role>Project Lead (current Scala version)</role>
+        <role>Project Lead (original Scala version)</role>
       </roles>
     </developer>
     <developer>
