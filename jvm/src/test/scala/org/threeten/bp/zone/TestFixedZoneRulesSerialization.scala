@@ -48,7 +48,7 @@ class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper {
   }
 
   test("serialization(test: ZoneRules, expectedOffset: ZoneOffset)") {
-    data_rules.foreach { case (test: ZoneRules, expectedOffset: ZoneOffset) =>
+    data_rules.foreach { case (test: ZoneRules, _: ZoneOffset) =>
       val baos: ByteArrayOutputStream = new ByteArrayOutputStream
       val out: ObjectOutputStream = new ObjectOutputStream(baos)
       out.writeObject(test)

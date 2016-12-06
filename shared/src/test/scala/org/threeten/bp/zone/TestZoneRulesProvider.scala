@@ -31,9 +31,6 @@
  */
 package org.threeten.bp.zone
 
-import java.util
-import java.util.Comparator
-import java.util.Map.Entry
 import java.util.Collections
 
 import org.scalatest.FunSuite
@@ -41,58 +38,6 @@ import org.threeten.bp.ZoneOffset
 
 /** Test ZoneRulesProvider. */
 object TestZoneRulesProvider {
-  // Navigable Map is not available in Scala.js however most methods are not used
-  // in the test so we can mock them
-  class NavMap extends java.util.HashMap[String, ZoneRules] with java.util.NavigableMap[String, ZoneRules] {
-    override def descendingMap(): util.NavigableMap[String, ZoneRules] = ???
-
-    override def firstEntry(): Entry[String, ZoneRules] = ???
-
-    override def navigableKeySet(): util.NavigableSet[String] = ???
-
-    override def subMap(fromKey: String, fromInclusive: Boolean, toKey: String, toInclusive: Boolean): util.NavigableMap[String, ZoneRules] = ???
-
-    override def subMap(fromKey: String, toKey: String): util.SortedMap[String, ZoneRules] = ???
-
-    override def headMap(toKey: String, inclusive: Boolean): util.NavigableMap[String, ZoneRules] = ???
-
-    override def headMap(toKey: String): util.SortedMap[String, ZoneRules] = ???
-
-    override def ceilingKey(key: String): String = ???
-
-    override def higherEntry(key: String): Entry[String, ZoneRules] = ???
-
-    override def ceilingEntry(key: String): Entry[String, ZoneRules] = ???
-
-    override def pollFirstEntry(): Entry[String, ZoneRules] = ???
-
-    override def floorKey(key: String): String = ???
-
-    override def floorEntry(key: String): Entry[String, ZoneRules] = ???
-
-    override def lowerEntry(key: String): Entry[String, ZoneRules] = ???
-
-    override def pollLastEntry(): Entry[String, ZoneRules] = ???
-
-    override def descendingKeySet(): util.NavigableSet[String] = ???
-
-    override def lastEntry(): Entry[String, ZoneRules] = ???
-
-    override def tailMap(fromKey: String, inclusive: Boolean): util.NavigableMap[String, ZoneRules] = ???
-
-    override def tailMap(fromKey: String): util.SortedMap[String, ZoneRules] = ???
-
-    override def lowerKey(key: String): String = ???
-
-    override def higherKey(key: String): String = ???
-
-    override def firstKey(): String = ???
-
-    override def comparator(): Comparator[_ >: String] = ???
-
-    override def lastKey(): String = ???
-  }
-
   private[zone] class MockTempProvider extends ZoneRulesProvider {
     private[zone] final val rules: ZoneRules = ZoneOffset.of("+01:45").getRules
 
@@ -101,7 +46,7 @@ object TestZoneRulesProvider {
     }
 
     protected def provideVersions(zoneId: String): java.util.NavigableMap[String, ZoneRules] = {
-      val result: java.util.NavigableMap[String, ZoneRules] = new NavMap()
+      val result: java.util.NavigableMap[String, ZoneRules] = new ZoneMap()
       result.put("BarVersion", rules)
       result
     }
@@ -152,10 +97,9 @@ class TestZoneRulesProvider extends FunSuite {
   }
 
   test("getVersions_String") {
-    pending
     val versions: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
     assert(versions.size >= 1)
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
     assert(versions.lastEntry.getValue == rules)
     val copy = new java.util.HashMap[String, ZoneRules](versions)
     versions.clear()
@@ -187,6 +131,6 @@ class TestZoneRulesProvider extends FunSuite {
     assert(!pre.contains("FooLocation"))
     val post: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
     assert(post.contains("FooLocation"))
-    assert(ZoneRulesProvider.getRules("FooLocation", false) == ZoneOffset.of("+01:45").getRules)
+    assert(ZoneRulesProvider.getRules("FooLocation", forCaching = false) == ZoneOffset.of("+01:45").getRules)
   }
 }

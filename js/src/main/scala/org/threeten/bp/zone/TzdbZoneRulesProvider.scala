@@ -57,6 +57,12 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
     * @throws ZoneRulesException if history cannot be obtained for the zone ID
     */
   override protected def provideVersions(zoneId: String): util.NavigableMap[String, ZoneRules] = {
-    ???
+    val actualRegion = zoneLinks.getOrElse(zoneId, zoneId)
+    allZones.get(actualRegion).fold(throw new DateTimeException(s"TimeZone Region $actualRegion unknown")) {
+      x =>
+        val r = new ZoneMap[String, ZoneRules]
+        r.put("2016f", x)
+        r
+    }
   }
 }
