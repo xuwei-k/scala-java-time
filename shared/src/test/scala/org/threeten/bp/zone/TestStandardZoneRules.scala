@@ -45,7 +45,7 @@ object TestStandardZoneRules {
   val GAP: Int = 0
 }
 
-class TestStandardZoneRules  extends FunSuite with AssertionsHelper {
+class TestStandardZoneRules extends FunSuite with AssertionsHelper {
 
   private def etcGmt: ZoneRules = {
     ZoneId.of("Etc/GMT").getRules
