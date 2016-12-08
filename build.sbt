@@ -33,18 +33,13 @@ lazy val commonSettings = Seq(
 
 lazy val root = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
-  .enablePlugins(MicrositesPlugin)
+  .settings(commonSettings: _*)
   .settings(
-    scalaVersion := scalaVer,
-    crossScalaVersions := crossScalaVer,
+    name                 := "scalajavatime",
     // No, SBT, we don't want any artifacts for root.
     // No, not even an empty jar.
-    // Invoking Cthulhu:
-    packageBin in Global := file(""),
-    packagedArtifacts    := Map(),
     publish              := {},
     publishLocal         := {},
-    publishArtifact      := false,
     Keys.`package`       := file(""))
 
 /**
