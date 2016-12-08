@@ -77,10 +77,10 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
     IO.copy(PathFinder(source).***.pair(Path.rebase(source, target)), overwrite, preserveLastModified)
 
   val onlyScalaDirs = srcDirs.filter(_.getName.endsWith("scala"))
-  // Copy the source files from the base project
+  // Copy the source files from the base project, exclude classes on java.util and dirs
   val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
     files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
-  }.filterNot(_.isDirectory).toList
+  }.filterNot(_.isDirectory).filterNot(_.getParentFile.getName == "util").toList
 
   // These replacements will in practice rename all the classes from
   // org.threeten to java.time
@@ -101,24 +101,27 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   generatedFiles
 }
 
-lazy val scalajavatimeJVM = scalajavatime.jvm
-lazy val scalajavatimeJS  = scalajavatime.js
-
-lazy val scalajavatimeTranslated = crossProject.crossType(CrossType.Full).in(file("translated"))
+lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
+  .jvmConfigure(_.enablePlugins(TestNGPlugin))
+  .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
-  .settings(
-    version      := "2.0.0-M5a"
-  )
   .jvmSettings(
     sourceGenerators in Compile += Def.task {
-        val srcDirs = (sourceDirectories in(scalajavatimeJVM, Compile)).value
+        val srcDirs = (sourceDirectories in Compile).value
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
-      }.taskValue
-  )
-  .jsSettings(
+      }.taskValue,
+    resolvers += Resolver.sbtPluginRepo("releases"),
+    // Fork the JVM test to ensure that the custom flags are set
+    fork in Test := true,
+    baseDirectory in Test := baseDirectory.value.getParentFile,
+    // Use CLDR provider for locales
+    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
+    javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR"),
+    TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
+  ).jsSettings(
     sourceGenerators in Compile += Def.task {
-        val srcDirs = (sourceDirectories in(scalajavatimeJS, Compile)).value
+        val srcDirs = (sourceDirectories in Compile).value
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
@@ -126,6 +129,9 @@ lazy val scalajavatimeTranslated = crossProject.crossType(CrossType.Full).in(fil
       "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
     )
   )
+
+lazy val scalajavatimeJVM = scalajavatime.jvm
+lazy val scalajavatimeJS  = scalajavatime.js
 
 lazy val pomData =
   <scm>
