@@ -1,7 +1,7 @@
 <html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>scala-java-time</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="java.time API implementation in Scala and Scala.js" /><meta name="author" content="Carlos Quiroz" /><meta name="og:image" content="/scala-java-time/img/poster.png" /><meta name="og:title" content="scala-java-time" /><meta name="og:site_name" content="scala-java-time" /><meta name="og:url" content="https://github.com/cquiroz/scala-java-time" /><meta name="og:type" content="website" /><meta name="og:description" content="java.time API implementation in Scala and Scala.js" /><meta name="twitter:image" content="/scala-java-time/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/scala-java-time/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/scala-java-time/highlight/styles/color-brewer.css" /><link rel="stylesheet" href="/scala-java-time/css/style.css" /><link rel="stylesheet" href="/scala-java-time/css/palette.css" /></head><body><header id="site-header"><div class="navbar-wrapper"><div class="container"><div class="row"><div class="col-xs-6"><a href="/scala-java-time/" class="brand"><div class="icon-wrapper"><span>scala-java-time</span></div></a></div><div class="col-xs-6"><nav class="text-right"><ul class=""><li><a href="https://github.com/cquiroz/scala-java-time"><i class="fa fa-github"></i><span class="hidden-xs">GitHub</span></a></li><li><a href="/scala-java-time/docs/"><i class="fa fa-file-text"></i><span class="hidden-xs">Documentation</span></a></li></ul></nav></div></div></div></div><div class="jumbotron"><div class="container"><h1 class="text-center">java.time API implementation in Scala and Scala.js</h1><h2></h2><p class="text-center"><a href="https://github.com/cquiroz/scala-java-time" class="btn btn-outline-inverse">View on GitHub</a></p></div></div><div><ul class="horizontalNav">      </ul></div></header><main id="site-main"><section class="use"><div class="container"><div id="content"><h2 id="scala-java-time">Scala Java-Time</h2>
 
 <p><a href="https://travis-ci.org/cquiroz/scala-java-time"><img src="https://travis-ci.org/cquiroz/scala-java-time.svg?branch=master" alt="Build Status" /></a>
-<a href="https://maven-badges.herokuapp.com/maven-central/com.github.cquiroz/scala-java-time_2.11"><img src="https://img.shields.io/maven-central/v/com.github.cquiroz/scala-java-time_2.11.svg" alt="Maven Central" /></a>
+<a href="https://maven-badges.herokuapp.com/maven-central/io.github.cquiroz/scala-java-time_2.11"><img src="https://img.shields.io/maven-central/v/io.github.cquiroz/scala-java-time_2.11.svg" alt="Maven Central" /></a>
 <a href="http://scala-js.org"><img src="http://scala-js.org/assets/badges/scalajs-0.6.8.svg" alt="Scala.js" /></a></p>
 
 <p>This project provides an implementation of the <code class="highlighter-rouge">java.time</code> package, a date and time library that was added in Java 8.
@@ -9,7 +9,8 @@ The implementation is based on the original BSD-licensed reference implementatio
 
 <h4 id="example">Example</h4>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">java.time._</span>
+<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="c1">// You can pick either java.time or org.threeten.bp package to import
+</span><span class="k">import</span> <span class="nn">java.time._</span>
 <span class="c1">// import java.time._
 </span>
 <span class="c1">// always returns 2009-02-13T23:31:30
@@ -20,16 +21,16 @@ The implementation is based on the original BSD-licensed reference implementatio
 <span class="c1">// date: java.time.LocalDateTime = 2009-02-13T23:31:30
 </span>
 <span class="n">date</span><span class="o">.</span><span class="n">getMonth</span>      <span class="o">==</span> <span class="nc">Month</span><span class="o">.</span><span class="nc">FEBRUARY</span>
-<span class="c1">// res1: Boolean = true
-</span>
-<span class="n">date</span><span class="o">.</span><span class="n">getDayOfWeek</span>  <span class="o">==</span> <span class="nc">DayOfWeek</span><span class="o">.</span><span class="nc">FRIDAY</span>
 <span class="c1">// res2: Boolean = true
 </span>
-<span class="n">date</span><span class="o">.</span><span class="n">getDayOfMonth</span> <span class="o">==</span> <span class="mi">13</span>
+<span class="n">date</span><span class="o">.</span><span class="n">getDayOfWeek</span>  <span class="o">==</span> <span class="nc">DayOfWeek</span><span class="o">.</span><span class="nc">FRIDAY</span>
 <span class="c1">// res3: Boolean = true
 </span>
-<span class="n">date</span><span class="o">.</span><span class="n">getHour</span>       <span class="o">==</span> <span class="mi">23</span>
+<span class="n">date</span><span class="o">.</span><span class="n">getDayOfMonth</span> <span class="o">==</span> <span class="mi">13</span>
 <span class="c1">// res4: Boolean = true
+</span>
+<span class="n">date</span><span class="o">.</span><span class="n">getHour</span>       <span class="o">==</span> <span class="mi">23</span>
+<span class="c1">// res5: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">tomorrow</span> <span class="k">=</span> <span class="n">date</span><span class="o">.</span><span class="n">plusDays</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
 <span class="c1">// tomorrow: java.time.LocalDateTime = 2009-02-14T23:31:30
@@ -38,59 +39,59 @@ The implementation is based on the original BSD-licensed reference implementatio
 <span class="c1">// duration: java.time.Duration = PT24H
 </span>
 <span class="n">duration</span><span class="o">.</span><span class="n">toMinutes</span> <span class="o">==</span> <span class="mi">1440L</span>
-<span class="c1">// res5: Boolean = true
+<span class="c1">// res6: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">period</span> <span class="k">=</span> <span class="nc">Period</span><span class="o">.</span><span class="n">between</span><span class="o">(</span><span class="n">date</span><span class="o">.</span><span class="n">toLocalDate</span><span class="o">,</span> <span class="n">tomorrow</span><span class="o">.</span><span class="n">toLocalDate</span><span class="o">)</span>
 <span class="c1">// period: java.time.Period = P1D
 </span>
 <span class="n">period</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">temporal</span><span class="o">.</span><span class="nc">ChronoUnit</span><span class="o">.</span><span class="nc">DAYS</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1L</span>
-<span class="c1">// res6: Boolean = true
+<span class="c1">// res7: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">date1</span> <span class="k">=</span> <span class="nc">LocalDate</span><span class="o">.</span><span class="n">of</span><span class="o">(</span><span class="mi">2001</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">31</span><span class="o">)</span>
 <span class="c1">// date1: java.time.LocalDate = 2001-01-31
 </span>
 <span class="n">date1</span><span class="o">.</span><span class="n">plusMonths</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="nc">LocalDate</span><span class="o">.</span><span class="n">of</span><span class="o">(</span><span class="mi">2001</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">28</span><span class="o">)</span>
-<span class="c1">// res7: Boolean = true
+<span class="c1">// res8: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">date2</span> <span class="k">=</span> <span class="n">date1</span><span class="o">.</span><span class="n">`with`</span><span class="o">(</span><span class="n">temporal</span><span class="o">.</span><span class="nc">TemporalAdjusters</span><span class="o">.</span><span class="n">next</span><span class="o">(</span><span class="nc">DayOfWeek</span><span class="o">.</span><span class="nc">SUNDAY</span><span class="o">))</span>
 <span class="c1">// date2: java.time.LocalDate = 2001-02-04
 </span>
 <span class="n">date2</span> <span class="o">==</span> <span class="nc">LocalDate</span><span class="o">.</span><span class="n">of</span><span class="o">(</span><span class="mi">2001</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
-<span class="c1">// res8: Boolean = true
+<span class="c1">// res9: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">offsetTime</span> <span class="k">=</span> <span class="nc">OffsetTime</span><span class="o">.</span><span class="n">of</span><span class="o">(</span><span class="n">date</span><span class="o">.</span><span class="n">toLocalTime</span><span class="o">,</span> <span class="nc">ZoneOffset</span><span class="o">.</span><span class="n">ofHours</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
 <span class="c1">// offsetTime: java.time.OffsetTime = 23:31:30+01:00
 </span>
 <span class="n">offsetTime</span><span class="o">.</span><span class="n">isBefore</span><span class="o">(</span><span class="nc">OffsetTime</span><span class="o">.</span><span class="n">of</span><span class="o">(</span><span class="n">date</span><span class="o">.</span><span class="n">toLocalTime</span><span class="o">,</span> <span class="nc">ZoneOffset</span><span class="o">.</span><span class="n">ofHours</span><span class="o">(</span><span class="mi">0</span><span class="o">)))</span> <span class="o">==</span> <span class="kc">true</span>
-<span class="c1">// res9: Boolean = true
+<span class="c1">// res10: Boolean = true
 </span>
 <span class="k">val</span> <span class="n">format1</span> <span class="k">=</span> <span class="n">format</span><span class="o">.</span><span class="nc">DateTimeFormatter</span><span class="o">.</span><span class="n">ofPattern</span><span class="o">(</span><span class="s">"MMMM MM d HH mm ss EE EEEE yyyy G"</span><span class="o">,</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Locale</span><span class="o">.</span><span class="nc">GERMAN</span><span class="o">)</span>
 <span class="c1">// format1: java.time.format.DateTimeFormatter = Text(MonthOfYear)' 'Value(MonthOfYear,2)' 'Value(DayOfMonth)' 'Value(HourOfDay,2)' 'Value(MinuteOfHour,2)' 'Value(SecondOfMinute,2)' 'Text(DayOfWeek,SHORT)' 'Text(DayOfWeek)' 'Value(YearOfEra,4,19,EXCEEDS_PAD)' 'Text(Era,SHORT)
 </span>
 <span class="n">date</span><span class="o">.</span><span class="n">format</span><span class="o">(</span><span class="n">format1</span><span class="o">)</span> <span class="o">==</span> <span class="s">"Februar 02 13 23 31 30 Fr. Freitag 2009 n. Chr."</span>
-<span class="c1">// res10: Boolean = false
+<span class="c1">// res11: Boolean = false
 </span>
 <span class="n">chrono</span><span class="o">.</span><span class="nc">JapaneseDate</span><span class="o">.</span><span class="n">now</span><span class="o">(</span><span class="n">fixedClock</span><span class="o">).</span><span class="n">toString</span>     <span class="o">==</span> <span class="s">"Japanese Heisei 21-02-13"</span>
-<span class="c1">// res11: Boolean = true
-</span>
-<span class="n">chrono</span><span class="o">.</span><span class="nc">ThaiBuddhistDate</span><span class="o">.</span><span class="n">now</span><span class="o">(</span><span class="n">fixedClock</span><span class="o">).</span><span class="n">toString</span> <span class="o">==</span> <span class="s">"ThaiBuddhist BE 2552-02-13"</span>
 <span class="c1">// res12: Boolean = true
 </span>
-<span class="n">chrono</span><span class="o">.</span><span class="nc">MinguoDate</span><span class="o">.</span><span class="n">now</span><span class="o">(</span><span class="n">fixedClock</span><span class="o">).</span><span class="n">toString</span>       <span class="o">==</span> <span class="s">"Minguo ROC 98-02-13"</span>
+<span class="n">chrono</span><span class="o">.</span><span class="nc">ThaiBuddhistDate</span><span class="o">.</span><span class="n">now</span><span class="o">(</span><span class="n">fixedClock</span><span class="o">).</span><span class="n">toString</span> <span class="o">==</span> <span class="s">"ThaiBuddhist BE 2552-02-13"</span>
 <span class="c1">// res13: Boolean = true
+</span>
+<span class="n">chrono</span><span class="o">.</span><span class="nc">MinguoDate</span><span class="o">.</span><span class="n">now</span><span class="o">(</span><span class="n">fixedClock</span><span class="o">).</span><span class="n">toString</span>       <span class="o">==</span> <span class="s">"Minguo ROC 98-02-13"</span>
+<span class="c1">// res14: Boolean = true
 </span></code></pre>
 </div>
 
 <h4 id="usage">Usage</h4>
 
 <p>The <em>scala-java-time</em> library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Both Scala 2.11 and Scala 2.12 (2.12.0-M5 and later) are supported.</p>
+Both Scala 2.11 and Scala 2.12 (2.12.0-M6 and later) are supported.</p>
 
 <p>To get started with SBT, add one (or both) of these dependencies:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">libraryDependencies += "com.github.cquiroz" %   "scala-java-time" % "2.0.0-M5"</code> (for Scala)</li>
-  <li><code class="highlighter-rouge">libraryDependencies += "com.github.cquiroz" %%% "scala-java-time" % "2.0.0-M5"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %   "scala-java-time" % "2.0.0-M6"</code> (for Scala)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M6"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
 </ul>
 
 <h4 id="building">Building</h4>
@@ -101,8 +102,7 @@ Run <code class="highlighter-rouge">sbt scalajavatimeCrossJVM/test</code> to run
 <h4 id="status">Status</h4>
 
 <p>Most parts of this library work perfectly fine with Scala.js in the browser.
-Locale, formatting and timezone support is limited and providing these missing pieces are the current focus of this project.
-@cquiroz is currently working on implementing locale support.</p>
+timezone support is limited and providing these missing pieces are the current focus of this project.</p>
 
 <h4 id="contributing">Contributing</h4>
 
@@ -110,8 +110,6 @@ Locale, formatting and timezone support is limited and providing these missing p
 We are especially interested in contributions that tackle the following issues:</p>
 
 <ul>
-  <li><em>Support for formatting:</em> Formatting uses a lot of JDK classes, which we might not want to reimplement in Scala.js.
-We might be able to use the new <code class="highlighter-rouge">Intl</code> Web API.</li>
   <li><em>Support for timezones:</em> The timezone information is read from a binary blob, which won’t work in the browser.
 We will have a look at other projects like moment.js and decide whether we want to use the same format, or come up with our own.</li>
 </ul>
@@ -124,13 +122,9 @@ We will have a look at other projects like moment.js and decide whether we want 
 
 <p>We will keep releasing milestone builds while work on the remaining bits and pieces to support 100% of this library on Scala.js is ongoing (most parts work fine already).</p>
 
-<p>The last milestone will rename the package name from <code class="highlighter-rouge">org.threeten.bp</code> to <code class="highlighter-rouge">java.time</code>.</p>
+<p>The current version is published containing the code in both packages: <code class="highlighter-rouge">org.threeten.bp</code> and <code class="highlighter-rouge">java.time</code>.</p>
 
 <p>A stable release of 2.0 will be published after a (hopefully) short RC phase.</p>
-
-<h5 id="section-1">3.0</h5>
-
-<p>As soon as Scala-Native provides cross-compilation capabilities we will investigate what’s necessary to compile this library to native code.</p>
 
 <h4 id="time-zone-data">Time-zone data</h4>
 <p>The time-zone database is stored as a pre-compiled dat file that is included in the built jar.
