@@ -10,8 +10,8 @@ val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M5",
-  organization := "com.github.cquiroz",
+  version      := "2.0.0-M6",
+  organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
 
@@ -47,13 +47,49 @@ lazy val root = project.in(file("."))
     publishArtifact      := false,
     Keys.`package`       := file(""))
 
+/**
+  * Copy source files and translate them to the java.time package
+  */
+def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
+  // Copy a directory and return the list of files
+  def copyDirectory(source: File, target: File, overwrite: Boolean = false, preserveLastModified: Boolean = false): Set[File] =
+    IO.copy(PathFinder(source).***.pair(Path.rebase(source, target)), overwrite, preserveLastModified)
+
+  val onlyScalaDirs = srcDirs.filter(_.getName.endsWith("scala"))
+  // Copy the source files from the base project, exclude classes on java.util and dirs
+  val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
+    files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
+  }.filterNot(_.isDirectory).filterNot(_.getParentFile.getName == "util").toList
+
+  // These replacements will in practice rename all the classes from
+  // org.threeten to java.time
+  def replacements(line: String): String = {
+    line
+      .replaceAll("package org.threeten$", "package java")
+      .replaceAll("package object bp", "package object time")
+      .replaceAll("package org.threeten.bp", "package java.time")
+      .replaceAll("import org.threeten.bp", "import java.time")
+      .replaceAll("private\\s*\\[bp\\]", "private[time]")
+  }
+
+  // Visit each file and read the content replacing key strings
+  generatedFiles.foreach { f =>
+    val replacedLines = IO.readLines(f).map(replacements)
+    IO.writeLines(f, replacedLines)
+  }
+  generatedFiles
+}
+
 lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   .jvmConfigure(_.enablePlugins(TestNGPlugin))
   .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
   .jvmSettings(
-    micrositeExtraMdFiles := Map(file("README.md") -> "index.md"),
-
+    sourceGenerators in Compile += Def.task {
+        val srcDirs = (sourceDirectories in Compile).value
+        val destinationDir = (sourceManaged in Compile).value
+        copyAndReplace(srcDirs, destinationDir)
+      }.taskValue,
     resolvers += Resolver.sbtPluginRepo("releases"),
     // Fork the JVM test to ensure that the custom flags are set
     fork in Test := true,
@@ -63,6 +99,11 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR"),
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
+    sourceGenerators in Compile += Def.task {
+        val srcDirs = (sourceDirectories in Compile).value
+        val destinationDir = (sourceManaged in Compile).value
+        copyAndReplace(srcDirs, destinationDir)
+      }.taskValue,
     libraryDependencies ++= Seq(
       "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
     )
