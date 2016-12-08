@@ -68,21 +68,63 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     )
   )
 
+/**
+  * Copy source files and translate them to the java.time package
+  */
+def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
+  // Copy a directory and return the list of files
+  def copyDirectory(source: File, target: File, overwrite: Boolean = false, preserveLastModified: Boolean = false): Set[File] =
+    IO.copy(PathFinder(source).***.pair(Path.rebase(source, target)), overwrite, preserveLastModified)
+
+  val onlyScalaDirs = srcDirs.filter(_.getName.endsWith("scala"))
+  // Copy the source files from the base project
+  val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
+    files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
+  }.filterNot(_.isDirectory).toList
+
+  // These replacements will in practice rename all the classes from
+  // org.threeten to java.time
+  def replacements(line: String): String = {
+    line
+      .replaceAll("package org.threeten$", "package java")
+      .replaceAll("package object bp", "package object time")
+      .replaceAll("package org.threeten.bp", "package java.time")
+      .replaceAll("import org.threeten.bp", "import java.time")
+      .replaceAll("private\\s*\\[bp\\]", "private[time]")
+  }
+
+  // Visit each file and read the content replacing key strings
+  generatedFiles.foreach { f =>
+    val replacedLines = IO.readLines(f).map(replacements)
+    IO.writeLines(f, replacedLines)
+  }
+  generatedFiles
+}
+
 lazy val scalajavatimeJVM = scalajavatime.jvm
 lazy val scalajavatimeJS  = scalajavatime.js
 
-lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavatimeJS)
-  .settings(commonSettings)
-  .settings(name := "docs")
-  .enablePlugins(MicrositesPlugin)
+lazy val scalajavatimeTranslated = crossProject.crossType(CrossType.Full).in(file("translated"))
+  .settings(commonSettings: _*)
   .settings(
-    micrositeName             := "scala-java-time",
-    micrositeAuthor           := "Carlos Quiroz",
-    micrositeGithubOwner      := "cquiroz",
-    micrositeGithubRepo       := "scala-java-time",
-    micrositeBaseUrl          := "/scala-java-time",
-    //micrositeDocumentationUrl := "/scala-java-time/docs/",
-    micrositeHighlightTheme   := "color-brewer"
+    version      := "2.0.0-M5a"
+  )
+  .jvmSettings(
+    sourceGenerators in Compile += Def.task {
+        val srcDirs = (sourceDirectories in(scalajavatimeJVM, Compile)).value
+        val destinationDir = (sourceManaged in Compile).value
+        copyAndReplace(srcDirs, destinationDir)
+      }.taskValue
+  )
+  .jsSettings(
+    sourceGenerators in Compile += Def.task {
+        val srcDirs = (sourceDirectories in(scalajavatimeJS, Compile)).value
+        val destinationDir = (sourceManaged in Compile).value
+        copyAndReplace(srcDirs, destinationDir)
+      }.taskValue,
+    libraryDependencies ++= Seq(
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
+    )
   )
 
 lazy val pomData =
