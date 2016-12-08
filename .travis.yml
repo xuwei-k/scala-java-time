@@ -10,7 +10,18 @@ jdk:
   - oraclejdk8
 
 scala:
+  - 2.10.6
   - 2.11.8
+  - 2.12.0
+
+before_install:
+  - export PATH=${PATH}:./vendor/bundle
+
+install:
+  - rvm use 2.2.3 --install --fuzzy
+  - gem update --system
+  - gem install sass
+  - gem install jekyll -v 3.2.1
 
 cache:
   directories:
@@ -23,6 +34,7 @@ env:
 
 script:
   - sbt scalajavatimeJVM/test scalajavatimeJS/test
+  - sbt docs/makeMicrosite
   #- sbt clean coverage test &&
   #  sbt coverageAggregate
 after_success:
