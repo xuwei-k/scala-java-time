@@ -28,7 +28,10 @@ lazy val commonSettings = Seq(
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     },
   pomExtra := pomData,
-  pomIncludeRepository := { _ => false }
+  pomIncludeRepository := { _ => false },
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+  )
 )
 
 lazy val root = project.in(file("."))
