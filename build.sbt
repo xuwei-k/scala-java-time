@@ -10,8 +10,8 @@ val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M5",
-  organization := "com.github.cquiroz",
+  version      := "2.0.0-M6",
+  organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
 
