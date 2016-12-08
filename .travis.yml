@@ -34,6 +34,7 @@ env:
 
 script:
   - sbt scalajavatimeJVM/test scalajavatimeJS/test
+  - sbt docs/makeMicrosite
   #- sbt clean coverage test &&
   #  sbt coverageAggregate
 after_success:
