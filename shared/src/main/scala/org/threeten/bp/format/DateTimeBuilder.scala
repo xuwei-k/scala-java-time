@@ -195,7 +195,7 @@ final class DateTimeBuilder() extends TemporalAccessor with Cloneable {
                 resolveMakeChanges(targetField, lt)
                 changes += 1
                 scala.util.control.Breaks.break()
-              case cldt: ChronoLocalDateTime[ChronoLocalDate] =>
+              case cldt: ChronoLocalDateTime[_] =>
                 resolveMakeChanges(targetField, cldt.toLocalDate)
                 resolveMakeChanges(targetField, cldt.toLocalTime)
                 changes += 1
