@@ -47,27 +47,6 @@ lazy val root = project.in(file("."))
     publishArtifact      := false,
     Keys.`package`       := file(""))
 
-lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
-  .jvmConfigure(_.enablePlugins(TestNGPlugin))
-  .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
-  .settings(commonSettings: _*)
-  .jvmSettings(
-    micrositeExtraMdFiles := Map(file("README.md") -> "index.md"),
-
-    resolvers += Resolver.sbtPluginRepo("releases"),
-    // Fork the JVM test to ensure that the custom flags are set
-    fork in Test := true,
-    baseDirectory in Test := baseDirectory.value.getParentFile,
-    // Use CLDR provider for locales
-    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR"),
-    TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
-  ).jsSettings(
-    libraryDependencies ++= Seq(
-      "com.github.cquiroz" %%% "scala-java-locales" % "0.4.0-cldr30"
-    )
-  )
-
 /**
   * Copy source files and translate them to the java.time package
   */
@@ -132,6 +111,20 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
 
 lazy val scalajavatimeJVM = scalajavatime.jvm
 lazy val scalajavatimeJS  = scalajavatime.js
+
+lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavatimeJS)
+  .settings(commonSettings)
+  .settings(name := "docs")
+  .enablePlugins(MicrositesPlugin)
+  .settings(
+    micrositeName             := "scala-java-time",
+    micrositeAuthor           := "Carlos Quiroz",
+    micrositeGithubOwner      := "cquiroz",
+    micrositeGithubRepo       := "scala-java-time",
+    micrositeBaseUrl          := "/scala-java-time",
+    //micrositeDocumentationUrl := "/scala-java-time/docs/",
+    micrositeHighlightTheme   := "color-brewer"
+  )
 
 lazy val pomData =
   <scm>
