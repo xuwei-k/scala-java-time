@@ -2,11 +2,14 @@ import sbt._
 
 import io.github.soc.testng.{TestNGPlugin, TestNGScalaJSPlugin}
 
+enablePlugins(MicrositesPlugin)
+
 val scalaVer = "2.11.8"
 val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
+  description  := "java.time API implementation in Scala and Scala.js",
   version      := "2.0.0-M5",
   organization := "com.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
@@ -30,6 +33,7 @@ lazy val commonSettings = Seq(
 
 lazy val root = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
+  .enablePlugins(MicrositesPlugin)
   .settings(
     scalaVersion := scalaVer,
     crossScalaVersions := crossScalaVer,
@@ -48,6 +52,8 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
   .jvmSettings(
+    micrositeExtraMdFiles := Map(file("README.md") -> "index.md"),
+
     resolvers += Resolver.sbtPluginRepo("releases"),
     // Fork the JVM test to ensure that the custom flags are set
     fork in Test := true,
@@ -64,6 +70,20 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
 
 lazy val scalajavatimeJVM = scalajavatime.jvm
 lazy val scalajavatimeJS  = scalajavatime.js
+
+lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavatimeJS)
+  .settings(commonSettings)
+  .settings(name := "docs")
+  .enablePlugins(MicrositesPlugin)
+  .settings(
+    micrositeName             := "scala-java-time",
+    micrositeAuthor           := "Carlos Quiroz",
+    micrositeGithubOwner      := "cquiroz",
+    micrositeGithubRepo       := "scala-java-time",
+    micrositeBaseUrl          := "/scala-java-time",
+    //micrositeDocumentationUrl := "/scala-java-time/docs/",
+    micrositeHighlightTheme   := "color-brewer"
+  )
 
 lazy val pomData =
   <scm>
