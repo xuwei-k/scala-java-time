@@ -94,7 +94,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     baseDirectory in Test := baseDirectory.value.getParentFile,
     // Use CLDR provider for locales
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR"),
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR"),
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
     sourceGenerators in Compile += Def.task {

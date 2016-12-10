@@ -31,8 +31,6 @@
  */
 package org.threeten.bp
 
-import java.util.{Arrays, Locale}
-
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.threeten.bp.format.DateTimeParseException
 import org.threeten.bp.temporal.ChronoField.{INSTANT_SECONDS, MICRO_OF_SECOND, MILLI_OF_SECOND, NANO_OF_SECOND}
@@ -281,7 +279,7 @@ class TestInstant extends FunSuite with GenDateTimeTest with AssertionsHelper wi
   test("factory_parseLowercase"){
     provider_factory_parse.foreach {
       case (text: String) :: expectedEpochSeconds :: expectedNanoOfSecond :: Nil =>
-        val t: Instant = Instant.parse(text.toLowerCase(Locale.ENGLISH))
+        val t: Instant = Instant.parse(text.toLowerCase)
         assertEquals(t.getEpochSecond, expectedEpochSeconds)
         assertEquals(t.getNano, expectedNanoOfSecond)
       case _ =>
@@ -1579,7 +1577,7 @@ class TestInstant extends FunSuite with GenDateTimeTest with AssertionsHelper wi
   test("parseLowercase") {
     data_toString.foreach {
       case (instant: Instant) :: (text: String) :: Nil =>
-        assertEquals(Instant.parse(text.toLowerCase(Locale.ENGLISH)), instant)
+        assertEquals(Instant.parse(text.toLowerCase), instant)
       case _ =>
         fail()
     }
