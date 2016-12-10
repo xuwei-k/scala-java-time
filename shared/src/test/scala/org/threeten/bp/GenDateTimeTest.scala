@@ -40,136 +40,98 @@ trait GenDateTimeTest extends FunSuite with AssertionsHelper {
     *
     * @return the objects, not null
     */
-  protected def samples: java.util.List[TemporalAccessor]
+  protected def samples: List[TemporalAccessor]
 
   /** List of valid supported fields.
     *
     * @return the fields, not null
     */
-  protected def validFields: java.util.List[TemporalField]
+  protected def validFields: List[TemporalField]
 
   /** List of invalid unsupported fields.
     *
     * @return the fields, not null
     */
-  protected def invalidFields: java.util.List[TemporalField]
+  protected def invalidFields: List[TemporalField]
 
   test("basicTest_isSupported_DateTimeField_supported") {
-    import scala.collection.JavaConversions._
-    for (sample <- samples) {
-      import scala.collection.JavaConversions._
-      for (field <- validFields) {
-        assertEquals(sample.isSupported(field), true, "Failed on " + sample + " " + field)
-      }
-    }
+    for {
+      sample <- samples
+      field <- validFields
+    } assertEquals(sample.isSupported(field), true, "Failed on " + sample + " " + field)
   }
 
   test("basicTest_isSupported_DateTimeField_unsupported") {
-    import scala.collection.JavaConversions._
-    for (sample <- samples) {
-      import scala.collection.JavaConversions._
-      for (field <- invalidFields) {
-        assertEquals(sample.isSupported(field), false, "Failed on " + sample + " " + field)
-      }
-    }
+    for {
+      sample <- samples
+      field <- invalidFields
+    } assertEquals(sample.isSupported(field), false, "Failed on " + sample + " " + field)
   }
 
   test("basicTest_isSupported_DateTimeField_null") {
-    import scala.collection.JavaConversions._
     for (sample <- samples) {
       assertEquals(sample.isSupported(null), false, "Failed on " + sample)
     }
   }
 
   test("basicTest_range_DateTimeField_unsupported") {
-    import scala.collection.JavaConversions._
-    for (sample <- samples) {
-      import scala.collection.JavaConversions._
-      for (field <- invalidFields) {
-        try {
-          sample.range(field)
-          fail("Failed on " + sample + " " + field)
-        }
-        catch {
-          case ex: DateTimeException =>
-        }
+    for {
+      sample <- samples
+      field <- invalidFields
+    } assertThrows[DateTimeException] {
+        sample.range(field)
+        fail("Failed on " + sample + " " + field)
       }
-    }
   }
 
   test("basicTest_range_DateTimeField_null") {
-    import scala.collection.JavaConversions._
     for (sample <- samples) {
-      try {
+      assertThrows[NullPointerException] {
         sample.range(null)
         fail("Failed on " + sample)
-      }
-      catch {
-        case ex: NullPointerException =>
       }
     }
   }
 
   test("basicTest_get_DateTimeField_unsupported") {
-    import scala.collection.JavaConversions._
-    for (sample <- samples) {
-      import scala.collection.JavaConversions._
-      for (field <- invalidFields) {
-        try {
-          sample.get(field)
-          fail("Failed on " + sample + " " + field)
-        }
-        catch {
-          case ex: DateTimeException =>
-        }
+    for {
+      sample <- samples
+      field <- invalidFields
+    } assertThrows[DateTimeException] {
+        sample.get(field)
+        fail("Failed on " + sample + " " + field)
       }
-    }
   }
 
   test("basicTest_get_DateTimeField_null") {
-    import scala.collection.JavaConversions._
     for (sample <- samples) {
-      try {
+      assertThrows[NullPointerException] {
         sample.get(null)
         fail("Failed on " + sample)
-      }
-      catch {
-        case ex: NullPointerException =>
       }
     }
   }
 
   test("basicTest_getLong_DateTimeField_unsupported") {
-    import scala.collection.JavaConversions._
-    for (sample <- samples) {
-      import scala.collection.JavaConversions._
-      for (field <- invalidFields) {
-        try {
-          sample.getLong(field)
-          fail("Failed on " + sample + " " + field)
-        }
-        catch {
-          case ex: DateTimeException =>
-        }
+    for {
+      sample <- samples
+      field <- invalidFields
+    } assertThrows[DateTimeException] {
+        sample.getLong(field)
+        fail("Failed on " + sample + " " + field)
       }
-    }
   }
 
   test("basicTest_getLong_DateTimeField_null") {
-    import scala.collection.JavaConversions._
     for (sample <- samples) {
-      try {
+      assertThrows[NullPointerException] {
         sample.getLong(null)
         fail("Failed on " + sample)
-      }
-      catch {
-        case ex: NullPointerException =>
       }
     }
   }
 
   test("basicTest_query") {
-    import scala.collection.JavaConversions._
     for (sample <- samples) {
       assertEquals(sample.query(new TemporalQuery[String] {
         override def queryFrom(temporal: TemporalAccessor): String = "foo"
