@@ -14,6 +14,9 @@ trait AssertionsHelper { this: FunSuite =>
   def assertEquals[A, B](o1: A, o2: B)(implicit prettifier: Prettifier, pos: source.Position): Assertion =
     assert(o1 == o2)
 
+  def assertSame[A <: AnyRef, B <: AnyRef](o1: A, o2: B)(implicit prettifier: Prettifier, pos: source.Position): Assertion =
+    assert(o1 eq o2)
+
   def assertNotEquals[A, B](o1: A, o2: B)(implicit prettifier: Prettifier, pos: source.Position): Assertion =
     assert(o1 != o2)
 
