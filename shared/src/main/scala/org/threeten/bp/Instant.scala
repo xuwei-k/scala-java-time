@@ -449,7 +449,10 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws DateTimeException if a value for the field cannot be obtained
     * @throws ArithmeticException if numeric overflow occurs
     */
-  def getLong(field: TemporalField): Long =
+  def getLong(field: TemporalField): Long = {
+    if (field == null) {
+      throw new NullPointerException()
+    }
     if (field.isInstanceOf[ChronoField])
       field.asInstanceOf[ChronoField] match {
         case NANO_OF_SECOND  => nanos
@@ -460,6 +463,7 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
       }
     else
       field.getFrom(this)
+  }
 
   /** Gets the number of seconds from the Java epoch of 1970-01-01T00:00:00Z.
     *
@@ -768,13 +772,17 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R >: Null](query: TemporalQuery[R]): R = {
+    if (query == null) {
+      throw new NullPointerException()
+    }
     if (query eq TemporalQueries.precision)
       NANOS.asInstanceOf[R]
     else if ((query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime) || (query eq TemporalQueries.chronology) || (query eq TemporalQueries.zoneId) || (query eq TemporalQueries.zone) || (query eq TemporalQueries.offset))
       null
     else
       query.queryFrom(this)
+  }
 
   /** Adjusts the specified temporal object to have this instant.
     *
@@ -956,6 +964,9 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws NullPointerException if otherInstant is null
     */
   def compare(otherInstant: Instant): Int = {
+    if (otherInstant == null) {
+      throw new NullPointerException("null object in comparison")
+    }
     val cmp: Int = java.lang.Long.compare(seconds, otherInstant.seconds)
     if (cmp != 0) cmp
     else nanos - otherInstant.nanos
