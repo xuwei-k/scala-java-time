@@ -114,16 +114,12 @@ trait TemporalAccessor {
     * @return the range of valid values for the field, not null
     * @throws DateTimeException if the range for the field cannot be obtained
     */
-  def range(field: TemporalField): ValueRange = {
-    if (field == null) {
-      throw new NullPointerException()
-    }
+  def range(field: TemporalField): ValueRange =
     if (field.isInstanceOf[ChronoField])
       if (isSupported(field)) field.range
       else throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
     else
       field.rangeRefinedBy(this)
-  }
 
   /** Gets the value of the specified field as an {@code int}.
     *
