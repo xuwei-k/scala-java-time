@@ -86,7 +86,7 @@ trait GenDateTimeTest extends FunSuite with AssertionsHelper {
 
   test("basicTest_range_DateTimeField_null") {
     for (sample <- samples) {
-      assertThrows[NullPointerException] {
+      assertThrows[Platform.NPE] {
         sample.range(null)
         fail("Failed on " + sample)
       }
@@ -105,7 +105,7 @@ trait GenDateTimeTest extends FunSuite with AssertionsHelper {
 
   test("basicTest_get_DateTimeField_null") {
     for (sample <- samples) {
-      assertThrows[NullPointerException] {
+      assertThrows[Platform.NPE] {
         sample.get(null)
         fail("Failed on " + sample)
       }
@@ -124,7 +124,7 @@ trait GenDateTimeTest extends FunSuite with AssertionsHelper {
 
   test("basicTest_getLong_DateTimeField_null") {
     for (sample <- samples) {
-      assertThrows[NullPointerException] {
+      assertThrows[Platform.NPE] {
         sample.getLong(null)
         fail("Failed on " + sample)
       }

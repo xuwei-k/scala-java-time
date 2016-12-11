@@ -351,7 +351,7 @@ class TestInstant extends FunSuite with GenDateTimeTest with AssertionsHelper wi
   }
 
   test("query_null") {
-    assertThrows[NullPointerException] {
+    assertThrows[Platform.NPE] {
       TEST_12345_123456789.query(null)
     }
   }
@@ -1430,21 +1430,22 @@ class TestInstant extends FunSuite with GenDateTimeTest with AssertionsHelper wi
   }
 
   test("compareTo_ObjectNull") {
-    assertThrows[NullPointerException] {
+    assertThrows[Platform.NPE] {
       val a: Instant = Instant.ofEpochSecond(0L, 0)
       a.compareTo(null)
     }
   }
 
+
   test("isBefore_ObjectNull") {
-    assertThrows[NullPointerException] {
+    assertThrows[Platform.NPE] {
       val a: Instant = Instant.ofEpochSecond(0L, 0)
       a.isBefore(null)
     }
   }
 
   test("isAfter_ObjectNull") {
-    assertThrows[NullPointerException] {
+    assertThrows[Platform.NPE] {
       val a: Instant = Instant.ofEpochSecond(0L, 0)
       a.isAfter(null)
     }

@@ -1,5 +1,5 @@
 package org.threeten.bp
 
 object Platform {
-  type NPE = NullPointerException
+  type NPE = scala.scalajs.js.JavaScriptException
 }
