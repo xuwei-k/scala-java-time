@@ -43,29 +43,11 @@ import org.threeten.bp.temporal.TemporalUnit
 
 /** Test Duration. */
 class TestDuration extends FunSuite with AssertionsHelper {
-  /*@Test def test_immutable(): Unit = {
-    throw new SkipException("private constructor shows up public due to companion object")
-    AbstractTest.assertImmutable(classOf[Duration])
-  }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_serialization(): Unit = {
-    AbstractTest.assertSerializable(Duration.ofHours(5))
-    AbstractTest.assertSerializable(Duration.ofHours(-5))
-    AbstractTest.assertSerializableAndSame(Duration.ZERO)
-  }
-
-  @Test
-  @throws(classOf[Exception])
-  def test_serialization_format(): Unit = {
-    AbstractTest.assertEqualsSerialisedForm(Duration.ofSeconds(654321, 123456789))
-  }
-
-  @Test def test_zero(): Unit = {
+  test("zero") {
     assertEquals(Duration.ZERO.getSeconds, 0L)
     assertEquals(Duration.ZERO.getNano, 0)
-  }*/
+  }
 
   test("factory_seconds_long") {
     {
@@ -152,15 +134,31 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  /*@DataProvider(name = "MillisDurationNoNanos") private[bp] def provider_factory_millis_long: Array[Array[_ <: AnyRef]] = {
-    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0), Array[Integer](1, 0, 1000000), Array[Integer](2, 0, 2000000), Array[Integer](999, 0, 999000000), Array[Integer](1000, 1, 0), Array[Integer](1001, 1, 1000000), Array[Integer](-1, -1, 999000000), Array[Integer](-2, -1, 998000000), Array[Integer](-999, -1, 1000000), Array[Integer](-1000, -1, 0), Array[Integer](-1001, -2, 999000000))
+  def provider_factory_millis_long: List[List[Int]] = {
+    List(
+      List(0, 0, 0),
+      List(1, 0, 1000000),
+      List(2, 0, 2000000),
+      List(999, 0, 999000000),
+      List(1000, 1, 0),
+      List(1001, 1, 1000000),
+      List(-1, -1, 999000000),
+      List(-2, -1, 998000000),
+      List(-999, -1, 1000000),
+      List(-1000, -1, 0),
+      List(-1001, -2, 999000000))
   }
 
-  @Test(dataProvider = "MillisDurationNoNanos") def factory_millis_long(millis: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val test: Duration = Duration.ofMillis(millis)
-    assertEquals(test.getSeconds, expectedSeconds)
-    assertEquals(test.getNano, expectedNanoOfSecond)
-  }*/
+  test("factory_millis_long") {
+    provider_factory_millis_long.foreach {
+      case millis :: expectedSeconds :: expectedNanoOfSecond :: Nil =>
+        val test: Duration = Duration.ofMillis(millis)
+        assertEquals(test.getSeconds, expectedSeconds)
+        assertEquals(test.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("factory_nanos_nanos") {
     val test: Duration = Duration.ofNanos(1)
@@ -281,24 +279,90 @@ class TestDuration extends FunSuite with AssertionsHelper {
       Duration.ofDays(Long.MinValue / 86400 - 1)
     }
   }
-/*
-  @DataProvider(name = "OfTemporalUnit") private[bp] def provider_factory_of_longTemporalUnit: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, NANOS, 0, 0), Array(0, MICROS, 0, 0), Array(0, MILLIS, 0, 0), Array(0, SECONDS, 0, 0), Array(0, MINUTES, 0, 0), Array(0, HOURS, 0, 0), Array(0, HALF_DAYS, 0, 0), Array(0, DAYS, 0, 0), Array(1, NANOS, 0, 1), Array(1, MICROS, 0, 1000), Array(1, MILLIS, 0, 1000000), Array(1, SECONDS, 1, 0), Array(1, MINUTES, 60, 0), Array(1, HOURS, 3600, 0), Array(1, HALF_DAYS, 43200, 0), Array(1, DAYS, 86400, 0), Array(3, NANOS, 0, 3), Array(3, MICROS, 0, 3000), Array(3, MILLIS, 0, 3000000), Array(3, SECONDS, 3, 0), Array(3, MINUTES, 3 * 60, 0), Array(3, HOURS, 3 * 3600, 0), Array(3, HALF_DAYS, 3 * 43200, 0), Array(3, DAYS, 3 * 86400, 0), Array(-1, NANOS, -1, 999999999), Array(-1, MICROS, -1, 999999000), Array(-1, MILLIS, -1, 999000000), Array(-1, SECONDS, -1, 0), Array(-1, MINUTES, -60, 0), Array(-1, HOURS, -3600, 0), Array(-1, HALF_DAYS, -43200, 0), Array(-1, DAYS, -86400, 0), Array(-3, NANOS, -1, 999999997), Array(-3, MICROS, -1, 999997000), Array(-3, MILLIS, -1, 997000000), Array(-3, SECONDS, -3, 0), Array(-3, MINUTES, -3 * 60, 0), Array(-3, HOURS, -3 * 3600, 0), Array(-3, HALF_DAYS, -3 * 43200, 0), Array(-3, DAYS, -3 * 86400, 0), Array(Long.MaxValue, NANOS, Long.MaxValue / 1000000000, (Long.MaxValue % 1000000000).toInt), Array(Long.MinValue, NANOS, Long.MinValue / 1000000000 - 1, (Long.MinValue % 1000000000 + 1000000000).toInt), Array(Long.MaxValue, MICROS, Long.MaxValue / 1000000, ((Long.MaxValue % 1000000) * 1000).toInt), Array(Long.MinValue, MICROS, Long.MinValue / 1000000 - 1, ((Long.MinValue % 1000000 + 1000000) * 1000).toInt), Array(Long.MaxValue, MILLIS, Long.MaxValue / 1000, ((Long.MaxValue % 1000) * 1000000).toInt), Array(Long.MinValue, MILLIS, Long.MinValue / 1000 - 1, ((Long.MinValue % 1000 + 1000) * 1000000).toInt), Array(Long.MaxValue, SECONDS, Long.MaxValue, 0), Array(Long.MinValue, SECONDS, Long.MinValue, 0), Array(Long.MaxValue / 60, MINUTES, (Long.MaxValue / 60) * 60, 0), Array(Long.MinValue / 60, MINUTES, (Long.MinValue / 60) * 60, 0), Array(Long.MaxValue / 3600, HOURS, (Long.MaxValue / 3600) * 3600, 0), Array(Long.MinValue / 3600, HOURS, (Long.MinValue / 3600) * 3600, 0), Array(Long.MaxValue / 43200, HALF_DAYS, (Long.MaxValue / 43200) * 43200, 0), Array(Long.MinValue / 43200, HALF_DAYS, (Long.MinValue / 43200) * 43200, 0))
+
+  def provider_factory_of_longTemporalUnit: List[List[Any]] = {
+    List(
+      List(0L, NANOS, 0L, 0),
+      List(0L, MICROS, 0L, 0),
+      List(0L, MILLIS, 0L, 0),
+      List(0L, SECONDS, 0L, 0),
+      List(0L, MINUTES, 0L, 0),
+      List(0L, HOURS, 0L, 0),
+      List(0L, HALF_DAYS, 0L, 0),
+      List(0L, DAYS, 0L, 0),
+      List(1L, NANOS, 0L, 1),
+      List(1L, MICROS, 0L, 1000),
+      List(1L, MILLIS, 0L, 1000000),
+      List(1L, SECONDS, 1L, 0),
+      List(1L, MINUTES, 60L, 0),
+      List(1L, HOURS, 3600L, 0),
+      List(1L, HALF_DAYS, 43200L, 0),
+      List(1L, DAYS, 86400L, 0),
+      List(3L, NANOS, 0L, 3),
+      List(3L, MICROS, 0L, 3000),
+      List(3L, MILLIS, 0L, 3000000),
+      List(3L, SECONDS, 3L, 0),
+      List(3L, MINUTES, 3 * 60L, 0),
+      List(3L, HOURS, 3 * 3600L, 0),
+      List(3L, HALF_DAYS, 3 * 43200L, 0),
+      List(3L, DAYS, 3 * 86400L, 0),
+      List(-1L, NANOS, -1L, 999999999),
+      List(-1L, MICROS, -1L, 999999000),
+      List(-1L, MILLIS, -1L, 999000000),
+      List(-1L, SECONDS, -1L, 0),
+      List(-1L, MINUTES, -60L, 0),
+      List(-1L, HOURS, -3600L, 0),
+      List(-1L, HALF_DAYS, -43200L, 0),
+      List(-1L, DAYS, -86400L, 0),
+      List(-3L, NANOS, -1L, 999999997),
+      List(-3L, MICROS, -1L, 999997000),
+      List(-3L, MILLIS, -1L, 997000000),
+      List(-3L, SECONDS, -3L, 0),
+      List(-3L, MINUTES, -3 * 60L, 0),
+      List(-3L, HOURS, -3 * 3600L, 0),
+      List(-3L, HALF_DAYS, -3 * 43200L, 0),
+      List(-3L, DAYS, -3 * 86400L, 0),
+      List(Long.MaxValue, NANOS, Long.MaxValue / 1000000000, (Long.MaxValue % 1000000000).toInt),
+      List(Long.MinValue, NANOS, Long.MinValue / 1000000000 - 1, (Long.MinValue % 1000000000 + 1000000000).toInt),
+      List(Long.MaxValue, MICROS, Long.MaxValue / 1000000, ((Long.MaxValue % 1000000) * 1000).toInt),
+      List(Long.MinValue, MICROS, Long.MinValue / 1000000 - 1, ((Long.MinValue % 1000000 + 1000000) * 1000).toInt),
+      List(Long.MaxValue, MILLIS, Long.MaxValue / 1000, ((Long.MaxValue % 1000) * 1000000).toInt),
+      List(Long.MinValue, MILLIS, Long.MinValue / 1000 - 1, ((Long.MinValue % 1000 + 1000) * 1000000).toInt),
+      List(Long.MaxValue, SECONDS, Long.MaxValue, 0),
+      List(Long.MinValue, SECONDS, Long.MinValue, 0),
+      List(Long.MaxValue / 60, MINUTES, (Long.MaxValue / 60) * 60, 0),
+      List(Long.MinValue / 60, MINUTES, (Long.MinValue / 60) * 60, 0),
+      List(Long.MaxValue / 3600, HOURS, (Long.MaxValue / 3600) * 3600, 0),
+      List(Long.MinValue / 3600, HOURS, (Long.MinValue / 3600) * 3600, 0),
+      List(Long.MaxValue / 43200, HALF_DAYS, (Long.MaxValue / 43200) * 43200, 0),
+      List(Long.MinValue / 43200, HALF_DAYS, (Long.MinValue / 43200) * 43200, 0))
   }
 
-  @Test(dataProvider = "OfTemporalUnit") def factory_of_longTemporalUnit(amount: Long, unit: TemporalUnit, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Duration = Duration.of(amount, unit)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("factory_of_longTemporalUnit") {
+    provider_factory_of_longTemporalUnit.foreach {
+      case (amount: Long) :: (unit: TemporalUnit) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Int) :: Nil =>
+        val t: Duration = Duration.of(amount, unit)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "OfTemporalUnitOutOfRange") private[bp] def provider_factory_of_longTemporalUnit_outOfRange: Array[Array[Any]] = {
-    Array[Array[Any]](Array(Long.MaxValue / 60 + 1, MINUTES), Array(Long.MinValue / 60 - 1, MINUTES), Array(Long.MaxValue / 3600 + 1, HOURS), Array(Long.MinValue / 3600 - 1, HOURS), Array(Long.MaxValue / 43200 + 1, HALF_DAYS), Array(Long.MinValue / 43200 - 1, HALF_DAYS))
+  def provider_factory_of_longTemporalUnit_outOfRange: List[List[Any]] = {
+    List(List(Long.MaxValue / 60 + 1, MINUTES), List(Long.MinValue / 60 - 1, MINUTES), List(Long.MaxValue / 3600 + 1, HOURS), List(Long.MinValue / 3600 - 1, HOURS), List(Long.MaxValue / 43200 + 1, HALF_DAYS), List(Long.MinValue / 43200 - 1, HALF_DAYS))
   }
 
-  @Test(dataProvider = "OfTemporalUnitOutOfRange", expectedExceptions = Array(classOf[ArithmeticException])) def factory_of_longTemporalUnit_outOfRange(amount: Long, unit: TemporalUnit): Unit = {
-    Duration.of(amount, unit)
-  }*/
+  test("factory_of_longTemporalUnit_outOfRange") {
+    provider_factory_of_longTemporalUnit_outOfRange.foreach {
+      case (amount: Long) :: (unit: TemporalUnit) :: Nil =>
+        assertThrows[ArithmeticException] {
+          Duration.of(amount, unit)
+        }
+      case _ =>
+        fail()
+    }
+  }
 
   test("factory_of_longTemporalUnit_estimatedUnit") {
     assertThrows[DateTimeException] {
@@ -312,17 +376,27 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  /*@DataProvider(name = "DurationBetween") private[bp] def provider_factory_between_Instant_Instant: Array[Array[_ <: AnyRef]] = {
-    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0, 0, 0, 0), Array[Integer](3, 0, 7, 0, 4, 0), Array[Integer](3, 20, 7, 50, 4, 30), Array[Integer](3, 80, 7, 50, 3, 999999970), Array[Integer](7, 0, 3, 0, -4, 0))
+  def provider_factory_between_Instant_Instant: List[List[Int]] = {
+    List(
+      List(0, 0, 0, 0, 0, 0),
+      List(3, 0, 7, 0, 4, 0),
+      List(3, 20, 7, 50, 4, 30),
+      List(3, 80, 7, 50, 3, 999999970),
+      List(7, 0, 3, 0, -4, 0))
   }
 
-  @Test(dataProvider = "DurationBetween") def factory_between_Instant_Instant(secs1: Long, nanos1: Int, secs2: Long, nanos2: Int, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val start: Instant = Instant.ofEpochSecond(secs1, nanos1)
-    val end: Instant = Instant.ofEpochSecond(secs2, nanos2)
-    val t: Duration = Duration.between(start, end)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  } */
+  test("factory_between_Instant_Instant") {
+    provider_factory_between_Instant_Instant.foreach {
+      case secs1 :: nanos1 :: secs2 :: nanos2 :: expectedSeconds :: expectedNanoOfSecond :: Nil =>
+        val start: Instant = Instant.ofEpochSecond(secs1, nanos1)
+        val end: Instant = Instant.ofEpochSecond(secs2, nanos2)
+        val t: Duration = Duration.between(start, end)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("factory_between_Instant_Instant_startNull") {
     assertThrows[Platform.NPE] {
@@ -338,43 +412,140 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  /*@DataProvider(name = "Parse") private[bp] def provider_factory_parse: Array[Array[Any]] = {
-    Array[Array[Any]](Array("PT0S", 0, 0), Array("PT1S", 1, 0), Array("PT12S", 12, 0), Array("PT123456789S", 123456789, 0), Array("PT" + Long.MaxValue + "S", Long.MaxValue, 0), Array("PT+1S", 1, 0), Array("PT+12S", 12, 0), Array("PT-1S", -1, 0), Array("PT-12S", -12, 0), Array("PT-123456789S", -123456789, 0), Array("PT" + Long.MinValue + "S", Long.MinValue, 0), Array("PT0.1S", 0, 100000000), Array("PT1.1S", 1, 100000000), Array("PT1.12S", 1, 120000000), Array("PT1.123S", 1, 123000000), Array("PT1.1234S", 1, 123400000), Array("PT1.12345S", 1, 123450000), Array("PT1.123456S", 1, 123456000), Array("PT1.1234567S", 1, 123456700), Array("PT1.12345678S", 1, 123456780), Array("PT1.123456789S", 1, 123456789), Array("PT-0.1S", -1, 1000000000 - 100000000), Array("PT-1.1S", -2, 1000000000 - 100000000), Array("PT-1.12S", -2, 1000000000 - 120000000), Array("PT-1.123S", -2, 1000000000 - 123000000), Array("PT-1.1234S", -2, 1000000000 - 123400000), Array("PT-1.12345S", -2, 1000000000 - 123450000), Array("PT-1.123456S", -2, 1000000000 - 123456000), Array("PT-1.1234567S", -2, 1000000000 - 123456700), Array("PT-1.12345678S", -2, 1000000000 - 123456780), Array("PT-1.123456789S", -2, 1000000000 - 123456789), Array("PT" + Long.MaxValue + ".123456789S", Long.MaxValue, 123456789), Array("PT" + Long.MinValue + ".000000000S", Long.MinValue, 0), Array("PT12M", 12 * 60, 0), Array("PT12M0.35S", 12 * 60, 350000000), Array("PT12M1.35S", 12 * 60 + 1, 350000000), Array("PT12M-0.35S", 12 * 60 - 1, 1000000000 - 350000000), Array("PT12M-1.35S", 12 * 60 - 2, 1000000000 - 350000000), Array("PT12H", 12 * 3600, 0), Array("PT12H0.35S", 12 * 3600, 350000000), Array("PT12H1.35S", 12 * 3600 + 1, 350000000), Array("PT12H-0.35S", 12 * 3600 - 1, 1000000000 - 350000000), Array("PT12H-1.35S", 12 * 3600 - 2, 1000000000 - 350000000), Array("P12D", 12 * 24 * 3600, 0), Array("P12DT0.35S", 12 * 24 * 3600, 350000000), Array("P12DT1.35S", 12 * 24 * 3600 + 1, 350000000), Array("P12DT-0.35S", 12 * 24 * 3600 - 1, 1000000000 - 350000000), Array("P12DT-1.35S", 12 * 24 * 3600 - 2, 1000000000 - 350000000))
+  def provider_factory_parse: List[List[Any]] = {
+    List(
+      List("PT0S", 0L, 0L),
+      List("PT1S", 1L, 0L),
+      List("PT12S", 12L, 0L),
+      List("PT123456789S", 123456789L, 0L),
+      List("PT" + Long.MaxValue + "S", Long.MaxValue, 0L),
+      List("PT+1S", 1L, 0L),
+      List("PT+12S", 12L, 0L),
+      List("PT-1S", -1L, 0L),
+      List("PT-12S", -12L, 0L),
+      List("PT-123456789S", -123456789L, 0L),
+      List("PT" + Long.MinValue + "S", Long.MinValue, 0L),
+      List("PT0.1S", 0L, 100000000L),
+      List("PT1.1S", 1L, 100000000L),
+      List("PT1.12S", 1L, 120000000L),
+      List("PT1.123S", 1L, 123000000L),
+      List("PT1.1234S", 1L, 123400000L),
+      List("PT1.12345S", 1L, 123450000L),
+      List("PT1.123456S", 1L, 123456000L),
+      List("PT1.1234567S", 1L, 123456700L),
+      List("PT1.12345678S", 1L, 123456780L),
+      List("PT1.123456789S", 1L, 123456789L),
+      List("PT-0.1S", -1L, 1000000000 - 100000000L),
+      List("PT-1.1S", -2L, 1000000000 - 100000000L),
+      List("PT-1.12S", -2L, 1000000000 - 120000000L),
+      List("PT-1.123S", -2L, 1000000000 - 123000000L),
+      List("PT-1.1234S", -2L, 1000000000 - 123400000L),
+      List("PT-1.12345S", -2L, 1000000000 - 123450000L),
+      List("PT-1.123456S", -2L, 1000000000 - 123456000L),
+      List("PT-1.1234567S", -2L, 1000000000 - 123456700L),
+      List("PT-1.12345678S", -2L, 1000000000 - 123456780L),
+      List("PT-1.123456789S", -2L, 1000000000 - 123456789L),
+      List("PT" + Long.MaxValue + ".123456789S", Long.MaxValue, 123456789L),
+      List("PT" + Long.MinValue + ".000000000S", Long.MinValue, 0L),
+      List("PT12M", 12 * 60L, 0L),
+      List("PT12M0.35S", 12 * 60L, 350000000L),
+      List("PT12M1.35S", 12 * 60 + 1L, 350000000L),
+      List("PT12M-0.35S", 12 * 60 - 1L, 1000000000 - 350000000L),
+      List("PT12M-1.35S", 12 * 60 - 2L, 1000000000 - 350000000L),
+      List("PT12H", 12 * 3600L, 0L),
+      List("PT12H0.35S", 12 * 3600L, 350000000L),
+      List("PT12H1.35S", 12 * 3600 + 1L, 350000000L),
+      List("PT12H-0.35S", 12 * 3600 - 1L, 1000000000 - 350000000L),
+      List("PT12H-1.35S", 12 * 3600 - 2L, 1000000000 - 350000000L),
+      List("P12D", 12 * 24 * 3600L, 0L),
+      List("P12DT0.35S", 12 * 24 * 3600L, 350000000L),
+      List("P12DT1.35S", 12 * 24 * 3600 + 1L, 350000000L),
+      List("P12DT-0.35S", 12 * 24 * 3600 - 1L, 1000000000 - 350000000L),
+      List("P12DT-1.35S", 12 * 24 * 3600 - 2L, 1000000000 - 350000000L))
   }
 
-  @Test(dataProvider = "Parse") def factory_parse(text: String, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Duration = Duration.parse(text)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("factory_parse") {
+    provider_factory_parse.foreach {
+      case (text: String) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        val t: Duration = Duration.parse(text)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "Parse") def factory_parse_ignoreCase(text: String, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Duration = Duration.parse(text.toLowerCase(Locale.ENGLISH))
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("factory_parse_ignoreCase") {
+    provider_factory_parse.foreach {
+      case (text: String) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        val t: Duration = Duration.parse(text.toLowerCase)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "Parse") def factory_parse_comma(text: String, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var _text = text
-    _text = _text.replace('.', ',')
-    val t: Duration = Duration.parse(_text)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("factory_parse_comma") {
+    provider_factory_parse.foreach {
+      case (text: String) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var _text = text
+        _text = _text.replace('.', ',')
+        val t: Duration = Duration.parse(_text)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "ParseFailures") private[bp] def provider_factory_parseFailures: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(""), Array("PTS"), Array("AT0S"), Array("PA0S"), Array("PT0A"), Array("PT+S"), Array("PT-S"), Array("PT.S"), Array("PTAS"), Array("PT-.S"), Array("PT+.S"), Array("PT1ABC2S"), Array("PT1.1ABC2S"), Array("PT123456789123456789123456789S"), Array("PT0.1234567891S"), Array("PT.1S"), Array("PT2.-3"), Array("PT-2.-3"), Array("PT2.+3"), Array("PT-2.+3"))
+  def provider_factory_parseFailures: List[List[String]] = {
+    List(
+      List(""),
+      List("PTS"),
+      List("AT0S"),
+      List("PA0S"),
+      List("PT0A"),
+      List("PT+S"),
+      List("PT-S"),
+      List("PT.S"),
+      List("PTAS"),
+      List("PT-.S"),
+      List("PT+.S"),
+      List("PT1ABC2S"),
+      List("PT1.1ABC2S"),
+      List("PT123456789123456789123456789S"),
+      List("PT0.1234567891S"),
+      List("PT.1S"),
+      List("PT2.-3"),
+      List("PT-2.-3"),
+      List("PT2.+3"),
+      List("PT-2.+3"))
   }
 
-  @Test(dataProvider = "ParseFailures", expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parseFailures(text: String): Unit = {
-    Duration.parse(text)
+  test("factory_parseFailures") {
+    provider_factory_parseFailures.foreach {
+      case text :: Nil =>
+        assertThrows[DateTimeException] {
+          Duration.parse(text)
+        }
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "ParseFailures", expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parseFailures_comma(text: String): Unit = {
-    var _text = text
-    _text = _text.replace('.', ',')
-    Duration.parse(_text)
-  }*/
+  test("factory_parseFailures_comma") {
+    provider_factory_parseFailures.foreach {
+      case text :: Nil =>
+        assertThrows[DateTimeException] {
+          var _text = text
+          _text = _text.replace('.', ',')
+          Duration.parse(_text)
+        }
+      case _ =>
+        fail()
+    }
+  }
 
   test("factory_parse_tooBig") {
     assertThrows[DateTimeException] {
@@ -405,20 +576,6 @@ class TestDuration extends FunSuite with AssertionsHelper {
       Duration.parse(null.asInstanceOf[String])
     }
   }
-/*
-  @Test
-  @throws(classOf[Exception])
-  def test_deserialization(): Unit = {
-    val orginal: Duration = Duration.ofSeconds(2)
-    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
-    val out: ObjectOutputStream = new ObjectOutputStream(baos)
-    out.writeObject(orginal)
-    out.close()
-    val bais: ByteArrayInputStream = new ByteArrayInputStream(baos.toByteArray)
-    val in: ObjectInputStream = new ObjectInputStream(bais)
-    val ser: Duration = in.readObject.asInstanceOf[Duration]
-    assertEquals(Duration.ofSeconds(2), ser)
-  }*/
 
   test("test_isZero") {
     assertEquals(Duration.ofNanos(0).isZero, true)
@@ -441,16 +598,188 @@ class TestDuration extends FunSuite with AssertionsHelper {
     assertEquals(Duration.ofSeconds(-1).isNegative, true)
     assertEquals(Duration.ofSeconds(-1, -1).isNegative, true)
   }
-/*
-  @DataProvider(name = "Plus") private[bp] def provider_plus: Array[Array[Any]] = {
-    Array[Array[Any]](Array(Long.MinValue, 0, Long.MaxValue, 0, -1, 0), Array(-4, 666666667, -4, 666666667, -7, 333333334), Array(-4, 666666667, -3, 0, -7, 666666667), Array(-4, 666666667, -2, 0, -6, 666666667), Array(-4, 666666667, -1, 0, -5, 666666667), Array(-4, 666666667, -1, 333333334, -4, 1), Array(-4, 666666667, -1, 666666667, -4, 333333334), Array(-4, 666666667, -1, 999999999, -4, 666666666), Array(-4, 666666667, 0, 0, -4, 666666667), Array(-4, 666666667, 0, 1, -4, 666666668), Array(-4, 666666667, 0, 333333333, -3, 0), Array(-4, 666666667, 0, 666666666, -3, 333333333), Array(-4, 666666667, 1, 0, -3, 666666667), Array(-4, 666666667, 2, 0, -2, 666666667), Array(-4, 666666667, 3, 0, -1, 666666667), Array(-4, 666666667, 3, 333333333, 0, 0), Array(-3, 0, -4, 666666667, -7, 666666667), Array(-3, 0, -3, 0, -6, 0), Array(-3, 0, -2, 0, -5, 0), Array(-3, 0, -1, 0, -4, 0), Array(-3, 0, -1, 333333334, -4, 333333334), Array(-3, 0, -1, 666666667, -4, 666666667), Array(-3, 0, -1, 999999999, -4, 999999999), Array(-3, 0, 0, 0, -3, 0), Array(-3, 0, 0, 1, -3, 1), Array(-3, 0, 0, 333333333, -3, 333333333), Array(-3, 0, 0, 666666666, -3, 666666666), Array(-3, 0, 1, 0, -2, 0), Array(-3, 0, 2, 0, -1, 0), Array(-3, 0, 3, 0, 0, 0), Array(-3, 0, 3, 333333333, 0, 333333333), Array(-2, 0, -4, 666666667, -6, 666666667), Array(-2, 0, -3, 0, -5, 0), Array(-2, 0, -2, 0, -4, 0), Array(-2, 0, -1, 0, -3, 0), Array(-2, 0, -1, 333333334, -3, 333333334), Array(-2, 0, -1, 666666667, -3, 666666667), Array(-2, 0, -1, 999999999, -3, 999999999), Array(-2, 0, 0, 0, -2, 0), Array(-2, 0, 0, 1, -2, 1), Array(-2, 0, 0, 333333333, -2, 333333333), Array(-2, 0, 0, 666666666, -2, 666666666), Array(-2, 0, 1, 0, -1, 0), Array(-2, 0, 2, 0, 0, 0), Array(-2, 0, 3, 0, 1, 0), Array(-2, 0, 3, 333333333, 1, 333333333), Array(-1, 0, -4, 666666667, -5, 666666667), Array(-1, 0, -3, 0, -4, 0), Array(-1, 0, -2, 0, -3, 0), Array(-1, 0, -1, 0, -2, 0), Array(-1, 0, -1, 333333334, -2, 333333334), Array(-1, 0, -1, 666666667, -2, 666666667), Array(-1, 0, -1, 999999999, -2, 999999999), Array(-1, 0, 0, 0, -1, 0), Array(-1, 0, 0, 1, -1, 1), Array(-1, 0, 0, 333333333, -1, 333333333), Array(-1, 0, 0, 666666666, -1, 666666666), Array(-1, 0, 1, 0, 0, 0), Array(-1, 0, 2, 0, 1, 0), Array(-1, 0, 3, 0, 2, 0), Array(-1, 0, 3, 333333333, 2, 333333333), Array(-1, 666666667, -4, 666666667, -4, 333333334), Array(-1, 666666667, -3, 0, -4, 666666667), Array(-1, 666666667, -2, 0, -3, 666666667), Array(-1, 666666667, -1, 0, -2, 666666667), Array(-1, 666666667, -1, 333333334, -1, 1), Array(-1, 666666667, -1, 666666667, -1, 333333334), Array(-1, 666666667, -1, 999999999, -1, 666666666), Array(-1, 666666667, 0, 0, -1, 666666667), Array(-1, 666666667, 0, 1, -1, 666666668), Array(-1, 666666667, 0, 333333333, 0, 0), Array(-1, 666666667, 0, 666666666, 0, 333333333), Array(-1, 666666667, 1, 0, 0, 666666667), Array(-1, 666666667, 2, 0, 1, 666666667), Array(-1, 666666667, 3, 0, 2, 666666667), Array(-1, 666666667, 3, 333333333, 3, 0), Array(0, 0, -4, 666666667, -4, 666666667), Array(0, 0, -3, 0, -3, 0), Array(0, 0, -2, 0, -2, 0), Array(0, 0, -1, 0, -1, 0), Array(0, 0, -1, 333333334, -1, 333333334), Array(0, 0, -1, 666666667, -1, 666666667), Array(0, 0, -1, 999999999, -1, 999999999), Array(0, 0, 0, 0, 0, 0), Array(0, 0, 0, 1, 0, 1), Array(0, 0, 0, 333333333, 0, 333333333), Array(0, 0, 0, 666666666, 0, 666666666), Array(0, 0, 1, 0, 1, 0), Array(0, 0, 2, 0, 2, 0), Array(0, 0, 3, 0, 3, 0), Array(0, 0, 3, 333333333, 3, 333333333), Array(0, 333333333, -4, 666666667, -3, 0), Array(0, 333333333, -3, 0, -3, 333333333), Array(0, 333333333, -2, 0, -2, 333333333), Array(0, 333333333, -1, 0, -1, 333333333), Array(0, 333333333, -1, 333333334, -1, 666666667), Array(0, 333333333, -1, 666666667, 0, 0), Array(0, 333333333, -1, 999999999, 0, 333333332), Array(0, 333333333, 0, 0, 0, 333333333), Array(0, 333333333, 0, 1, 0, 333333334), Array(0, 333333333, 0, 333333333, 0, 666666666), Array(0, 333333333, 0, 666666666, 0, 999999999), Array(0, 333333333, 1, 0, 1, 333333333), Array(0, 333333333, 2, 0, 2, 333333333), Array(0, 333333333, 3, 0, 3, 333333333), Array(0, 333333333, 3, 333333333, 3, 666666666), Array(1, 0, -4, 666666667, -3, 666666667), Array(1, 0, -3, 0, -2, 0), Array(1, 0, -2, 0, -1, 0), Array(1, 0, -1, 0, 0, 0), Array(1, 0, -1, 333333334, 0, 333333334), Array(1, 0, -1, 666666667, 0, 666666667), Array(1, 0, -1, 999999999, 0, 999999999), Array(1, 0, 0, 0, 1, 0), Array(1, 0, 0, 1, 1, 1), Array(1, 0, 0, 333333333, 1, 333333333), Array(1, 0, 0, 666666666, 1, 666666666), Array(1, 0, 1, 0, 2, 0), Array(1, 0, 2, 0, 3, 0), Array(1, 0, 3, 0, 4, 0), Array(1, 0, 3, 333333333, 4, 333333333), Array(2, 0, -4, 666666667, -2, 666666667), Array(2, 0, -3, 0, -1, 0), Array(2, 0, -2, 0, 0, 0), Array(2, 0, -1, 0, 1, 0), Array(2, 0, -1, 333333334, 1, 333333334), Array(2, 0, -1, 666666667, 1, 666666667), Array(2, 0, -1, 999999999, 1, 999999999), Array(2, 0, 0, 0, 2, 0), Array(2, 0, 0, 1, 2, 1), Array(2, 0, 0, 333333333, 2, 333333333), Array(2, 0, 0, 666666666, 2, 666666666), Array(2, 0, 1, 0, 3, 0), Array(2, 0, 2, 0, 4, 0), Array(2, 0, 3, 0, 5, 0), Array(2, 0, 3, 333333333, 5, 333333333), Array(3, 0, -4, 666666667, -1, 666666667), Array(3, 0, -3, 0, 0, 0), Array(3, 0, -2, 0, 1, 0), Array(3, 0, -1, 0, 2, 0), Array(3, 0, -1, 333333334, 2, 333333334), Array(3, 0, -1, 666666667, 2, 666666667), Array(3, 0, -1, 999999999, 2, 999999999), Array(3, 0, 0, 0, 3, 0), Array(3, 0, 0, 1, 3, 1), Array(3, 0, 0, 333333333, 3, 333333333), Array(3, 0, 0, 666666666, 3, 666666666), Array(3, 0, 1, 0, 4, 0), Array(3, 0, 2, 0, 5, 0), Array(3, 0, 3, 0, 6, 0), Array(3, 0, 3, 333333333, 6, 333333333), Array(3, 333333333, -4, 666666667, 0, 0), Array(3, 333333333, -3, 0, 0, 333333333), Array(3, 333333333, -2, 0, 1, 333333333), Array(3, 333333333, -1, 0, 2, 333333333), Array(3, 333333333, -1, 333333334, 2, 666666667), Array(3, 333333333, -1, 666666667, 3, 0), Array(3, 333333333, -1, 999999999, 3, 333333332), Array(3, 333333333, 0, 0, 3, 333333333), Array(3, 333333333, 0, 1, 3, 333333334), Array(3, 333333333, 0, 333333333, 3, 666666666), Array(3, 333333333, 0, 666666666, 3, 999999999), Array(3, 333333333, 1, 0, 4, 333333333), Array(3, 333333333, 2, 0, 5, 333333333), Array(3, 333333333, 3, 0, 6, 333333333), Array(3, 333333333, 3, 333333333, 6, 666666666), Array(Long.MaxValue, 0, Long.MinValue, 0, -1, 0))
+
+  def provider_plus: List[List[Long]] = {
+    List(
+      List(Long.MinValue, 0, Long.MaxValue, 0, -1, 0),
+      List(-4, 666666667, -4, 666666667, -7, 333333334),
+      List(-4, 666666667, -3, 0, -7, 666666667),
+      List(-4, 666666667, -2, 0, -6, 666666667),
+      List(-4, 666666667, -1, 0, -5, 666666667),
+      List(-4, 666666667, -1, 333333334, -4, 1),
+      List(-4, 666666667, -1, 666666667, -4, 333333334),
+      List(-4, 666666667, -1, 999999999, -4, 666666666),
+      List(-4, 666666667, 0, 0, -4, 666666667),
+      List(-4, 666666667, 0, 1, -4, 666666668),
+      List(-4, 666666667, 0, 333333333, -3, 0),
+      List(-4, 666666667, 0, 666666666, -3, 333333333),
+      List(-4, 666666667, 1, 0, -3, 666666667),
+      List(-4, 666666667, 2, 0, -2, 666666667),
+      List(-4, 666666667, 3, 0, -1, 666666667),
+      List(-4, 666666667, 3, 333333333, 0, 0),
+      List(-3, 0, -4, 666666667, -7, 666666667),
+      List(-3, 0, -3, 0, -6, 0),
+      List(-3, 0, -2, 0, -5, 0),
+      List(-3, 0, -1, 0, -4, 0),
+      List(-3, 0, -1, 333333334, -4, 333333334),
+      List(-3, 0, -1, 666666667, -4, 666666667),
+      List(-3, 0, -1, 999999999, -4, 999999999),
+      List(-3, 0, 0, 0, -3, 0),
+      List(-3, 0, 0, 1, -3, 1),
+      List(-3, 0, 0, 333333333, -3, 333333333),
+      List(-3, 0, 0, 666666666, -3, 666666666),
+      List(-3, 0, 1, 0, -2, 0),
+      List(-3, 0, 2, 0, -1, 0),
+      List(-3, 0, 3, 0, 0, 0),
+      List(-3, 0, 3, 333333333, 0, 333333333),
+      List(-2, 0, -4, 666666667, -6, 666666667),
+      List(-2, 0, -3, 0, -5, 0),
+      List(-2, 0, -2, 0, -4, 0),
+      List(-2, 0, -1, 0, -3, 0),
+      List(-2, 0, -1, 333333334, -3, 333333334),
+      List(-2, 0, -1, 666666667, -3, 666666667),
+      List(-2, 0, -1, 999999999, -3, 999999999),
+      List(-2, 0, 0, 0, -2, 0),
+      List(-2, 0, 0, 1, -2, 1),
+      List(-2, 0, 0, 333333333, -2, 333333333),
+      List(-2, 0, 0, 666666666, -2, 666666666),
+      List(-2, 0, 1, 0, -1, 0),
+      List(-2, 0, 2, 0, 0, 0),
+      List(-2, 0, 3, 0, 1, 0),
+      List(-2, 0, 3, 333333333, 1, 333333333),
+      List(-1, 0, -4, 666666667, -5, 666666667),
+      List(-1, 0, -3, 0, -4, 0),
+      List(-1, 0, -2, 0, -3, 0),
+      List(-1, 0, -1, 0, -2, 0),
+      List(-1, 0, -1, 333333334, -2, 333333334),
+      List(-1, 0, -1, 666666667, -2, 666666667),
+      List(-1, 0, -1, 999999999, -2, 999999999),
+      List(-1, 0, 0, 0, -1, 0),
+      List(-1, 0, 0, 1, -1, 1),
+      List(-1, 0, 0, 333333333, -1, 333333333),
+      List(-1, 0, 0, 666666666, -1, 666666666),
+      List(-1, 0, 1, 0, 0, 0),
+      List(-1, 0, 2, 0, 1, 0),
+      List(-1, 0, 3, 0, 2, 0),
+      List(-1, 0, 3, 333333333, 2, 333333333),
+      List(-1, 666666667, -4, 666666667, -4, 333333334),
+      List(-1, 666666667, -3, 0, -4, 666666667),
+      List(-1, 666666667, -2, 0, -3, 666666667),
+      List(-1, 666666667, -1, 0, -2, 666666667),
+      List(-1, 666666667, -1, 333333334, -1, 1),
+      List(-1, 666666667, -1, 666666667, -1, 333333334),
+      List(-1, 666666667, -1, 999999999, -1, 666666666),
+      List(-1, 666666667, 0, 0, -1, 666666667),
+      List(-1, 666666667, 0, 1, -1, 666666668),
+      List(-1, 666666667, 0, 333333333, 0, 0),
+      List(-1, 666666667, 0, 666666666, 0, 333333333),
+      List(-1, 666666667, 1, 0, 0, 666666667),
+      List(-1, 666666667, 2, 0, 1, 666666667),
+      List(-1, 666666667, 3, 0, 2, 666666667),
+      List(-1, 666666667, 3, 333333333, 3, 0),
+      List(0, 0, -4, 666666667, -4, 666666667),
+      List(0, 0, -3, 0, -3, 0),
+      List(0, 0, -2, 0, -2, 0),
+      List(0, 0, -1, 0, -1, 0),
+      List(0, 0, -1, 333333334, -1, 333333334),
+      List(0, 0, -1, 666666667, -1, 666666667),
+      List(0, 0, -1, 999999999, -1, 999999999),
+      List(0, 0, 0, 0, 0, 0),
+      List(0, 0, 0, 1, 0, 1),
+      List(0, 0, 0, 333333333, 0, 333333333),
+      List(0, 0, 0, 666666666, 0, 666666666),
+      List(0, 0, 1, 0, 1, 0),
+      List(0, 0, 2, 0, 2, 0),
+      List(0, 0, 3, 0, 3, 0),
+      List(0, 0, 3, 333333333, 3, 333333333),
+      List(0, 333333333, -4, 666666667, -3, 0),
+      List(0, 333333333, -3, 0, -3, 333333333),
+      List(0, 333333333, -2, 0, -2, 333333333),
+      List(0, 333333333, -1, 0, -1, 333333333),
+      List(0, 333333333, -1, 333333334, -1, 666666667),
+      List(0, 333333333, -1, 666666667, 0, 0),
+      List(0, 333333333, -1, 999999999, 0, 333333332),
+      List(0, 333333333, 0, 0, 0, 333333333),
+      List(0, 333333333, 0, 1, 0, 333333334),
+      List(0, 333333333, 0, 333333333, 0, 666666666),
+      List(0, 333333333, 0, 666666666, 0, 999999999),
+      List(0, 333333333, 1, 0, 1, 333333333),
+      List(0, 333333333, 2, 0, 2, 333333333),
+      List(0, 333333333, 3, 0, 3, 333333333),
+      List(0, 333333333, 3, 333333333, 3, 666666666),
+      List(1, 0, -4, 666666667, -3, 666666667),
+      List(1, 0, -3, 0, -2, 0),
+      List(1, 0, -2, 0, -1, 0),
+      List(1, 0, -1, 0, 0, 0),
+      List(1, 0, -1, 333333334, 0, 333333334),
+      List(1, 0, -1, 666666667, 0, 666666667),
+      List(1, 0, -1, 999999999, 0, 999999999),
+      List(1, 0, 0, 0, 1, 0),
+      List(1, 0, 0, 1, 1, 1),
+      List(1, 0, 0, 333333333, 1, 333333333),
+      List(1, 0, 0, 666666666, 1, 666666666),
+      List(1, 0, 1, 0, 2, 0),
+      List(1, 0, 2, 0, 3, 0),
+      List(1, 0, 3, 0, 4, 0),
+      List(1, 0, 3, 333333333, 4, 333333333),
+      List(2, 0, -4, 666666667, -2, 666666667),
+      List(2, 0, -3, 0, -1, 0),
+      List(2, 0, -2, 0, 0, 0),
+      List(2, 0, -1, 0, 1, 0),
+      List(2, 0, -1, 333333334, 1, 333333334),
+      List(2, 0, -1, 666666667, 1, 666666667),
+      List(2, 0, -1, 999999999, 1, 999999999),
+      List(2, 0, 0, 0, 2, 0),
+      List(2, 0, 0, 1, 2, 1),
+      List(2, 0, 0, 333333333, 2, 333333333),
+      List(2, 0, 0, 666666666, 2, 666666666),
+      List(2, 0, 1, 0, 3, 0),
+      List(2, 0, 2, 0, 4, 0),
+      List(2, 0, 3, 0, 5, 0),
+      List(2, 0, 3, 333333333, 5, 333333333),
+      List(3, 0, -4, 666666667, -1, 666666667),
+      List(3, 0, -3, 0, 0, 0),
+      List(3, 0, -2, 0, 1, 0),
+      List(3, 0, -1, 0, 2, 0),
+      List(3, 0, -1, 333333334, 2, 333333334),
+      List(3, 0, -1, 666666667, 2, 666666667),
+      List(3, 0, -1, 999999999, 2, 999999999),
+      List(3, 0, 0, 0, 3, 0),
+      List(3, 0, 0, 1, 3, 1),
+      List(3, 0, 0, 333333333, 3, 333333333),
+      List(3, 0, 0, 666666666, 3, 666666666),
+      List(3, 0, 1, 0, 4, 0),
+      List(3, 0, 2, 0, 5, 0),
+      List(3, 0, 3, 0, 6, 0),
+      List(3, 0, 3, 333333333, 6, 333333333),
+      List(3, 333333333, -4, 666666667, 0, 0),
+      List(3, 333333333, -3, 0, 0, 333333333),
+      List(3, 333333333, -2, 0, 1, 333333333),
+      List(3, 333333333, -1, 0, 2, 333333333),
+      List(3, 333333333, -1, 333333334, 2, 666666667),
+      List(3, 333333333, -1, 666666667, 3, 0),
+      List(3, 333333333, -1, 999999999, 3, 333333332),
+      List(3, 333333333, 0, 0, 3, 333333333),
+      List(3, 333333333, 0, 1, 3, 333333334),
+      List(3, 333333333, 0, 333333333, 3, 666666666),
+      List(3, 333333333, 0, 666666666, 3, 999999999),
+      List(3, 333333333, 1, 0, 4, 333333333),
+      List(3, 333333333, 2, 0, 5, 333333333),
+      List(3, 333333333, 3, 0, 6, 333333333),
+      List(3, 333333333, 3, 333333333, 6, 666666666),
+      List(Long.MaxValue, 0, Long.MinValue, 0, -1, 0))
   }
 
-  @Test(dataProvider = "Plus") def plus(seconds: Long, nanos: Int, otherSeconds: Long, otherNanos: Int, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Duration = Duration.ofSeconds(seconds, nanos).plus(Duration.ofSeconds(otherSeconds, otherNanos))
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("plus") {
+    provider_plus.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (otherSeconds: Long) :: (otherNanos: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        val t: Duration = Duration.ofSeconds(seconds, nanos).plus(Duration.ofSeconds(otherSeconds, otherNanos))
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("plusOverflowTooBig") {
     assertThrows[ArithmeticException] {
@@ -493,22 +822,49 @@ class TestDuration extends FunSuite with AssertionsHelper {
     assertEquals(1, t.getSeconds)
     assertEquals(1, t.getNano)
   }
-/*
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def plus_longTemporalUnit_null(): Unit = {
-    val t: Duration = Duration.ofSeconds(1)
-    t.plus(1, null.asInstanceOf[TemporalUnit])
+
+  test("plus_longTemporalUnit_null") {
+    assertThrows[NullPointerException] {
+      val t: Duration = Duration.ofSeconds(1)
+      t.plus(1, null.asInstanceOf[TemporalUnit])
+    }
   }
 
-  @DataProvider(name = "PlusSeconds") private[bp] def provider_plusSeconds_long: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, 0), Array(0, 0, 1, 1, 0), Array(0, 0, -1, -1, 0), Array(0, 0, Long.MaxValue, Long.MaxValue, 0), Array(0, 0, Long.MinValue, Long.MinValue, 0), Array(1, 0, 0, 1, 0), Array(1, 0, 1, 2, 0), Array(1, 0, -1, 0, 0), Array(1, 0, Long.MaxValue - 1, Long.MaxValue, 0), Array(1, 0, Long.MinValue, Long.MinValue + 1, 0), Array(1, 1, 0, 1, 1), Array(1, 1, 1, 2, 1), Array(1, 1, -1, 0, 1), Array(1, 1, Long.MaxValue - 1, Long.MaxValue, 1), Array(1, 1, Long.MinValue, Long.MinValue + 1, 1), Array(-1, 1, 0, -1, 1), Array(-1, 1, 1, 0, 1), Array(-1, 1, -1, -2, 1), Array(-1, 1, Long.MaxValue, Long.MaxValue - 1, 1), Array(-1, 1, Long.MinValue + 1, Long.MinValue, 1))
+  def provider_plusSeconds_long: List[List[Long]] = {
+    List(
+      List(0, 0, 0, 0, 0),
+      List(0, 0, 1, 1, 0),
+      List(0, 0, -1, -1, 0),
+      List(0, 0, Long.MaxValue, Long.MaxValue, 0),
+      List(0, 0, Long.MinValue, Long.MinValue, 0),
+      List(1, 0, 0, 1, 0),
+      List(1, 0, 1, 2, 0),
+      List(1, 0, -1, 0, 0),
+      List(1, 0, Long.MaxValue - 1, Long.MaxValue, 0),
+      List(1, 0, Long.MinValue, Long.MinValue + 1, 0),
+      List(1, 1, 0, 1, 1),
+      List(1, 1, 1, 2, 1),
+      List(1, 1, -1, 0, 1),
+      List(1, 1, Long.MaxValue - 1, Long.MaxValue, 1),
+      List(1, 1, Long.MinValue, Long.MinValue + 1, 1),
+      List(-1, 1, 0, -1, 1),
+      List(-1, 1, 1, 0, 1),
+      List(-1, 1, -1, -2, 1),
+      List(-1, 1, Long.MaxValue, Long.MaxValue - 1, 1),
+      List(-1, 1, Long.MinValue + 1, Long.MinValue, 1))
   }
 
-  @Test(dataProvider = "PlusSeconds") def plusSeconds_long(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds, nanos)
-    t = t.plusSeconds(amount)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("plusSeconds_long") {
+    provider_plusSeconds_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds, nanos)
+        t = t.plusSeconds(amount)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("plusSeconds_long_overflowTooBig") {
     assertThrows[ArithmeticException] {
@@ -524,30 +880,91 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  @DataProvider(name = "PlusMillis") private[bp] def provider_plusMillis_long: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, 0), Array(0, 0, 1, 0, 1000000), Array(0, 0, 999, 0, 999000000), Array(0, 0, 1000, 1, 0), Array(0, 0, 1001, 1, 1000000), Array(0, 0, 1999, 1, 999000000), Array(0, 0, 2000, 2, 0), Array(0, 0, -1, -1, 999000000), Array(0, 0, -999, -1, 1000000), Array(0, 0, -1000, -1, 0), Array(0, 0, -1001, -2, 999000000), Array(0, 0, -1999, -2, 1000000), Array(0, 1, 0, 0, 1), Array(0, 1, 1, 0, 1000001), Array(0, 1, 998, 0, 998000001), Array(0, 1, 999, 0, 999000001), Array(0, 1, 1000, 1, 1), Array(0, 1, 1998, 1, 998000001), Array(0, 1, 1999, 1, 999000001), Array(0, 1, 2000, 2, 1), Array(0, 1, -1, -1, 999000001), Array(0, 1, -2, -1, 998000001), Array(0, 1, -1000, -1, 1), Array(0, 1, -1001, -2, 999000001), Array(0, 1000000, 0, 0, 1000000), Array(0, 1000000, 1, 0, 2000000), Array(0, 1000000, 998, 0, 999000000), Array(0, 1000000, 999, 1, 0), Array(0, 1000000, 1000, 1, 1000000), Array(0, 1000000, 1998, 1, 999000000), Array(0, 1000000, 1999, 2, 0), Array(0, 1000000, 2000, 2, 1000000), Array(0, 1000000, -1, 0, 0), Array(0, 1000000, -2, -1, 999000000), Array(0, 1000000, -999, -1, 2000000), Array(0, 1000000, -1000, -1, 1000000), Array(0, 1000000, -1001, -1, 0), Array(0, 1000000, -1002, -2, 999000000), Array(0, 999999999, 0, 0, 999999999), Array(0, 999999999, 1, 1, 999999), Array(0, 999999999, 999, 1, 998999999), Array(0, 999999999, 1000, 1, 999999999), Array(0, 999999999, 1001, 2, 999999), Array(0, 999999999, -1, 0, 998999999), Array(0, 999999999, -1000, -1, 999999999), Array(0, 999999999, -1001, -1, 998999999))
-  }
-/*
-  @Test(dataProvider = "PlusMillis") def plusMillis_long(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds, nanos)
-    t = t.plusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  def provider_plusMillis_long: List[List[Long]] = {
+    List(
+      List(0, 0, 0, 0, 0),
+      List(0, 0, 1, 0, 1000000),
+      List(0, 0, 999, 0, 999000000),
+      List(0, 0, 1000, 1, 0),
+      List(0, 0, 1001, 1, 1000000),
+      List(0, 0, 1999, 1, 999000000),
+      List(0, 0, 2000, 2, 0),
+      List(0, 0, -1, -1, 999000000),
+      List(0, 0, -999, -1, 1000000),
+      List(0, 0, -1000, -1, 0),
+      List(0, 0, -1001, -2, 999000000),
+      List(0, 0, -1999, -2, 1000000),
+      List(0, 1, 0, 0, 1),
+      List(0, 1, 1, 0, 1000001),
+      List(0, 1, 998, 0, 998000001),
+      List(0, 1, 999, 0, 999000001),
+      List(0, 1, 1000, 1, 1),
+      List(0, 1, 1998, 1, 998000001),
+      List(0, 1, 1999, 1, 999000001),
+      List(0, 1, 2000, 2, 1),
+      List(0, 1, -1, -1, 999000001),
+      List(0, 1, -2, -1, 998000001),
+      List(0, 1, -1000, -1, 1),
+      List(0, 1, -1001, -2, 999000001),
+      List(0, 1000000, 0, 0, 1000000),
+      List(0, 1000000, 1, 0, 2000000),
+      List(0, 1000000, 998, 0, 999000000),
+      List(0, 1000000, 999, 1, 0),
+      List(0, 1000000, 1000, 1, 1000000),
+      List(0, 1000000, 1998, 1, 999000000),
+      List(0, 1000000, 1999, 2, 0),
+      List(0, 1000000, 2000, 2, 1000000),
+      List(0, 1000000, -1, 0, 0),
+      List(0, 1000000, -2, -1, 999000000),
+      List(0, 1000000, -999, -1, 2000000),
+      List(0, 1000000, -1000, -1, 1000000),
+      List(0, 1000000, -1001, -1, 0),
+      List(0, 1000000, -1002, -2, 999000000),
+      List(0, 999999999, 0, 0, 999999999),
+      List(0, 999999999, 1, 1, 999999),
+      List(0, 999999999, 999, 1, 998999999),
+      List(0, 999999999, 1000, 1, 999999999),
+      List(0, 999999999, 1001, 2, 999999),
+      List(0, 999999999, -1, 0, 998999999),
+      List(0, 999999999, -1000, -1, 999999999),
+      List(0, 999999999, -1001, -1, 998999999))
   }
 
-  @Test(dataProvider = "PlusMillis") def plusMillis_long_oneMore(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds + 1, nanos)
-    t = t.plusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds + 1)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("plusMillis_long") {
+    provider_plusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds, nanos)
+        t = t.plusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "PlusMillis") def plusMillis_long_minusOneLess(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds - 1, nanos)
-    t = t.plusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds - 1)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("plusMillis_long_oneMore") {
+    provider_plusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds + 1, nanos)
+        t = t.plusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds + 1)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
+
+  test("plusMillis_long_minusOneLess") {
+    provider_plusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds - 1, nanos)
+        t = t.plusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds - 1)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("plusMillis_long_max") {
     var t: Duration = Duration.ofSeconds(Long.MaxValue, 998999999)
@@ -576,17 +993,86 @@ class TestDuration extends FunSuite with AssertionsHelper {
       t.plusMillis(-1)
     }
   }
-/*
-  @DataProvider(name = "PlusNanos") private[bp] def provider_plusNanos_long: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, 0), Array(0, 0, 1, 0, 1), Array(0, 0, 999999999, 0, 999999999), Array(0, 0, 1000000000, 1, 0), Array(0, 0, 1000000001, 1, 1), Array(0, 0, 1999999999, 1, 999999999), Array(0, 0, 2000000000, 2, 0), Array(0, 0, -1, -1, 999999999), Array(0, 0, -999999999, -1, 1), Array(0, 0, -1000000000, -1, 0), Array(0, 0, -1000000001, -2, 999999999), Array(0, 0, -1999999999, -2, 1), Array(1, 0, 0, 1, 0), Array(1, 0, 1, 1, 1), Array(1, 0, 999999999, 1, 999999999), Array(1, 0, 1000000000, 2, 0), Array(1, 0, 1000000001, 2, 1), Array(1, 0, 1999999999, 2, 999999999), Array(1, 0, 2000000000, 3, 0), Array(1, 0, -1, 0, 999999999), Array(1, 0, -999999999, 0, 1), Array(1, 0, -1000000000, 0, 0), Array(1, 0, -1000000001, -1, 999999999), Array(1, 0, -1999999999, -1, 1), Array(-1, 0, 0, -1, 0), Array(-1, 0, 1, -1, 1), Array(-1, 0, 999999999, -1, 999999999), Array(-1, 0, 1000000000, 0, 0), Array(-1, 0, 1000000001, 0, 1), Array(-1, 0, 1999999999, 0, 999999999), Array(-1, 0, 2000000000, 1, 0), Array(-1, 0, -1, -2, 999999999), Array(-1, 0, -999999999, -2, 1), Array(-1, 0, -1000000000, -2, 0), Array(-1, 0, -1000000001, -3, 999999999), Array(-1, 0, -1999999999, -3, 1), Array(1, 1, 0, 1, 1), Array(1, 1, 1, 1, 2), Array(1, 1, 999999998, 1, 999999999), Array(1, 1, 999999999, 2, 0), Array(1, 1, 1000000000, 2, 1), Array(1, 1, 1999999998, 2, 999999999), Array(1, 1, 1999999999, 3, 0), Array(1, 1, 2000000000, 3, 1), Array(1, 1, -1, 1, 0), Array(1, 1, -2, 0, 999999999), Array(1, 1, -1000000000, 0, 1), Array(1, 1, -1000000001, 0, 0), Array(1, 1, -1000000002, -1, 999999999), Array(1, 1, -2000000000, -1, 1), Array(1, 999999999, 0, 1, 999999999), Array(1, 999999999, 1, 2, 0), Array(1, 999999999, 999999999, 2, 999999998), Array(1, 999999999, 1000000000, 2, 999999999), Array(1, 999999999, 1000000001, 3, 0), Array(1, 999999999, -1, 1, 999999998), Array(1, 999999999, -1000000000, 0, 999999999), Array(1, 999999999, -1000000001, 0, 999999998), Array(1, 999999999, -1999999999, 0, 0), Array(1, 999999999, -2000000000, -1, 999999999), Array(Long.MaxValue, 0, 999999999, Long.MaxValue, 999999999), Array(Long.MaxValue - 1, 0, 1999999999, Long.MaxValue, 999999999), Array(Long.MinValue, 1, -1, Long.MinValue, 0), Array(Long.MinValue + 1, 1, -1000000001, Long.MinValue, 0))
+
+  def provider_plusNanos_long: List[List[Long]] = {
+    List(
+      List(0, 0, 0, 0, 0),
+      List(0, 0, 1, 0, 1),
+      List(0, 0, 999999999, 0, 999999999),
+      List(0, 0, 1000000000, 1, 0),
+      List(0, 0, 1000000001, 1, 1),
+      List(0, 0, 1999999999, 1, 999999999),
+      List(0, 0, 2000000000, 2, 0),
+      List(0, 0, -1, -1, 999999999),
+      List(0, 0, -999999999, -1, 1),
+      List(0, 0, -1000000000, -1, 0),
+      List(0, 0, -1000000001, -2, 999999999),
+      List(0, 0, -1999999999, -2, 1),
+      List(1, 0, 0, 1, 0),
+      List(1, 0, 1, 1, 1),
+      List(1, 0, 999999999, 1, 999999999),
+      List(1, 0, 1000000000, 2, 0),
+      List(1, 0, 1000000001, 2, 1),
+      List(1, 0, 1999999999, 2, 999999999),
+      List(1, 0, 2000000000, 3, 0),
+      List(1, 0, -1, 0, 999999999),
+      List(1, 0, -999999999, 0, 1),
+      List(1, 0, -1000000000, 0, 0),
+      List(1, 0, -1000000001, -1, 999999999),
+      List(1, 0, -1999999999, -1, 1),
+      List(-1, 0, 0, -1, 0),
+      List(-1, 0, 1, -1, 1),
+      List(-1, 0, 999999999, -1, 999999999),
+      List(-1, 0, 1000000000, 0, 0),
+      List(-1, 0, 1000000001, 0, 1),
+      List(-1, 0, 1999999999, 0, 999999999),
+      List(-1, 0, 2000000000, 1, 0),
+      List(-1, 0, -1, -2, 999999999),
+      List(-1, 0, -999999999, -2, 1),
+      List(-1, 0, -1000000000, -2, 0),
+      List(-1, 0, -1000000001, -3, 999999999),
+      List(-1, 0, -1999999999, -3, 1),
+      List(1, 1, 0, 1, 1),
+      List(1, 1, 1, 1, 2),
+      List(1, 1, 999999998, 1, 999999999),
+      List(1, 1, 999999999, 2, 0),
+      List(1, 1, 1000000000, 2, 1),
+      List(1, 1, 1999999998, 2, 999999999),
+      List(1, 1, 1999999999, 3, 0),
+      List(1, 1, 2000000000, 3, 1),
+      List(1, 1, -1, 1, 0),
+      List(1, 1, -2, 0, 999999999),
+      List(1, 1, -1000000000, 0, 1),
+      List(1, 1, -1000000001, 0, 0),
+      List(1, 1, -1000000002, -1, 999999999),
+      List(1, 1, -2000000000, -1, 1),
+      List(1, 999999999, 0, 1, 999999999),
+      List(1, 999999999, 1, 2, 0),
+      List(1, 999999999, 999999999, 2, 999999998),
+      List(1, 999999999, 1000000000, 2, 999999999),
+      List(1, 999999999, 1000000001, 3, 0),
+      List(1, 999999999, -1, 1, 999999998),
+      List(1, 999999999, -1000000000, 0, 999999999),
+      List(1, 999999999, -1000000001, 0, 999999998),
+      List(1, 999999999, -1999999999, 0, 0),
+      List(1, 999999999, -2000000000, -1, 999999999),
+      List(Long.MaxValue, 0, 999999999, Long.MaxValue, 999999999),
+      List(Long.MaxValue - 1, 0, 1999999999, Long.MaxValue, 999999999),
+      List(Long.MinValue, 1, -1, Long.MinValue, 0),
+      List(Long.MinValue + 1, 1, -1000000001, Long.MinValue, 0))
   }
 
-  @Test(dataProvider = "PlusNanos") def plusNanos_long(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds, nanos)
-    t = t.plusNanos(amount)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("plusNanos_long") {
+    provider_plusNanos_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds, nanos)
+        t = t.plusNanos(amount)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("plusNanos_long_overflowTooBig") {
     assertThrows[ArithmeticException] {
@@ -601,16 +1087,188 @@ class TestDuration extends FunSuite with AssertionsHelper {
       t.plusNanos(-1)
     }
   }
-/*
-  @DataProvider(name = "Minus") private[bp] def provider_minus: Array[Array[Any]] = {
-    Array[Array[Any]](Array(Long.MinValue, 0, Long.MinValue + 1, 0, -1, 0), Array(-4, 666666667, -4, 666666667, 0, 0), Array(-4, 666666667, -3, 0, -1, 666666667), Array(-4, 666666667, -2, 0, -2, 666666667), Array(-4, 666666667, -1, 0, -3, 666666667), Array(-4, 666666667, -1, 333333334, -3, 333333333), Array(-4, 666666667, -1, 666666667, -3, 0), Array(-4, 666666667, -1, 999999999, -4, 666666668), Array(-4, 666666667, 0, 0, -4, 666666667), Array(-4, 666666667, 0, 1, -4, 666666666), Array(-4, 666666667, 0, 333333333, -4, 333333334), Array(-4, 666666667, 0, 666666666, -4, 1), Array(-4, 666666667, 1, 0, -5, 666666667), Array(-4, 666666667, 2, 0, -6, 666666667), Array(-4, 666666667, 3, 0, -7, 666666667), Array(-4, 666666667, 3, 333333333, -7, 333333334), Array(-3, 0, -4, 666666667, 0, 333333333), Array(-3, 0, -3, 0, 0, 0), Array(-3, 0, -2, 0, -1, 0), Array(-3, 0, -1, 0, -2, 0), Array(-3, 0, -1, 333333334, -3, 666666666), Array(-3, 0, -1, 666666667, -3, 333333333), Array(-3, 0, -1, 999999999, -3, 1), Array(-3, 0, 0, 0, -3, 0), Array(-3, 0, 0, 1, -4, 999999999), Array(-3, 0, 0, 333333333, -4, 666666667), Array(-3, 0, 0, 666666666, -4, 333333334), Array(-3, 0, 1, 0, -4, 0), Array(-3, 0, 2, 0, -5, 0), Array(-3, 0, 3, 0, -6, 0), Array(-3, 0, 3, 333333333, -7, 666666667), Array(-2, 0, -4, 666666667, 1, 333333333), Array(-2, 0, -3, 0, 1, 0), Array(-2, 0, -2, 0, 0, 0), Array(-2, 0, -1, 0, -1, 0), Array(-2, 0, -1, 333333334, -2, 666666666), Array(-2, 0, -1, 666666667, -2, 333333333), Array(-2, 0, -1, 999999999, -2, 1), Array(-2, 0, 0, 0, -2, 0), Array(-2, 0, 0, 1, -3, 999999999), Array(-2, 0, 0, 333333333, -3, 666666667), Array(-2, 0, 0, 666666666, -3, 333333334), Array(-2, 0, 1, 0, -3, 0), Array(-2, 0, 2, 0, -4, 0), Array(-2, 0, 3, 0, -5, 0), Array(-2, 0, 3, 333333333, -6, 666666667), Array(-1, 0, -4, 666666667, 2, 333333333), Array(-1, 0, -3, 0, 2, 0), Array(-1, 0, -2, 0, 1, 0), Array(-1, 0, -1, 0, 0, 0), Array(-1, 0, -1, 333333334, -1, 666666666), Array(-1, 0, -1, 666666667, -1, 333333333), Array(-1, 0, -1, 999999999, -1, 1), Array(-1, 0, 0, 0, -1, 0), Array(-1, 0, 0, 1, -2, 999999999), Array(-1, 0, 0, 333333333, -2, 666666667), Array(-1, 0, 0, 666666666, -2, 333333334), Array(-1, 0, 1, 0, -2, 0), Array(-1, 0, 2, 0, -3, 0), Array(-1, 0, 3, 0, -4, 0), Array(-1, 0, 3, 333333333, -5, 666666667), Array(-1, 666666667, -4, 666666667, 3, 0), Array(-1, 666666667, -3, 0, 2, 666666667), Array(-1, 666666667, -2, 0, 1, 666666667), Array(-1, 666666667, -1, 0, 0, 666666667), Array(-1, 666666667, -1, 333333334, 0, 333333333), Array(-1, 666666667, -1, 666666667, 0, 0), Array(-1, 666666667, -1, 999999999, -1, 666666668), Array(-1, 666666667, 0, 0, -1, 666666667), Array(-1, 666666667, 0, 1, -1, 666666666), Array(-1, 666666667, 0, 333333333, -1, 333333334), Array(-1, 666666667, 0, 666666666, -1, 1), Array(-1, 666666667, 1, 0, -2, 666666667), Array(-1, 666666667, 2, 0, -3, 666666667), Array(-1, 666666667, 3, 0, -4, 666666667), Array(-1, 666666667, 3, 333333333, -4, 333333334), Array(0, 0, -4, 666666667, 3, 333333333), Array(0, 0, -3, 0, 3, 0), Array(0, 0, -2, 0, 2, 0), Array(0, 0, -1, 0, 1, 0), Array(0, 0, -1, 333333334, 0, 666666666), Array(0, 0, -1, 666666667, 0, 333333333), Array(0, 0, -1, 999999999, 0, 1), Array(0, 0, 0, 0, 0, 0), Array(0, 0, 0, 1, -1, 999999999), Array(0, 0, 0, 333333333, -1, 666666667), Array(0, 0, 0, 666666666, -1, 333333334), Array(0, 0, 1, 0, -1, 0), Array(0, 0, 2, 0, -2, 0), Array(0, 0, 3, 0, -3, 0), Array(0, 0, 3, 333333333, -4, 666666667), Array(0, 333333333, -4, 666666667, 3, 666666666), Array(0, 333333333, -3, 0, 3, 333333333), Array(0, 333333333, -2, 0, 2, 333333333), Array(0, 333333333, -1, 0, 1, 333333333), Array(0, 333333333, -1, 333333334, 0, 999999999), Array(0, 333333333, -1, 666666667, 0, 666666666), Array(0, 333333333, -1, 999999999, 0, 333333334), Array(0, 333333333, 0, 0, 0, 333333333), Array(0, 333333333, 0, 1, 0, 333333332), Array(0, 333333333, 0, 333333333, 0, 0), Array(0, 333333333, 0, 666666666, -1, 666666667), Array(0, 333333333, 1, 0, -1, 333333333), Array(0, 333333333, 2, 0, -2, 333333333), Array(0, 333333333, 3, 0, -3, 333333333), Array(0, 333333333, 3, 333333333, -3, 0), Array(1, 0, -4, 666666667, 4, 333333333), Array(1, 0, -3, 0, 4, 0), Array(1, 0, -2, 0, 3, 0), Array(1, 0, -1, 0, 2, 0), Array(1, 0, -1, 333333334, 1, 666666666), Array(1, 0, -1, 666666667, 1, 333333333), Array(1, 0, -1, 999999999, 1, 1), Array(1, 0, 0, 0, 1, 0), Array(1, 0, 0, 1, 0, 999999999), Array(1, 0, 0, 333333333, 0, 666666667), Array(1, 0, 0, 666666666, 0, 333333334), Array(1, 0, 1, 0, 0, 0), Array(1, 0, 2, 0, -1, 0), Array(1, 0, 3, 0, -2, 0), Array(1, 0, 3, 333333333, -3, 666666667), Array(2, 0, -4, 666666667, 5, 333333333), Array(2, 0, -3, 0, 5, 0), Array(2, 0, -2, 0, 4, 0), Array(2, 0, -1, 0, 3, 0), Array(2, 0, -1, 333333334, 2, 666666666), Array(2, 0, -1, 666666667, 2, 333333333), Array(2, 0, -1, 999999999, 2, 1), Array(2, 0, 0, 0, 2, 0), Array(2, 0, 0, 1, 1, 999999999), Array(2, 0, 0, 333333333, 1, 666666667), Array(2, 0, 0, 666666666, 1, 333333334), Array(2, 0, 1, 0, 1, 0), Array(2, 0, 2, 0, 0, 0), Array(2, 0, 3, 0, -1, 0), Array(2, 0, 3, 333333333, -2, 666666667), Array(3, 0, -4, 666666667, 6, 333333333), Array(3, 0, -3, 0, 6, 0), Array(3, 0, -2, 0, 5, 0), Array(3, 0, -1, 0, 4, 0), Array(3, 0, -1, 333333334, 3, 666666666), Array(3, 0, -1, 666666667, 3, 333333333), Array(3, 0, -1, 999999999, 3, 1), Array(3, 0, 0, 0, 3, 0), Array(3, 0, 0, 1, 2, 999999999), Array(3, 0, 0, 333333333, 2, 666666667), Array(3, 0, 0, 666666666, 2, 333333334), Array(3, 0, 1, 0, 2, 0), Array(3, 0, 2, 0, 1, 0), Array(3, 0, 3, 0, 0, 0), Array(3, 0, 3, 333333333, -1, 666666667), Array(3, 333333333, -4, 666666667, 6, 666666666), Array(3, 333333333, -3, 0, 6, 333333333), Array(3, 333333333, -2, 0, 5, 333333333), Array(3, 333333333, -1, 0, 4, 333333333), Array(3, 333333333, -1, 333333334, 3, 999999999), Array(3, 333333333, -1, 666666667, 3, 666666666), Array(3, 333333333, -1, 999999999, 3, 333333334), Array(3, 333333333, 0, 0, 3, 333333333), Array(3, 333333333, 0, 1, 3, 333333332), Array(3, 333333333, 0, 333333333, 3, 0), Array(3, 333333333, 0, 666666666, 2, 666666667), Array(3, 333333333, 1, 0, 2, 333333333), Array(3, 333333333, 2, 0, 1, 333333333), Array(3, 333333333, 3, 0, 0, 333333333), Array(3, 333333333, 3, 333333333, 0, 0), Array(Long.MaxValue, 0, Long.MaxValue, 0, 0, 0))
+
+  def provider_minus: List[List[Long]] = {
+    List(
+      List(Long.MinValue, 0, Long.MinValue + 1, 0, -1, 0),
+      List(-4, 666666667, -4, 666666667, 0, 0),
+      List(-4, 666666667, -3, 0, -1, 666666667),
+      List(-4, 666666667, -2, 0, -2, 666666667),
+      List(-4, 666666667, -1, 0, -3, 666666667),
+      List(-4, 666666667, -1, 333333334, -3, 333333333),
+      List(-4, 666666667, -1, 666666667, -3, 0),
+      List(-4, 666666667, -1, 999999999, -4, 666666668),
+      List(-4, 666666667, 0, 0, -4, 666666667),
+      List(-4, 666666667, 0, 1, -4, 666666666),
+      List(-4, 666666667, 0, 333333333, -4, 333333334),
+      List(-4, 666666667, 0, 666666666, -4, 1),
+      List(-4, 666666667, 1, 0, -5, 666666667),
+      List(-4, 666666667, 2, 0, -6, 666666667),
+      List(-4, 666666667, 3, 0, -7, 666666667),
+      List(-4, 666666667, 3, 333333333, -7, 333333334),
+      List(-3, 0, -4, 666666667, 0, 333333333),
+      List(-3, 0, -3, 0, 0, 0),
+      List(-3, 0, -2, 0, -1, 0),
+      List(-3, 0, -1, 0, -2, 0),
+      List(-3, 0, -1, 333333334, -3, 666666666),
+      List(-3, 0, -1, 666666667, -3, 333333333),
+      List(-3, 0, -1, 999999999, -3, 1),
+      List(-3, 0, 0, 0, -3, 0),
+      List(-3, 0, 0, 1, -4, 999999999),
+      List(-3, 0, 0, 333333333, -4, 666666667),
+      List(-3, 0, 0, 666666666, -4, 333333334),
+      List(-3, 0, 1, 0, -4, 0),
+      List(-3, 0, 2, 0, -5, 0),
+      List(-3, 0, 3, 0, -6, 0),
+      List(-3, 0, 3, 333333333, -7, 666666667),
+      List(-2, 0, -4, 666666667, 1, 333333333),
+      List(-2, 0, -3, 0, 1, 0),
+      List(-2, 0, -2, 0, 0, 0),
+      List(-2, 0, -1, 0, -1, 0),
+      List(-2, 0, -1, 333333334, -2, 666666666),
+      List(-2, 0, -1, 666666667, -2, 333333333),
+      List(-2, 0, -1, 999999999, -2, 1),
+      List(-2, 0, 0, 0, -2, 0),
+      List(-2, 0, 0, 1, -3, 999999999),
+      List(-2, 0, 0, 333333333, -3, 666666667),
+      List(-2, 0, 0, 666666666, -3, 333333334),
+      List(-2, 0, 1, 0, -3, 0),
+      List(-2, 0, 2, 0, -4, 0),
+      List(-2, 0, 3, 0, -5, 0),
+      List(-2, 0, 3, 333333333, -6, 666666667),
+      List(-1, 0, -4, 666666667, 2, 333333333),
+      List(-1, 0, -3, 0, 2, 0),
+      List(-1, 0, -2, 0, 1, 0),
+      List(-1, 0, -1, 0, 0, 0),
+      List(-1, 0, -1, 333333334, -1, 666666666),
+      List(-1, 0, -1, 666666667, -1, 333333333),
+      List(-1, 0, -1, 999999999, -1, 1),
+      List(-1, 0, 0, 0, -1, 0),
+      List(-1, 0, 0, 1, -2, 999999999),
+      List(-1, 0, 0, 333333333, -2, 666666667),
+      List(-1, 0, 0, 666666666, -2, 333333334),
+      List(-1, 0, 1, 0, -2, 0),
+      List(-1, 0, 2, 0, -3, 0),
+      List(-1, 0, 3, 0, -4, 0),
+      List(-1, 0, 3, 333333333, -5, 666666667),
+      List(-1, 666666667, -4, 666666667, 3, 0),
+      List(-1, 666666667, -3, 0, 2, 666666667),
+      List(-1, 666666667, -2, 0, 1, 666666667),
+      List(-1, 666666667, -1, 0, 0, 666666667),
+      List(-1, 666666667, -1, 333333334, 0, 333333333),
+      List(-1, 666666667, -1, 666666667, 0, 0),
+      List(-1, 666666667, -1, 999999999, -1, 666666668),
+      List(-1, 666666667, 0, 0, -1, 666666667),
+      List(-1, 666666667, 0, 1, -1, 666666666),
+      List(-1, 666666667, 0, 333333333, -1, 333333334),
+      List(-1, 666666667, 0, 666666666, -1, 1),
+      List(-1, 666666667, 1, 0, -2, 666666667),
+      List(-1, 666666667, 2, 0, -3, 666666667),
+      List(-1, 666666667, 3, 0, -4, 666666667),
+      List(-1, 666666667, 3, 333333333, -4, 333333334),
+      List(0, 0, -4, 666666667, 3, 333333333),
+      List(0, 0, -3, 0, 3, 0),
+      List(0, 0, -2, 0, 2, 0),
+      List(0, 0, -1, 0, 1, 0),
+      List(0, 0, -1, 333333334, 0, 666666666),
+      List(0, 0, -1, 666666667, 0, 333333333),
+      List(0, 0, -1, 999999999, 0, 1),
+      List(0, 0, 0, 0, 0, 0),
+      List(0, 0, 0, 1, -1, 999999999),
+      List(0, 0, 0, 333333333, -1, 666666667),
+      List(0, 0, 0, 666666666, -1, 333333334),
+      List(0, 0, 1, 0, -1, 0),
+      List(0, 0, 2, 0, -2, 0),
+      List(0, 0, 3, 0, -3, 0),
+      List(0, 0, 3, 333333333, -4, 666666667),
+      List(0, 333333333, -4, 666666667, 3, 666666666),
+      List(0, 333333333, -3, 0, 3, 333333333),
+      List(0, 333333333, -2, 0, 2, 333333333),
+      List(0, 333333333, -1, 0, 1, 333333333),
+      List(0, 333333333, -1, 333333334, 0, 999999999),
+      List(0, 333333333, -1, 666666667, 0, 666666666),
+      List(0, 333333333, -1, 999999999, 0, 333333334),
+      List(0, 333333333, 0, 0, 0, 333333333),
+      List(0, 333333333, 0, 1, 0, 333333332),
+      List(0, 333333333, 0, 333333333, 0, 0),
+      List(0, 333333333, 0, 666666666, -1, 666666667),
+      List(0, 333333333, 1, 0, -1, 333333333),
+      List(0, 333333333, 2, 0, -2, 333333333),
+      List(0, 333333333, 3, 0, -3, 333333333),
+      List(0, 333333333, 3, 333333333, -3, 0),
+      List(1, 0, -4, 666666667, 4, 333333333),
+      List(1, 0, -3, 0, 4, 0),
+      List(1, 0, -2, 0, 3, 0),
+      List(1, 0, -1, 0, 2, 0),
+      List(1, 0, -1, 333333334, 1, 666666666),
+      List(1, 0, -1, 666666667, 1, 333333333),
+      List(1, 0, -1, 999999999, 1, 1),
+      List(1, 0, 0, 0, 1, 0),
+      List(1, 0, 0, 1, 0, 999999999),
+      List(1, 0, 0, 333333333, 0, 666666667),
+      List(1, 0, 0, 666666666, 0, 333333334),
+      List(1, 0, 1, 0, 0, 0),
+      List(1, 0, 2, 0, -1, 0),
+      List(1, 0, 3, 0, -2, 0),
+      List(1, 0, 3, 333333333, -3, 666666667),
+      List(2, 0, -4, 666666667, 5, 333333333),
+      List(2, 0, -3, 0, 5, 0),
+      List(2, 0, -2, 0, 4, 0),
+      List(2, 0, -1, 0, 3, 0),
+      List(2, 0, -1, 333333334, 2, 666666666),
+      List(2, 0, -1, 666666667, 2, 333333333),
+      List(2, 0, -1, 999999999, 2, 1),
+      List(2, 0, 0, 0, 2, 0),
+      List(2, 0, 0, 1, 1, 999999999),
+      List(2, 0, 0, 333333333, 1, 666666667),
+      List(2, 0, 0, 666666666, 1, 333333334),
+      List(2, 0, 1, 0, 1, 0),
+      List(2, 0, 2, 0, 0, 0),
+      List(2, 0, 3, 0, -1, 0),
+      List(2, 0, 3, 333333333, -2, 666666667),
+      List(3, 0, -4, 666666667, 6, 333333333),
+      List(3, 0, -3, 0, 6, 0),
+      List(3, 0, -2, 0, 5, 0),
+      List(3, 0, -1, 0, 4, 0),
+      List(3, 0, -1, 333333334, 3, 666666666),
+      List(3, 0, -1, 666666667, 3, 333333333),
+      List(3, 0, -1, 999999999, 3, 1),
+      List(3, 0, 0, 0, 3, 0),
+      List(3, 0, 0, 1, 2, 999999999),
+      List(3, 0, 0, 333333333, 2, 666666667),
+      List(3, 0, 0, 666666666, 2, 333333334),
+      List(3, 0, 1, 0, 2, 0),
+      List(3, 0, 2, 0, 1, 0),
+      List(3, 0, 3, 0, 0, 0),
+      List(3, 0, 3, 333333333, -1, 666666667),
+      List(3, 333333333, -4, 666666667, 6, 666666666),
+      List(3, 333333333, -3, 0, 6, 333333333),
+      List(3, 333333333, -2, 0, 5, 333333333),
+      List(3, 333333333, -1, 0, 4, 333333333),
+      List(3, 333333333, -1, 333333334, 3, 999999999),
+      List(3, 333333333, -1, 666666667, 3, 666666666),
+      List(3, 333333333, -1, 999999999, 3, 333333334),
+      List(3, 333333333, 0, 0, 3, 333333333),
+      List(3, 333333333, 0, 1, 3, 333333332),
+      List(3, 333333333, 0, 333333333, 3, 0),
+      List(3, 333333333, 0, 666666666, 2, 666666667),
+      List(3, 333333333, 1, 0, 2, 333333333),
+      List(3, 333333333, 2, 0, 1, 333333333),
+      List(3, 333333333, 3, 0, 0, 333333333),
+      List(3, 333333333, 3, 333333333, 0, 0),
+      List(Long.MaxValue, 0, Long.MaxValue, 0, 0, 0))
   }
 
-  @Test(dataProvider = "Minus") def minus(seconds: Long, nanos: Int, otherSeconds: Long, otherNanos: Int, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    val t: Duration = Duration.ofSeconds(seconds, nanos).minus(Duration.ofSeconds(otherSeconds, otherNanos))
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("minus") {
+    provider_minus.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (otherSeconds: Long) :: (otherNanos: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        val t: Duration = Duration.ofSeconds(seconds, nanos).minus(Duration.ofSeconds(otherSeconds, otherNanos))
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("minusOverflowTooSmall") {
     assertThrows[ArithmeticException] {
@@ -661,16 +1319,41 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  /*@DataProvider(name = "MinusSeconds") private[bp] def provider_minusSeconds_long: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, 0), Array(0, 0, 1, -1, 0), Array(0, 0, -1, 1, 0), Array(0, 0, Long.MaxValue, -Long.MaxValue, 0), Array(0, 0, Long.MinValue + 1, Long.MaxValue, 0), Array(1, 0, 0, 1, 0), Array(1, 0, 1, 0, 0), Array(1, 0, -1, 2, 0), Array(1, 0, Long.MaxValue - 1, -Long.MaxValue + 2, 0), Array(1, 0, Long.MinValue + 2, Long.MaxValue, 0), Array(1, 1, 0, 1, 1), Array(1, 1, 1, 0, 1), Array(1, 1, -1, 2, 1), Array(1, 1, Long.MaxValue, -Long.MaxValue + 1, 1), Array(1, 1, Long.MinValue + 2, Long.MaxValue, 1), Array(-1, 1, 0, -1, 1), Array(-1, 1, 1, -2, 1), Array(-1, 1, -1, 0, 1), Array(-1, 1, Long.MaxValue, Long.MinValue, 1), Array(-1, 1, Long.MinValue + 1, Long.MaxValue - 1, 1))
+  def provider_minusSeconds_long: List[List[Long]] = {
+    List(
+      List(0, 0, 0, 0, 0),
+      List(0, 0, 1, -1, 0),
+      List(0, 0, -1, 1, 0),
+      List(0, 0, Long.MaxValue, -Long.MaxValue, 0),
+      List(0, 0, Long.MinValue + 1, Long.MaxValue, 0),
+      List(1, 0, 0, 1, 0),
+      List(1, 0, 1, 0, 0),
+      List(1, 0, -1, 2, 0),
+      List(1, 0, Long.MaxValue - 1, -Long.MaxValue + 2, 0),
+      List(1, 0, Long.MinValue + 2, Long.MaxValue, 0),
+      List(1, 1, 0, 1, 1),
+      List(1, 1, 1, 0, 1),
+      List(1, 1, -1, 2, 1),
+      List(1, 1, Long.MaxValue, -Long.MaxValue + 1, 1),
+      List(1, 1, Long.MinValue + 2, Long.MaxValue, 1),
+      List(-1, 1, 0, -1, 1),
+      List(-1, 1, 1, -2, 1),
+      List(-1, 1, -1, 0, 1),
+      List(-1, 1, Long.MaxValue, Long.MinValue, 1),
+      List(-1, 1, Long.MinValue + 1, Long.MaxValue - 1, 1))
   }
 
-  @Test(dataProvider = "MinusSeconds") def minusSeconds_long(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds, nanos)
-    t = t.minusSeconds(amount)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("minusSeconds_long") {
+    provider_minusSeconds_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds, nanos)
+        t = t.minusSeconds(amount)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("minusSeconds_long_overflowTooBig") {
     assertThrows[ArithmeticException] {
@@ -685,31 +1368,92 @@ class TestDuration extends FunSuite with AssertionsHelper {
       t.minusSeconds(Long.MaxValue)
     }
   }
-/*
-  @DataProvider(name = "MinusMillis") private[bp] def provider_minusMillis_long: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, 0), Array(0, 0, 1, -1, 999000000), Array(0, 0, 999, -1, 1000000), Array(0, 0, 1000, -1, 0), Array(0, 0, 1001, -2, 999000000), Array(0, 0, 1999, -2, 1000000), Array(0, 0, 2000, -2, 0), Array(0, 0, -1, 0, 1000000), Array(0, 0, -999, 0, 999000000), Array(0, 0, -1000, 1, 0), Array(0, 0, -1001, 1, 1000000), Array(0, 0, -1999, 1, 999000000), Array(0, 1, 0, 0, 1), Array(0, 1, 1, -1, 999000001), Array(0, 1, 998, -1, 2000001), Array(0, 1, 999, -1, 1000001), Array(0, 1, 1000, -1, 1), Array(0, 1, 1998, -2, 2000001), Array(0, 1, 1999, -2, 1000001), Array(0, 1, 2000, -2, 1), Array(0, 1, -1, 0, 1000001), Array(0, 1, -2, 0, 2000001), Array(0, 1, -1000, 1, 1), Array(0, 1, -1001, 1, 1000001), Array(0, 1000000, 0, 0, 1000000), Array(0, 1000000, 1, 0, 0), Array(0, 1000000, 998, -1, 3000000), Array(0, 1000000, 999, -1, 2000000), Array(0, 1000000, 1000, -1, 1000000), Array(0, 1000000, 1998, -2, 3000000), Array(0, 1000000, 1999, -2, 2000000), Array(0, 1000000, 2000, -2, 1000000), Array(0, 1000000, -1, 0, 2000000), Array(0, 1000000, -2, 0, 3000000), Array(0, 1000000, -999, 1, 0), Array(0, 1000000, -1000, 1, 1000000), Array(0, 1000000, -1001, 1, 2000000), Array(0, 1000000, -1002, 1, 3000000), Array(0, 999999999, 0, 0, 999999999), Array(0, 999999999, 1, 0, 998999999), Array(0, 999999999, 999, 0, 999999), Array(0, 999999999, 1000, -1, 999999999), Array(0, 999999999, 1001, -1, 998999999), Array(0, 999999999, -1, 1, 999999), Array(0, 999999999, -1000, 1, 999999999), Array(0, 999999999, -1001, 2, 999999))
+
+  def provider_minusMillis_long: List[List[Long]] = {
+    List(
+      List(0, 0, 0, 0, 0),
+      List(0, 0, 1, -1, 999000000),
+      List(0, 0, 999, -1, 1000000),
+      List(0, 0, 1000, -1, 0),
+      List(0, 0, 1001, -2, 999000000),
+      List(0, 0, 1999, -2, 1000000),
+      List(0, 0, 2000, -2, 0),
+      List(0, 0, -1, 0, 1000000),
+      List(0, 0, -999, 0, 999000000),
+      List(0, 0, -1000, 1, 0),
+      List(0, 0, -1001, 1, 1000000),
+      List(0, 0, -1999, 1, 999000000),
+      List(0, 1, 0, 0, 1),
+      List(0, 1, 1, -1, 999000001),
+      List(0, 1, 998, -1, 2000001),
+      List(0, 1, 999, -1, 1000001),
+      List(0, 1, 1000, -1, 1),
+      List(0, 1, 1998, -2, 2000001),
+      List(0, 1, 1999, -2, 1000001),
+      List(0, 1, 2000, -2, 1),
+      List(0, 1, -1, 0, 1000001),
+      List(0, 1, -2, 0, 2000001),
+      List(0, 1, -1000, 1, 1),
+      List(0, 1, -1001, 1, 1000001),
+      List(0, 1000000, 0, 0, 1000000),
+      List(0, 1000000, 1, 0, 0),
+      List(0, 1000000, 998, -1, 3000000),
+      List(0, 1000000, 999, -1, 2000000),
+      List(0, 1000000, 1000, -1, 1000000),
+      List(0, 1000000, 1998, -2, 3000000),
+      List(0, 1000000, 1999, -2, 2000000),
+      List(0, 1000000, 2000, -2, 1000000),
+      List(0, 1000000, -1, 0, 2000000),
+      List(0, 1000000, -2, 0, 3000000),
+      List(0, 1000000, -999, 1, 0),
+      List(0, 1000000, -1000, 1, 1000000),
+      List(0, 1000000, -1001, 1, 2000000),
+      List(0, 1000000, -1002, 1, 3000000),
+      List(0, 999999999, 0, 0, 999999999),
+      List(0, 999999999, 1, 0, 998999999),
+      List(0, 999999999, 999, 0, 999999),
+      List(0, 999999999, 1000, -1, 999999999),
+      List(0, 999999999, 1001, -1, 998999999),
+      List(0, 999999999, -1, 1, 999999),
+      List(0, 999999999, -1000, 1, 999999999),
+      List(0, 999999999, -1001, 2, 999999))
   }
 
-  @Test(dataProvider = "MinusMillis") def minusMillis_long(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds, nanos)
-    t = t.minusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("minusMillis_long") {
+    provider_minusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds, nanos)
+        t = t.minusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "MinusMillis") def minusMillis_long_oneMore(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds + 1, nanos)
-    t = t.minusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds + 1)
-    assertEquals(t.getNano, expectedNanoOfSecond)
+  test("minusMillis_long_oneMore") {
+    provider_minusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds + 1, nanos)
+        t = t.minusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds + 1)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "MinusMillis") def minusMillis_long_minusOneLess(seconds: Long, nanos: Int, amount: Long, expectedSeconds: Long, expectedNanoOfSecond: Int): Unit = {
-    var t: Duration = Duration.ofSeconds(seconds - 1, nanos)
-    t = t.minusMillis(amount)
-    assertEquals(t.getSeconds, expectedSeconds - 1)
-    assertEquals(t.getNano, expectedNanoOfSecond)
-  }*/
+  test("minusMillis_long_minusOneLess") {
+    provider_minusMillis_long.foreach {
+      case (seconds: Long) :: (nanos: Long) :: (amount: Long) :: (expectedSeconds: Long) :: (expectedNanoOfSecond: Long) :: Nil =>
+        var t: Duration = Duration.ofSeconds(seconds - 1, nanos)
+        t = t.minusMillis(amount)
+        assertEquals(t.getSeconds, expectedSeconds - 1)
+        assertEquals(t.getNano, expectedNanoOfSecond)
+      case _ =>
+        fail()
+    }
+  }
 
   test("minusMillis_long_max") {
     var t: Duration = Duration.ofSeconds(Long.MaxValue, 998999999)
