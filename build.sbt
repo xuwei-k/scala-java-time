@@ -60,8 +60,8 @@ lazy val root = project.in(file("."))
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
-    val tzdbDir = ((resourceDirectory in Compile) / "tzdb").value
-    val tzdbTarball = ((resourceDirectory in Compile) / "tzdb.tar.gz").value
+    val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
+    val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
       println(s"tzdb data missing. downloading latest...")
       IO.download(
@@ -76,7 +76,7 @@ lazy val tzDbSettings = Seq(
   compile in Compile := (compile in Compile).dependsOn(downloadFromZip).value,
   sourceGenerators in Compile += Def.task {
     generateTZDataSources((sourceManaged in Compile).value,
-      ((resourceDirectory in Compile) / "tzdb").value)
+      (resourceDirectory in Compile).value / "tzdb")
   }.taskValue
 )
 /**
