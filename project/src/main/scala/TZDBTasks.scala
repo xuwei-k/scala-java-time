@@ -6,12 +6,11 @@ object TZDBTasks {
 
   def generateTZDataSources(base: File, data: File): Seq[File] = {
     val dataPath = base.toPath.resolve("tzdb")
-    val path = dataPath.resolve(s"tzdb.scala")
+    val paths = List(("zonedb.threeten", "org.threeten.bp", dataPath.resolve(s"tzdb_threeten.scala")), ("zonedb.java", "java.time", dataPath.resolve(s"tzdb_java.scala")))
 
-    path.getParent.toFile.mkdirs()
-    val tzdbFile = path.toFile
-    TZDBCodeGenerator.exportAll(data, tzdbFile).unsafePerformIO()
+    paths.foreach(_._3.getParent.toFile.mkdirs())
+    paths.foreach(p => TZDBCodeGenerator.exportAll(data, p._3.toFile, p._1, p._2).unsafePerformIO())
 
-    List(tzdbFile)
+    paths.map(_._3.toFile)
   }
 }

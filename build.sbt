@@ -101,6 +101,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
       .replaceAll("package object bp", "package object time")
       .replaceAll("package org.threeten.bp", "package java.time")
       .replaceAll("import org.threeten.bp", "import java.time")
+      .replaceAll("import zonedb.threeten", "import zonedb.java")
       .replaceAll("private\\s*\\[bp\\]", "private[time]")
   }
 
@@ -116,7 +117,6 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   .jvmConfigure(_.enablePlugins(TestNGPlugin))
   .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
-  .jvmSettings(tzDbSettings: _*)
   .jvmSettings(
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value

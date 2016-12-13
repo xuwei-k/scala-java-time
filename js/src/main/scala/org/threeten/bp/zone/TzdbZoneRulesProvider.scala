@@ -4,7 +4,7 @@ import java.util
 import org.threeten.bp.DateTimeException
 
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
-  import tzdb.tzdb._
+  import zonedb.threeten.tzdb._
   import scala.collection.JavaConverters._
 
   /** SPI method to get the available zone IDs.

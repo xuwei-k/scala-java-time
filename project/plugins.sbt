@@ -17,6 +17,6 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 // addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 
 libraryDependencies ++= Seq(
-  "com.github.cquiroz" %% "kuyfi" % "0.3.0-SNAPSHOT",
+  "io.github.cquiroz" %% "kuyfi" % "0.4.0-SNAPSHOT",
   "org.apache.commons" % "commons-compress" % "1.12"
 )
