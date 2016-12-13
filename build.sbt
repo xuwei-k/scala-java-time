@@ -157,10 +157,6 @@ lazy val pomData =
   </developers>
   <contributors>
     <contributor>
-      <name>Carlos Quiroz</name>
-      <url>https://github.com/cquiroz/</url>
-    </contributor>
-    <contributor>
       <name>Javier Fernandez-Ivern</name>
       <url>https://github.com/ivern</url>
     </contributor>
