@@ -31,52 +31,35 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.threeten.bp.Month.DECEMBER
-import org.threeten.bp.Month.JANUARY
-import org.threeten.bp.Month.JUNE
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.List
 import java.util.Locale
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
+
+import org.scalatest.FunSuite
+import org.threeten.bp.Month.{DECEMBER, JANUARY, JUNE}
 import org.threeten.bp.chrono.IsoChronology
 import org.threeten.bp.format.TextStyle
-import org.threeten.bp.temporal.ChronoField
-import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.JulianFields
-import org.threeten.bp.temporal.TemporalAccessor
-import org.threeten.bp.temporal.TemporalField
-import org.threeten.bp.temporal.TemporalQueries
+import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
+import org.threeten.bp.temporal._
 
 /** Test Month. */
 object TestMonth {
-  private val MAX_LENGTH: Int = 12
+  val MAX_LENGTH: Int = 12
 }
 
-@Test class TestMonth extends AbstractDateTimeTest {
-  protected def samples: java.util.List[TemporalAccessor] = {
-    val array: Array[TemporalAccessor] = Array(JANUARY, JUNE, DECEMBER)
-    Arrays.asList(array: _*)
+class TestMonth extends FunSuite with GenDateTimeTest with AssertionsHelper {
+  protected def samples: List[TemporalAccessor] = {
+    List(JANUARY, JUNE, DECEMBER)
   }
 
-  protected def validFields: java.util.List[TemporalField] = {
-    val array: Array[TemporalField] = Array(MONTH_OF_YEAR)
-    Arrays.asList(array: _*)
+  protected def validFields: List[TemporalField] = {
+    List(MONTH_OF_YEAR)
   }
 
-  protected def invalidFields: java.util.List[TemporalField] = {
-    val list: java.util.List[TemporalField] = new java.util.ArrayList[TemporalField](Arrays.asList[TemporalField](ChronoField.values: _*))
-    list.removeAll(validFields)
-    list.add(JulianFields.JULIAN_DAY)
-    list.add(JulianFields.MODIFIED_JULIAN_DAY)
-    list.add(JulianFields.RATA_DIE)
-    list
+  protected def invalidFields: List[TemporalField] = {
+    val list: List[TemporalField] = List(ChronoField.values: _*)
+    (list :+ JulianFields.JULIAN_DAY :+ JulianFields.MODIFIED_JULIAN_DAY :+ JulianFields.RATA_DIE).filterNot(validFields.contains)
   }
 
-  @Test def test_factory_int_singleton(): Unit = {
+  test("factory_int_singleton") {
     var i: Int = 1
     while (i <= TestMonth.MAX_LENGTH) {
       val test: Month = Month.of(i)
@@ -85,28 +68,43 @@ object TestMonth {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_int_tooLow(): Unit =
-    Month.of(0)
+  test("factory_int_tooLow") {
+    assertThrows[DateTimeException] {
+      Month.of(0)
+    }
+  }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_int_tooHigh(): Unit =
-    Month.of(13)
+  test("factory_int_tooHigh") {
+    assertThrows[DateTimeException] {
+      Month.of(13)
+    }
+  }
 
-  @Test def test_factory_CalendricalObject(): Unit =
+  test("factory_CalendricalObject") {
     assertEquals(Month.from(LocalDate.of(2011, 6, 6)), JUNE)
+  }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_CalendricalObject_invalid_noDerive(): Unit =
-    Month.from(LocalTime.of(12, 30))
+  test("factory_CalendricalObject_invalid_noDerive") {
+    assertThrows[DateTimeException] {
+      Month.from(LocalTime.of(12, 30))
+    }
+  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_factory_CalendricalObject_null(): Unit =
-    Month.from(null.asInstanceOf[TemporalAccessor])
+  test("factory_CalendricalObject_null") {
+    assertThrows[NullPointerException] {
+      Month.from(null.asInstanceOf[TemporalAccessor])
+    }
+  }
 
-  @Test def test_get_TemporalField(): Unit =
+  test("get_TemporalField") {
     assertEquals(Month.JULY.get(ChronoField.MONTH_OF_YEAR), 7)
+  }
 
-  @Test def test_getLong_TemporalField(): Unit =
+  test("getLong_TemporalField") {
     assertEquals(Month.JULY.getLong(ChronoField.MONTH_OF_YEAR), 7)
+  }
 
-  @Test def test_query(): Unit = {
+  test("query") {
     assertEquals(Month.JUNE.query(TemporalQueries.chronology), IsoChronology.INSTANCE)
     assertEquals(Month.JUNE.query(TemporalQueries.localDate), null)
     assertEquals(Month.JUNE.query(TemporalQueries.localTime), null)
@@ -116,31 +114,53 @@ object TestMonth {
     assertEquals(Month.JUNE.query(TemporalQueries.zoneId), null)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_query_null(): Unit =
-    Month.JUNE.query(null)
+  test("query_null") {
+    assertThrows[Platform.NPE] {
+      Month.JUNE.query(null)
+    }
+  }
 
-  @Test def test_getDisplayName(): Unit =
+  test("getDisplayName") {
     assertEquals(Month.JANUARY.getDisplayName(TextStyle.SHORT, Locale.US), "Jan")
+  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getDisplayName_nullStyle(): Unit =
-    Month.JANUARY.getDisplayName(null, Locale.US)
+  test("getDisplayName_nullStyle") {
+    assertThrows[NullPointerException] {
+      Month.JANUARY.getDisplayName(null, Locale.US)
+    }
+  }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getDisplayName_nullLocale(): Unit =
-    Month.JANUARY.getDisplayName(TextStyle.FULL, null)
+  test("getDisplayName_nullLocale") {
+    assertThrows[NullPointerException] {
+      Month.JANUARY.getDisplayName(TextStyle.FULL, null)
+    }
+  }
 
-  @DataProvider(name = "plus") private[bp] def data_plus: Array[Array[Any]] =
-    Array[Array[Any]](Array(1, -13, 12), Array(1, -12, 1), Array(1, -11, 2), Array(1, -10, 3), Array(1, -9, 4), Array(1, -8, 5), Array(1, -7, 6), Array(1, -6, 7), Array(1, -5, 8), Array(1, -4, 9), Array(1, -3, 10), Array(1, -2, 11), Array(1, -1, 12), Array(1, 0, 1), Array(1, 1, 2), Array(1, 2, 3), Array(1, 3, 4), Array(1, 4, 5), Array(1, 5, 6), Array(1, 6, 7), Array(1, 7, 8), Array(1, 8, 9), Array(1, 9, 10), Array(1, 10, 11), Array(1, 11, 12), Array(1, 12, 1), Array(1, 13, 2), Array(1, 1, 2), Array(2, 1, 3), Array(3, 1, 4), Array(4, 1, 5), Array(5, 1, 6), Array(6, 1, 7), Array(7, 1, 8), Array(8, 1, 9), Array(9, 1, 10), Array(10, 1, 11), Array(11, 1, 12), Array(12, 1, 1), Array(1, -1, 12), Array(2, -1, 1), Array(3, -1, 2), Array(4, -1, 3), Array(5, -1, 4), Array(6, -1, 5), Array(7, -1, 6), Array(8, -1, 7), Array(9, -1, 8), Array(10, -1, 9), Array(11, -1, 10), Array(12, -1, 11))
+  def data_plus: List[List[Int]] =
+    List(List(1, -13, 12), List(1, -12, 1), List(1, -11, 2), List(1, -10, 3), List(1, -9, 4), List(1, -8, 5), List(1, -7, 6), List(1, -6, 7), List(1, -5, 8), List(1, -4, 9), List(1, -3, 10), List(1, -2, 11), List(1, -1, 12), List(1, 0, 1), List(1, 1, 2), List(1, 2, 3), List(1, 3, 4), List(1, 4, 5), List(1, 5, 6), List(1, 6, 7), List(1, 7, 8), List(1, 8, 9), List(1, 9, 10), List(1, 10, 11), List(1, 11, 12), List(1, 12, 1), List(1, 13, 2), List(1, 1, 2), List(2, 1, 3), List(3, 1, 4), List(4, 1, 5), List(5, 1, 6), List(6, 1, 7), List(7, 1, 8), List(8, 1, 9), List(9, 1, 10), List(10, 1, 11), List(11, 1, 12), List(12, 1, 1), List(1, -1, 12), List(2, -1, 1), List(3, -1, 2), List(4, -1, 3), List(5, -1, 4), List(6, -1, 5), List(7, -1, 6), List(8, -1, 7), List(9, -1, 8), List(10, -1, 9), List(11, -1, 10), List(12, -1, 11))
 
-  @Test(dataProvider = "plus") def test_plus_long(base: Int, amount: Long, expected: Int): Unit =
-    assertEquals(Month.of(base).plus(amount), Month.of(expected))
+  test("plus_long") {
+    data_plus.foreach {
+      case base :: amount :: expected :: Nil =>
+        assertEquals(Month.of(base).plus(amount), Month.of(expected))
+      case _ =>
+        fail()
+    }
+  }
 
-  @DataProvider(name = "minus") private[bp] def data_minus: Array[Array[Any]] =
-    Array[Array[Any]](Array(1, -13, 2), Array(1, -12, 1), Array(1, -11, 12), Array(1, -10, 11), Array(1, -9, 10), Array(1, -8, 9), Array(1, -7, 8), Array(1, -6, 7), Array(1, -5, 6), Array(1, -4, 5), Array(1, -3, 4), Array(1, -2, 3), Array(1, -1, 2), Array(1, 0, 1), Array(1, 1, 12), Array(1, 2, 11), Array(1, 3, 10), Array(1, 4, 9), Array(1, 5, 8), Array(1, 6, 7), Array(1, 7, 6), Array(1, 8, 5), Array(1, 9, 4), Array(1, 10, 3), Array(1, 11, 2), Array(1, 12, 1), Array(1, 13, 12))
+  def data_minus: List[List[Int]] =
+    List(List(1, -13, 2), List(1, -12, 1), List(1, -11, 12), List(1, -10, 11), List(1, -9, 10), List(1, -8, 9), List(1, -7, 8), List(1, -6, 7), List(1, -5, 6), List(1, -4, 5), List(1, -3, 4), List(1, -2, 3), List(1, -1, 2), List(1, 0, 1), List(1, 1, 12), List(1, 2, 11), List(1, 3, 10), List(1, 4, 9), List(1, 5, 8), List(1, 6, 7), List(1, 7, 6), List(1, 8, 5), List(1, 9, 4), List(1, 10, 3), List(1, 11, 2), List(1, 12, 1), List(1, 13, 12))
 
-  @Test(dataProvider = "minus") def test_minus_long(base: Int, amount: Long, expected: Int): Unit =
-    assertEquals(Month.of(base).minus(amount), Month.of(expected))
+  test("minus_long") {
+    data_minus.foreach {
+      case base :: amount :: expected :: Nil =>
+        assertEquals(Month.of(base).minus(amount), Month.of(expected))
+      case _ =>
+        fail()
+    }
+  }
 
-  @Test def test_length_boolean_notLeapYear(): Unit = {
+  test("length_boolean_notLeapYear") {
     assertEquals(Month.JANUARY.length(false), 31)
     assertEquals(Month.FEBRUARY.length(false), 28)
     assertEquals(Month.MARCH.length(false), 31)
@@ -155,7 +175,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.length(false), 31)
   }
 
-  @Test def test_length_boolean_leapYear(): Unit = {
+  test("length_boolean_leapYear") {
     assertEquals(Month.JANUARY.length(true), 31)
     assertEquals(Month.FEBRUARY.length(true), 29)
     assertEquals(Month.MARCH.length(true), 31)
@@ -170,7 +190,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.length(true), 31)
   }
 
-  @Test def test_minLength(): Unit = {
+  test("minLength") {
     assertEquals(Month.JANUARY.minLength, 31)
     assertEquals(Month.FEBRUARY.minLength, 28)
     assertEquals(Month.MARCH.minLength, 31)
@@ -185,7 +205,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.minLength, 31)
   }
 
-  @Test def test_maxLength(): Unit = {
+  test("maxLength") {
     assertEquals(Month.JANUARY.maxLength, 31)
     assertEquals(Month.FEBRUARY.maxLength, 29)
     assertEquals(Month.MARCH.maxLength, 31)
@@ -200,7 +220,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.maxLength, 31)
   }
 
-  @Test def test_firstDayOfYear_notLeapYear(): Unit = {
+  test("firstDayOfYear_notLeapYear") {
     assertEquals(Month.JANUARY.firstDayOfYear(false), 1)
     assertEquals(Month.FEBRUARY.firstDayOfYear(false), 1 + 31)
     assertEquals(Month.MARCH.firstDayOfYear(false), 1 + 31 + 28)
@@ -215,7 +235,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.firstDayOfYear(false), 1 + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30)
   }
 
-  @Test def test_firstDayOfYear_leapYear(): Unit = {
+  test("firstDayOfYear_leapYear") {
     assertEquals(Month.JANUARY.firstDayOfYear(true), 1)
     assertEquals(Month.FEBRUARY.firstDayOfYear(true), 1 + 31)
     assertEquals(Month.MARCH.firstDayOfYear(true), 1 + 31 + 29)
@@ -230,7 +250,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.firstDayOfYear(true), 1 + 31 + 29 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30)
   }
 
-  @Test def test_firstMonthOfQuarter(): Unit = {
+  test("firstMonthOfQuarter") {
     assertEquals(Month.JANUARY.firstMonthOfQuarter, Month.JANUARY)
     assertEquals(Month.FEBRUARY.firstMonthOfQuarter, Month.JANUARY)
     assertEquals(Month.MARCH.firstMonthOfQuarter, Month.JANUARY)
@@ -245,7 +265,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.firstMonthOfQuarter, Month.OCTOBER)
   }
 
-  @Test def test_toString(): Unit = {
+  test("toString") {
     assertEquals(Month.JANUARY.toString, "JANUARY")
     assertEquals(Month.FEBRUARY.toString, "FEBRUARY")
     assertEquals(Month.MARCH.toString, "MARCH")
@@ -260,7 +280,7 @@ object TestMonth {
     assertEquals(Month.DECEMBER.toString, "DECEMBER")
   }
 
-  @Test def test_enum(): Unit = {
+  test("enum") {
     assertEquals(Month.valueOf("JANUARY"), Month.JANUARY)
     assertEquals(Month.values(0), Month.JANUARY)
   }
