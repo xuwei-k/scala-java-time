@@ -106,7 +106,7 @@ import org.threeten.bp.temporal.TemporalAdjusters
     assertEquals(test, LocalDateTime.of(1890, 10, 29, 0, 0))
   }
 
-  @DataProvider(name = "japaneseEras") private[chrono] def data_japanseseEras: Array[Array[Any]] = {
+  @DataProvider(name = "japaneseEras") private[chrono] def data_japansesEras: Array[Array[Any]] = {
     Array[Array[Any]](Array(JapaneseEra.MEIJI, -1, "Meiji"), Array(JapaneseEra.TAISHO, 0, "Taisho"), Array(JapaneseEra.SHOWA, 1, "Showa"), Array(JapaneseEra.HEISEI, 2, "Heisei"))
   }
 
@@ -114,8 +114,9 @@ import org.threeten.bp.temporal.TemporalAdjusters
     assertEquals(era.getValue, eraValue, "EraValue")
     assertEquals(era.toString, name, "Era Name")
     assertEquals(era, JapaneseChronology.INSTANCE.eraOf(eraValue), "JapaneseChrono.eraOf()")
+    assertEquals(JapaneseEra.valueOf(name), era)
     val eras: java.util.List[Era] = JapaneseChronology.INSTANCE.eras
-    assertTrue(eras.contains(era), "Era is not present in JapaneseChrono.INSTANCE.eras()")
+    assertTrue(eras.contains(era), "Era is not present in JapaneseChronology.INSTANCE.eras()")
   }
 
   @Test def test_Japanese_badEras(): Unit = {
@@ -123,11 +124,40 @@ import org.threeten.bp.temporal.TemporalAdjusters
     for (badEra <- badEras)
       try {
         val era: Era = JapaneseChronology.INSTANCE.eraOf(badEra)
-        fail(s"JapaneseChrono.eraOf returned $era + for invalid eraValue $badEra")
+        fail(s"JapaneseChronology.eraOf returned $era + for invalid eraValue $badEra")
       } catch {
         case ex: DateTimeException =>
       }
+    try {
+      val era = JapaneseEra.valueOf("Rubbish")
+      fail("JapaneseEra.valueOf returned " + era + " + for invalid era name Rubbish")
+    } catch {
+      case _: IllegalArgumentException =>
+        // ignore expected exception
+    }
   }
+
+  @Test def test_Japanese_registerEra() {
+      try {
+        JapaneseEra.registerEra(JapaneseEra.SHOWA.endDate, "TestAdditional")
+        fail("JapaneseEra.registerEra should have failed")
+      } catch {
+        case _: DateTimeException =>
+          // ignore expected exception
+      }
+      val additional = JapaneseEra.registerEra(LocalDate.of(2100, 1, 1), "TestAdditional")
+      assertEquals(JapaneseEra.of(3), additional)
+      assertEquals(JapaneseEra.valueOf("TestAdditional"), additional)
+      assertEquals(JapaneseEra.values(4), additional)
+      try {
+        JapaneseEra.registerEra(LocalDate.of(2200, 1, 1), "TestAdditional2")
+        fail("JapaneseEra.registerEra should have failed")
+
+      } catch {
+        case ex: DateTimeException =>
+          // ignore expected exception
+      }
+    }
 
   @DataProvider(name = "toString") private[chrono] def data_toString: Array[Array[AnyRef]] =
     Array[Array[AnyRef]](Array(JapaneseChronology.INSTANCE.date(1873, 9, 8), "Japanese Meiji 6-09-08"), Array(JapaneseChronology.INSTANCE.date(1912, 7, 29), "Japanese Meiji 45-07-29"), Array(JapaneseChronology.INSTANCE.date(1912, 7, 30), "Japanese Taisho 1-07-30"), Array(JapaneseChronology.INSTANCE.date(1926, 12, 24), "Japanese Taisho 15-12-24"), Array(JapaneseChronology.INSTANCE.date(1926, 12, 25), "Japanese Showa 1-12-25"), Array(JapaneseChronology.INSTANCE.date(1989, 1, 7), "Japanese Showa 64-01-07"), Array(JapaneseChronology.INSTANCE.date(1989, 1, 8), "Japanese Heisei 1-01-08"), Array(JapaneseChronology.INSTANCE.date(2012, 12, 6), "Japanese Heisei 24-12-06"))
