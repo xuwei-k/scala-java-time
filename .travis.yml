@@ -33,7 +33,7 @@ env:
   - COURSIER_NO_TERM=1
 
 script:
-  - sbt scalajavatimeJVM/test scalajavatimeJS/test
+  - sbt ++$TRAVIS_SCALA_VERSION scalajavatimeJVM/test scalajavatimeJS/test
   - sbt docs/makeMicrosite
   #- sbt clean coverage test &&
   #  sbt coverageAggregate
