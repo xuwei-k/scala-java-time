@@ -31,15 +31,10 @@
  */
 package org.threeten.bp
 
-import org.threeten.bp.temporal.ChronoUnit.DAYS
-import org.threeten.bp.temporal.ChronoUnit.FOREVER
-import org.threeten.bp.temporal.ChronoUnit.SECONDS
-import java.util.{Objects, Collections}
-import org.threeten.bp.temporal.Temporal
-import org.threeten.bp.temporal.TemporalAmount
-import org.threeten.bp.temporal.TemporalUnit
+import java.util.{Collections, Objects}
 
-import scala.collection.JavaConverters._
+import org.threeten.bp.temporal.ChronoUnit.{DAYS, FOREVER, SECONDS}
+import org.threeten.bp.temporal.{Temporal, TemporalAmount, TemporalUnit}
 
 /** Mock period of time measured using a single unit, such as {@code 3 Days}. */
 object MockSimplePeriod {

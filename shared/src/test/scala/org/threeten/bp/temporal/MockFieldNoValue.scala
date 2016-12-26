@@ -31,11 +31,11 @@
  */
 package org.threeten.bp.temporal
 
-import org.threeten.bp.temporal.ChronoUnit.MONTHS
-import org.threeten.bp.temporal.ChronoUnit.WEEKS
 import java.util.Locale
+
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.format.ResolverStyle
+import org.threeten.bp.temporal.ChronoUnit.{MONTHS, WEEKS}
 
 /** Mock DateTimeField that returns null. */
 object MockFieldNoValue {
