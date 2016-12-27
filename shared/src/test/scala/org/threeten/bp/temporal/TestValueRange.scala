@@ -31,35 +31,13 @@
  */
 package org.threeten.bp.temporal
 
-import org.testng.Assert.assertEquals
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import org.testng.SkipException
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
-import org.threeten.bp.AbstractTest
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
 
 /** Test. */
-@Test class TestValueRange {
-  @Test def test_immutable(): Unit = {
-    throw new SkipException("private constructor shows up public due to companion object")
-    AbstractTest.assertImmutable(classOf[ValueRange])
-  }
+class TestValueRange extends FunSuite with AssertionsHelper {
 
-  @throws(classOf[Exception])
-  def test_serialization(): Unit = {
-    val obj: AnyRef = ValueRange.of(1, 2, 3, 4)
-    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
-    val oos: ObjectOutputStream = new ObjectOutputStream(baos)
-    oos.writeObject(obj)
-    oos.close()
-    val ois: ObjectInputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray))
-    assertEquals(ois.readObject, obj)
-  }
-
-  def test_of_longlong(): Unit = {
+  test("of_longlong") {
     val test: ValueRange = ValueRange.of(1, 12)
     assertEquals(test.getMinimum, 1)
     assertEquals(test.getLargestMinimum, 1)
@@ -69,7 +47,7 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isIntValue, true)
   }
 
-  def test_of_longlong_big(): Unit = {
+  test("of_longlong_big") {
     val test: ValueRange = ValueRange.of(1, 123456789012345L)
     assertEquals(test.getMinimum, 1)
     assertEquals(test.getLargestMinimum, 1)
@@ -79,11 +57,13 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isIntValue, false)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_of_longlong_minGtMax(): Unit = {
-    ValueRange.of(12, 1)
+  test("of_longlong_minGtMax") {
+    assertThrows[IllegalArgumentException] {
+      ValueRange.of(12, 1)
+    }
   }
 
-  def test_of_longlonglong(): Unit = {
+  test("of_longlonglong") {
     val test: ValueRange = ValueRange.of(1, 28, 31)
     assertEquals(test.getMinimum, 1)
     assertEquals(test.getLargestMinimum, 1)
@@ -93,37 +73,69 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isIntValue, true)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_of_longlonglong_minGtMax(): Unit = {
-    ValueRange.of(12, 1, 2)
+  test("of_longlonglong_minGtMax") {
+    assertThrows[IllegalArgumentException] {
+      ValueRange.of(12, 1, 2)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_of_longlonglong_smallestmaxminGtMax(): Unit = {
-    ValueRange.of(1, 31, 28)
+  test("of_longlonglong_smallestmaxminGtMax") {
+    assertThrows[IllegalArgumentException] {
+      ValueRange.of(1, 31, 28)
+    }
   }
 
-  @DataProvider(name = "valid") private[temporal] def data_valid: Array[Array[Any]] = {
-    Array[Array[Any]](Array(1, 1, 1, 1), Array(1, 1, 1, 2), Array(1, 1, 2, 2), Array(1, 2, 3, 4), Array(1, 1, 28, 31), Array(1, 3, 31, 31), Array(-5, -4, -3, -2), Array(-5, -4, 3, 4), Array(1, 20, 10, 31))
+  def data_valid: List[List[Int]] = {
+    List(
+      List(1, 1, 1, 1),
+      List(1, 1, 1, 2),
+      List(1, 1, 2, 2),
+      List(1, 2, 3, 4),
+      List(1, 1, 28, 31),
+      List(1, 3, 31, 31),
+      List(-5, -4, -3, -2),
+      List(-5, -4, 3, 4),
+      List(1, 20, 10, 31))
   }
 
-  @Test(dataProvider = "valid") def test_of_longlonglonglong(sMin: Long, lMin: Long, sMax: Long, lMax: Long): Unit = {
-    val test: ValueRange = ValueRange.of(sMin, lMin, sMax, lMax)
-    assertEquals(test.getMinimum, sMin)
-    assertEquals(test.getLargestMinimum, lMin)
-    assertEquals(test.getSmallestMaximum, sMax)
-    assertEquals(test.getMaximum, lMax)
-    assertEquals(test.isFixed, sMin == lMin && sMax == lMax)
-    assertEquals(test.isIntValue, true)
+  test("of_longlonglonglong") {
+    data_valid.foreach {
+      case sMin :: lMin :: sMax :: lMax :: Nil =>
+        val test: ValueRange = ValueRange.of(sMin, lMin, sMax, lMax)
+        assertEquals(test.getMinimum, sMin)
+        assertEquals(test.getLargestMinimum, lMin)
+        assertEquals(test.getSmallestMaximum, sMax)
+        assertEquals(test.getMaximum, lMax)
+        assertEquals(test.isFixed, sMin == lMin && sMax == lMax)
+        assertEquals(test.isIntValue, true)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "invalid") private[temporal] def data_invalid: Array[Array[Any]] = {
-    Array[Array[Any]](Array(1, 2, 31, 28), Array(1, 31, 2, 28), Array(31, 2, 1, 28), Array(31, 2, 3, 28), Array(2, 1, 28, 31), Array(2, 1, 31, 28), Array(12, 13, 1, 2))
+  def data_invalid: List[List[Int]] = {
+    List(
+      List(1, 2, 31, 28),
+      List(1, 31, 2, 28),
+      List(31, 2, 1, 28),
+      List(31, 2, 3, 28),
+      List(2, 1, 28, 31),
+      List(2, 1, 31, 28),
+      List(12, 13, 1, 2))
   }
 
-  @Test(dataProvider = "invalid", expectedExceptions = Array(classOf[IllegalArgumentException])) def test_of_longlonglonglong_invalid(sMin: Long, lMin: Long, sMax: Long, lMax: Long): Unit = {
-    ValueRange.of(sMin, lMin, sMax, lMax)
+  test("of_longlonglonglong_invalid") {
+    data_invalid.foreach {
+      case sMin :: lMin :: sMax :: lMax :: Nil =>
+        assertThrows[IllegalArgumentException] {
+          ValueRange.of(sMin, lMin, sMax, lMax)
+        }
+      case _ =>
+        fail()
+    }
   }
 
-  def test_isValidValue_long(): Unit = {
+  test("isValidValue_long") {
     val test: ValueRange = ValueRange.of(1, 28, 31)
     assertEquals(test.isValidValue(0), false)
     assertEquals(test.isValidValue(1), true)
@@ -133,7 +145,7 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isValidValue(32), false)
   }
 
-  def test_isValidValue_long_int(): Unit = {
+  test("isValidValue_long_int") {
     val test: ValueRange = ValueRange.of(1, 28, 31)
     assertEquals(test.isValidValue(0), false)
     assertEquals(test.isValidValue(1), true)
@@ -141,7 +153,7 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isValidValue(32), false)
   }
 
-  def test_isValidValue_long_long(): Unit = {
+  test("isValidValue_long_long") {
     val test: ValueRange = ValueRange.of(1, 28, Int.MaxValue + 1L)
     assertEquals(test.isValidIntValue(0), false)
     assertEquals(test.isValidIntValue(1), false)
@@ -149,7 +161,7 @@ import org.threeten.bp.AbstractTest
     assertEquals(test.isValidIntValue(32), false)
   }
 
-  def test_equals1(): Unit = {
+  test("equals1") {
     val a: ValueRange = ValueRange.of(1, 2, 3, 4)
     val b: ValueRange = ValueRange.of(1, 2, 3, 4)
     assertEquals(a == a, true)
@@ -159,7 +171,7 @@ import org.threeten.bp.AbstractTest
     assertEquals(a.hashCode == b.hashCode, true)
   }
 
-  def test_equals2(): Unit = {
+  test("equals2") {
     val a: ValueRange = ValueRange.of(1, 2, 3, 4)
     assertEquals(a == ValueRange.of(0, 2, 3, 4), false)
     assertEquals(a == ValueRange.of(1, 3, 3, 4), false)
@@ -167,17 +179,17 @@ import org.threeten.bp.AbstractTest
     assertEquals(a == ValueRange.of(1, 2, 3, 5), false)
   }
 
-  def test_equals_otherType(): Unit = {
+  test("equals_otherType") {
     val a: ValueRange = ValueRange.of(1, 12)
-    assertEquals(a == "Rubbish", false)
+    assertNotEquals(a, "Rubbish")
   }
 
-  def test_equals_null(): Unit = {
+  test("equals_null") {
     val a: ValueRange = ValueRange.of(1, 12)
     assertEquals(a == null, false)
   }
 
-  def test_toString(): Unit = {
+  test("toString") {
     assertEquals(ValueRange.of(1, 1, 4, 4).toString, "1 - 4")
     assertEquals(ValueRange.of(1, 1, 3, 4).toString, "1 - 3/4")
     assertEquals(ValueRange.of(1, 2, 3, 4).toString, "1/2 - 3/4")
