@@ -31,28 +31,26 @@
  */
 package org.threeten.bp.temporal
 
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
 
 /** Test. */
-@Test class TestChronoField {
-  @Test def test_isDateBased(): Unit = {
+class TestChronoField extends FunSuite with AssertionsHelper {
+  test("isDateBased") {
     for (field <- ChronoField.values) {
       if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
         assertEquals(field.isTimeBased, false)
-      }
-      else {
+      } else {
         assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
       }
     }
   }
 
-  @Test def test_isTimeBased(): Unit = {
+  test("isTimeBased") {
     for (field <- ChronoField.values) {
       if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
         assertEquals(field.isTimeBased, false)
-      }
-      else {
+      } else {
         assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
       }
     }
