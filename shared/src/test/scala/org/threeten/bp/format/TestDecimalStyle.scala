@@ -31,21 +31,20 @@
  */
 package org.threeten.bp.format
 
-import org.testng.annotations.Test
-import org.testng.Assert.assertEquals
-
 import java.util.Locale
 
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
 
 /** Test DecimalStyle. */
-@Test class TestDecimalStyle {
-  @Test def test_getAvailableLocales(): Unit = {
+class TestDecimalStyle extends FunSuite with AssertionsHelper {
+  test("getAvailableLocales") {
     val locales: java.util.Set[Locale] = DecimalStyle.getAvailableLocales
     assertEquals(locales.size > 0, true)
     assertEquals(locales.contains(Locale.US), true)
   }
 
-  @Test def test_of_Locale(): Unit = {
+  test("of_Locale") {
     val loc1: DecimalStyle = DecimalStyle.of(Locale.CANADA)
     assertEquals(loc1.getZeroDigit, '0')
     assertEquals(loc1.getPositiveSign, '+')
@@ -53,7 +52,7 @@ import java.util.Locale
     assertEquals(loc1.getDecimalSeparator, '.')
   }
 
-  @Test def test_STANDARD(): Unit = {
+  test("STANDARD") {
     val loc1: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(loc1.getZeroDigit, '0')
     assertEquals(loc1.getPositiveSign, '+')
@@ -61,27 +60,27 @@ import java.util.Locale
     assertEquals(loc1.getDecimalSeparator, '.')
   }
 
-  @Test def test_zeroDigit(): Unit = {
+  test("zeroDigit") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.withZeroDigit('A').getZeroDigit, 'A')
   }
 
-  @Test def test_positiveSign(): Unit = {
+  test("positiveSign") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.withPositiveSign('A').getPositiveSign, 'A')
   }
 
-  @Test def test_negativeSign(): Unit = {
+  test("negativeSign") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.withNegativeSign('A').getNegativeSign, 'A')
   }
 
-  @Test def test_decimalSeparator(): Unit = {
+  test("decimalSeparator") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.withDecimalSeparator('A').getDecimalSeparator, 'A')
   }
 
-  @Test def test_convertToDigit_base(): Unit = {
+  test("convertToDigit_base") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.convertToDigit('0'), 0)
     assertEquals(base.convertToDigit('1'), 1)
@@ -90,7 +89,7 @@ import java.util.Locale
     assertEquals(base.convertToDigit('A'), -1)
   }
 
-  @Test def test_convertToDigit_altered(): Unit = {
+  test("convertToDigit_altered") {
     val base: DecimalStyle = DecimalStyle.STANDARD.withZeroDigit('A')
     assertEquals(base.convertToDigit('A'), 0)
     assertEquals(base.convertToDigit('B'), 1)
@@ -99,17 +98,17 @@ import java.util.Locale
     assertEquals(base.convertToDigit('0'), -1)
   }
 
-  @Test def test_convertNumberToI18N_base(): Unit = {
+  test("convertNumberToI18N_base") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.convertNumberToI18N("134"), "134")
   }
 
-  @Test def test_convertNumberToI18N_altered(): Unit = {
+  test("convertNumberToI18N_altered") {
     val base: DecimalStyle = DecimalStyle.STANDARD.withZeroDigit('A')
     assertEquals(base.convertNumberToI18N("134"), "BDE")
   }
 
-  @Test def test_equalsHashCode1(): Unit = {
+  test("equalsHashCode1") {
     val a: DecimalStyle = DecimalStyle.STANDARD
     val b: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(a == b, true)
@@ -117,7 +116,7 @@ import java.util.Locale
     assertEquals(a.hashCode, b.hashCode)
   }
 
-  @Test def test_equalsHashCode2(): Unit = {
+  test("equalsHashCode2") {
     val a: DecimalStyle = DecimalStyle.STANDARD.withZeroDigit('A')
     val b: DecimalStyle = DecimalStyle.STANDARD.withZeroDigit('A')
     assertEquals(a == b, true)
@@ -125,25 +124,25 @@ import java.util.Locale
     assertEquals(a.hashCode, b.hashCode)
   }
 
-  @Test def test_equalsHashCode3(): Unit = {
+  test("equalsHashCode3") {
     val a: DecimalStyle = DecimalStyle.STANDARD.withZeroDigit('A')
     val b: DecimalStyle = DecimalStyle.STANDARD.withDecimalSeparator('A')
     assertEquals(a == b, false)
     assertEquals(b == a, false)
   }
 
-  @Test def test_equalsHashCode_bad(): Unit = {
+  test("equalsHashCode_bad") {
     val a: DecimalStyle = DecimalStyle.STANDARD
-    assertEquals(a == "", false)
+    assertNotEquals(a, "")
     assertEquals(a == null, false)
   }
 
-  @Test def test_toString_base(): Unit = {
+  test("toString_base") {
     val base: DecimalStyle = DecimalStyle.STANDARD
     assertEquals(base.toString, "DecimalStyle[0+-.]")
   }
 
-  @Test def test_toString_altered(): Unit = {
+  test("toString_altered") {
     val base: DecimalStyle = DecimalStyle.of(Locale.US).withZeroDigit('A').withDecimalSeparator('@')
     assertEquals(base.toString, "DecimalStyle[A+-@]")
   }
