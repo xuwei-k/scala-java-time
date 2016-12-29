@@ -31,8 +31,7 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
 
 /** Test OffsetDateTime creation. */
 object TestOffsetDateTime_instants {
@@ -41,17 +40,21 @@ object TestOffsetDateTime_instants {
   private val OFFSET_MIN: ZoneOffset = ZoneOffset.ofHours(-18)
 }
 
-@Test class TestOffsetDateTime_instants {
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_ofInstant_nullInstant(): Unit = {
-    OffsetDateTime.ofInstant(null.asInstanceOf[Instant], TestOffsetDateTime_instants.OFFSET_PONE)
+class TestOffsetDateTime_instants  extends FunSuite with AssertionsHelper {
+  test("factory_ofInstant_nullInstant") {
+    assertThrows[NullPointerException] {
+      OffsetDateTime.ofInstant(null.asInstanceOf[Instant], TestOffsetDateTime_instants.OFFSET_PONE)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_ofInstant_nullOffset(): Unit = {
-    val instant: Instant = Instant.ofEpochSecond(0L)
-    OffsetDateTime.ofInstant(instant, null.asInstanceOf[ZoneOffset])
+  test("factory_ofInstant_nullOffset") {
+    assertThrows[NullPointerException] {
+      val instant: Instant = Instant.ofEpochSecond(0L)
+      OffsetDateTime.ofInstant(instant, null.asInstanceOf[ZoneOffset])
+    }
   }
 
-  def factory_ofInstant_allSecsInDay(): Unit = {
+  test("factory_ofInstant_allSecsInDay") {
     {
       var i: Int = 0
       while (i < (24 * 60 * 60)) {
@@ -73,7 +76,7 @@ object TestOffsetDateTime_instants {
     }
   }
 
-  def factory_ofInstant_allDaysInCycle(): Unit = {
+  test("factory_ofInstant_allDaysInCycle") {
     var expected: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 1), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
 
     {
@@ -93,35 +96,39 @@ object TestOffsetDateTime_instants {
     }
   }
 
-  def factory_ofInstant_history(): Unit = {
+  test("factory_ofInstant_history") {
     doTest_factory_ofInstant_all(-2820, 2820)
   }
 
-  def factory_ofInstant_minYear(): Unit = {
+  test("factory_ofInstant_minYear") {
     doTest_factory_ofInstant_all(Year.MIN_VALUE, Year.MIN_VALUE + 420)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofInstant_tooLow(): Unit = {
-    val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
-    val year: Int = Year.MIN_VALUE - 1
-    val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
-    val instant: Instant = Instant.ofEpochSecond(days * 24L * 60L * 60L)
-    OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+  test("factory_ofInstant_tooLow") {
+    assertThrows[DateTimeException] {
+      val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
+      val year: Int = Year.MIN_VALUE - 1
+      val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
+      val instant: Instant = Instant.ofEpochSecond(days * 24L * 60L * 60L)
+      OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+    }
   }
 
-  def factory_ofInstant_maxYear(): Unit = {
+  test("factory_ofInstant_maxYear") {
     doTest_factory_ofInstant_all(Year.MAX_VALUE - 420, Year.MAX_VALUE)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofInstant_tooBig(): Unit = {
-    val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
-    val year: Long = Year.MAX_VALUE + 1L
-    val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
-    val instant: Instant = Instant.ofEpochSecond(days * 24L * 60L * 60L)
-    OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+  test("factory_ofInstant_tooBig") {
+    assertThrows[DateTimeException] {
+      val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
+      val year: Long = Year.MAX_VALUE + 1L
+      val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
+      val instant: Instant = Instant.ofEpochSecond(days * 24L * 60L * 60L)
+      OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
+    }
   }
 
-  def factory_ofInstant_minWithMinOffset(): Unit = {
+  test("factory_ofInstant_minWithMinOffset") {
     val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
     val year: Int = Year.MIN_VALUE
     val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
@@ -137,7 +144,7 @@ object TestOffsetDateTime_instants {
     assertEquals(test.getNano, 0)
   }
 
-  def factory_ofInstant_minWithMaxOffset(): Unit = {
+  test("factory_ofInstant_minWithMaxOffset") {
     val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
     val year: Int = Year.MIN_VALUE
     val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) - days_0000_to_1970
@@ -153,7 +160,7 @@ object TestOffsetDateTime_instants {
     assertEquals(test.getNano, 0)
   }
 
-  def factory_ofInstant_maxWithMinOffset(): Unit = {
+  test("factory_ofInstant_maxWithMinOffset") {
     val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
     val year: Int = Year.MAX_VALUE
     val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) + 365 - days_0000_to_1970
@@ -169,7 +176,7 @@ object TestOffsetDateTime_instants {
     assertEquals(test.getNano, 0)
   }
 
-  def factory_ofInstant_maxWithMaxOffset(): Unit = {
+  test("factory_ofInstant_maxWithMaxOffset") {
     val days_0000_to_1970: Long = (146097 * 5) - (30 * 365 + 7)
     val year: Int = Year.MAX_VALUE
     val days: Long = (year * 365L + (year / 4 - year / 100 + year / 400)) + 365 - days_0000_to_1970
@@ -185,14 +192,18 @@ object TestOffsetDateTime_instants {
     assertEquals(test.getNano, 0)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofInstant_maxInstantWithMaxOffset(): Unit = {
-    val instant: Instant = Instant.ofEpochSecond(Long.MaxValue)
-    OffsetDateTime.ofInstant(instant, TestOffsetDateTime_instants.OFFSET_MAX)
+  test("factory_ofInstant_maxInstantWithMaxOffset") {
+    assertThrows[DateTimeException] {
+      val instant: Instant = Instant.ofEpochSecond(Long.MaxValue)
+      OffsetDateTime.ofInstant(instant, TestOffsetDateTime_instants.OFFSET_MAX)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofInstant_maxInstantWithMinOffset(): Unit = {
-    val instant: Instant = Instant.ofEpochSecond(Long.MaxValue)
-    OffsetDateTime.ofInstant(instant, TestOffsetDateTime_instants.OFFSET_MIN)
+  test("factory_ofInstant_maxInstantWithMinOffset") {
+    assertThrows[DateTimeException] {
+      val instant: Instant = Instant.ofEpochSecond(Long.MaxValue)
+      OffsetDateTime.ofInstant(instant, TestOffsetDateTime_instants.OFFSET_MIN)
+    }
   }
 
   private def doTest_factory_ofInstant_all(minYear: Long, maxYear: Long): Unit = {
@@ -233,62 +244,62 @@ object TestOffsetDateTime_instants {
     }
   }
 
-  def test_toInstant_19700101(): Unit = {
+  test("toInstant_19700101") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 1), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     val test: Instant = dt.toInstant
     assertEquals(test.getEpochSecond, 0)
     assertEquals(test.getNano, 0)
   }
 
-  def test_toInstant_19700101_oneNano(): Unit = {
+  test("toInstant_19700101_oneNano") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 1), LocalTime.of(0, 0, 0, 1), ZoneOffset.UTC)
     val test: Instant = dt.toInstant
     assertEquals(test.getEpochSecond, 0)
     assertEquals(test.getNano, 1)
   }
 
-  def test_toInstant_19700101_minusOneNano(): Unit = {
+  test("toInstant_19700101_minusOneNano") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1969, 12, 31), LocalTime.of(23, 59, 59, 999999999), ZoneOffset.UTC)
     val test: Instant = dt.toInstant
     assertEquals(test.getEpochSecond, -1)
     assertEquals(test.getNano, 999999999)
   }
 
-  def test_toInstant_19700102(): Unit = {
+  test("toInstant_19700102") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 2), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     val test: Instant = dt.toInstant
     assertEquals(test.getEpochSecond, 24L * 60L * 60L)
     assertEquals(test.getNano, 0)
   }
 
-  def test_toInstant_19691231(): Unit = {
+  test("toInstant_19691231") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1969, 12, 31), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     val test: Instant = dt.toInstant
     assertEquals(test.getEpochSecond, -24L * 60L * 60L)
     assertEquals(test.getNano, 0)
   }
 
-  def test_toEpochSecond_19700101(): Unit = {
+  test("toEpochSecond_19700101") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 1), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     assertEquals(dt.toEpochSecond, 0)
   }
 
-  def test_toEpochSecond_19700101_oneNano(): Unit = {
+  test("toEpochSecond_19700101_oneNano") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 1), LocalTime.of(0, 0, 0, 1), ZoneOffset.UTC)
     assertEquals(dt.toEpochSecond, 0)
   }
 
-  def test_toEpochSecond_19700101_minusOneNano(): Unit = {
+  test("toEpochSecond_19700101_minusOneNano") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1969, 12, 31), LocalTime.of(23, 59, 59, 999999999), ZoneOffset.UTC)
     assertEquals(dt.toEpochSecond, -1)
   }
 
-  def test_toEpochSecond_19700102(): Unit = {
+  test("toEpochSecond_19700102") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1970, 1, 2), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     assertEquals(dt.toEpochSecond, 24L * 60L * 60L)
   }
 
-  def test_toEpochSecond_19691231(): Unit = {
+  test("toEpochSecond_19691231") {
     val dt: OffsetDateTime = OffsetDateTime.of(LocalDate.of(1969, 12, 31), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)
     assertEquals(dt.toEpochSecond, -24L * 60L * 60L)
   }
