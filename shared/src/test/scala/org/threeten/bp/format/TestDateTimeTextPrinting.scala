@@ -31,73 +31,103 @@
  */
 package org.threeten.bp.format
 
-import org.testng.Assert.assertEquals
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
 import java.util.Locale
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.Month
+
+import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.threeten.bp.{AssertionsHelper, LocalDateTime, Month}
+import org.threeten.bp.temporal.ChronoField.{DAY_OF_MONTH, DAY_OF_WEEK, MONTH_OF_YEAR}
 import org.threeten.bp.temporal.TemporalField
 
 /** Test text printing. */
-@Test class TestDateTimeTextPrinting {
+class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with BeforeAndAfter {
   private var builder: DateTimeFormatterBuilder = null
 
-  @BeforeMethod def setUp(): Unit = {
+  before {
     builder = new DateTimeFormatterBuilder
   }
 
-  @DataProvider(name = "printText") private[format] def data_text: Array[Array[Any]] = {
-    Array[Array[Any]](Array(DAY_OF_WEEK, TextStyle.FULL, 1, "Monday"), Array(DAY_OF_WEEK, TextStyle.FULL, 2, "Tuesday"), Array(DAY_OF_WEEK, TextStyle.FULL, 3, "Wednesday"), Array(DAY_OF_WEEK, TextStyle.FULL, 4, "Thursday"), Array(DAY_OF_WEEK, TextStyle.FULL, 5, "Friday"), Array(DAY_OF_WEEK, TextStyle.FULL, 6, "Saturday"), Array(DAY_OF_WEEK, TextStyle.FULL, 7, "Sunday"), Array(DAY_OF_WEEK, TextStyle.SHORT, 1, "Mon"), Array(DAY_OF_WEEK, TextStyle.SHORT, 2, "Tue"), Array(DAY_OF_WEEK, TextStyle.SHORT, 3, "Wed"), Array(DAY_OF_WEEK, TextStyle.SHORT, 4, "Thu"), Array(DAY_OF_WEEK, TextStyle.SHORT, 5, "Fri"), Array(DAY_OF_WEEK, TextStyle.SHORT, 6, "Sat"), Array(DAY_OF_WEEK, TextStyle.SHORT, 7, "Sun"), Array(DAY_OF_MONTH, TextStyle.FULL, 1, "1"), Array(DAY_OF_MONTH, TextStyle.FULL, 2, "2"), Array(DAY_OF_MONTH, TextStyle.FULL, 3, "3"), Array(DAY_OF_MONTH, TextStyle.FULL, 28, "28"), Array(DAY_OF_MONTH, TextStyle.FULL, 29, "29"), Array(DAY_OF_MONTH, TextStyle.FULL, 30, "30"), Array(DAY_OF_MONTH, TextStyle.FULL, 31, "31"), Array(DAY_OF_MONTH, TextStyle.SHORT, 1, "1"), Array(DAY_OF_MONTH, TextStyle.SHORT, 2, "2"), Array(DAY_OF_MONTH, TextStyle.SHORT, 3, "3"), Array(DAY_OF_MONTH, TextStyle.SHORT, 28, "28"), Array(DAY_OF_MONTH, TextStyle.SHORT, 29, "29"), Array(DAY_OF_MONTH, TextStyle.SHORT, 30, "30"), Array(DAY_OF_MONTH, TextStyle.SHORT, 31, "31"), Array(MONTH_OF_YEAR, TextStyle.FULL, 1, "January"), Array(MONTH_OF_YEAR, TextStyle.FULL, 12, "December"), Array(MONTH_OF_YEAR, TextStyle.SHORT, 1, "Jan"), Array(MONTH_OF_YEAR, TextStyle.SHORT, 12, "Dec"))
+  def data_text: List[List[Any]] = {
+    List(
+      List(DAY_OF_WEEK, TextStyle.FULL, 1, "Monday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 2, "Tuesday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 3, "Wednesday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 4, "Thursday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 5, "Friday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 6, "Saturday"),
+      List(DAY_OF_WEEK, TextStyle.FULL, 7, "Sunday"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 1, "Mon"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 2, "Tue"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 3, "Wed"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 4, "Thu"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 5, "Fri"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 6, "Sat"),
+      List(DAY_OF_WEEK, TextStyle.SHORT, 7, "Sun"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 1, "1"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 2, "2"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 3, "3"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 28, "28"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 29, "29"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 30, "30"),
+      List(DAY_OF_MONTH, TextStyle.FULL, 31, "31"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 1, "1"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 2, "2"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 3, "3"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 28, "28"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 29, "29"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 30, "30"),
+      List(DAY_OF_MONTH, TextStyle.SHORT, 31, "31"),
+      List(MONTH_OF_YEAR, TextStyle.FULL, 1, "January"),
+      List(MONTH_OF_YEAR, TextStyle.FULL, 12, "December"),
+      List(MONTH_OF_YEAR, TextStyle.SHORT, 1, "Jan"),
+      List(MONTH_OF_YEAR, TextStyle.SHORT, 12, "Dec"))
   }
 
-  @Test(dataProvider = "printText")
-  @throws(classOf[Exception])
-  def test_appendText2arg_print(field: TemporalField, style: TextStyle, value: Int, expected: String): Unit = {
-    val f: DateTimeFormatter = builder.appendText(field, style).toFormatter(Locale.ENGLISH)
-    var dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
-    dt = dt.`with`(field, value)
-    val text: String = f.format(dt)
-    assertEquals(text, expected)
-  }
-
-  @Test(dataProvider = "printText")
-  @throws(classOf[Exception])
-  def test_appendText1arg_print(field: TemporalField, style: TextStyle, value: Int, expected: String): Unit = {
-    if (style eq TextStyle.FULL) {
-      val f: DateTimeFormatter = builder.appendText(field).toFormatter(Locale.ENGLISH)
-      var dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
-      dt = dt.`with`(field, value)
-      val text: String = f.format(dt)
-      assertEquals(text, expected)
+  test("appendText2arg_print") {
+    data_text.foreach {
+      case (field: TemporalField) :: (style: TextStyle) :: (value: Int) :: (expected: String) :: Nil =>
+        val builder = new DateTimeFormatterBuilder
+        val f: DateTimeFormatter = builder.appendText(field, style).toFormatter(Locale.ENGLISH)
+        var dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
+        dt = dt.`with`(field, value)
+        val text: String = f.format(dt)
+        println(text)
+        assertEquals(text, expected)
+      case _ =>
+        fail()
     }
   }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_print_appendText2arg_french_long(): Unit = {
+  test("appendText1arg_print") {
+    data_text.foreach {
+      case (field: TemporalField) :: (style: TextStyle) :: (value: Int) :: (expected: String) :: Nil =>
+        if (style eq TextStyle.FULL) {
+          val builder = new DateTimeFormatterBuilder
+          val f: DateTimeFormatter = builder.appendText(field).toFormatter(Locale.ENGLISH)
+          var dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
+          dt = dt.`with`(field, value)
+          val text: String = f.format(dt)
+          assertEquals(text, expected)
+        }
+      case _ =>
+        fail()
+    }
+  }
+
+  test("print_appendText2arg_french_long") {
     val f: DateTimeFormatter = builder.appendText(MONTH_OF_YEAR, TextStyle.FULL).toFormatter(Locale.FRENCH)
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
     val text: String = f.format(dt)
     assertEquals(text, "janvier")
   }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_print_appendText2arg_french_short(): Unit = {
+  test("print_appendText2arg_french_short") {
     val f: DateTimeFormatter = builder.appendText(MONTH_OF_YEAR, TextStyle.SHORT).toFormatter(Locale.FRENCH)
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
     val text: String = f.format(dt)
     assertEquals(text, "janv.")
   }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_appendTextMap(): Unit = {
+  test("appendTextMap") {
     val map: java.util.Map[Long, String] = new java.util.HashMap[Long, String]
     map.put(1L, "JNY")
     map.put(2L, "FBY")
@@ -119,9 +149,7 @@ import org.threeten.bp.temporal.TemporalField
     }
   }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_appendTextMap_DOM(): Unit = {
+  test("appendTextMap_DOM") {
     val map: java.util.Map[Long, String] = new java.util.HashMap[Long, String]
     map.put(1L, "1st")
     map.put(2L, "2nd")
@@ -134,9 +162,7 @@ import org.threeten.bp.temporal.TemporalField
     assertEquals(f.format(dt.withDayOfMonth(3)), "3rd")
   }
 
-  @Test
-  @throws(classOf[Exception])
-  def test_appendTextMapIncomplete(): Unit = {
+  test("appendTextMapIncomplete") {
     val map: java.util.Map[Long, String] = new java.util.HashMap[Long, String]
     map.put(1L, "JNY")
     builder.appendText(MONTH_OF_YEAR, map)
