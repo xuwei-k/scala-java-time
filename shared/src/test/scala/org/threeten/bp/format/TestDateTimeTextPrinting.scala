@@ -39,12 +39,7 @@ import org.threeten.bp.temporal.ChronoField.{DAY_OF_MONTH, DAY_OF_WEEK, MONTH_OF
 import org.threeten.bp.temporal.TemporalField
 
 /** Test text printing. */
-class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with BeforeAndAfter {
-  private var builder: DateTimeFormatterBuilder = null
-
-  before {
-    builder = new DateTimeFormatterBuilder
-  }
+class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper {
 
   def data_text: List[List[Any]] = {
     List(
@@ -90,7 +85,6 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
         var dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
         dt = dt.`with`(field, value)
         val text: String = f.format(dt)
-        println(text)
         assertEquals(text, expected)
       case _ =>
         fail()
@@ -114,6 +108,7 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
   }
 
   test("print_appendText2arg_french_long") {
+    val builder = new DateTimeFormatterBuilder
     val f: DateTimeFormatter = builder.appendText(MONTH_OF_YEAR, TextStyle.FULL).toFormatter(Locale.FRENCH)
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
     val text: String = f.format(dt)
@@ -121,6 +116,7 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
   }
 
   test("print_appendText2arg_french_short") {
+    val builder = new DateTimeFormatterBuilder
     val f: DateTimeFormatter = builder.appendText(MONTH_OF_YEAR, TextStyle.SHORT).toFormatter(Locale.FRENCH)
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
     val text: String = f.format(dt)
@@ -141,6 +137,7 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
     map.put(10L, "OBR")
     map.put(11L, "NVR")
     map.put(12L, "DBR")
+    val builder = new DateTimeFormatterBuilder
     builder.appendText(MONTH_OF_YEAR, map)
     val f: DateTimeFormatter = builder.toFormatter
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
@@ -154,6 +151,7 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
     map.put(1L, "1st")
     map.put(2L, "2nd")
     map.put(3L, "3rd")
+    val builder = new DateTimeFormatterBuilder
     builder.appendText(DAY_OF_MONTH, map)
     val f: DateTimeFormatter = builder.toFormatter
     val dt: LocalDateTime = LocalDateTime.of(2010, 1, 1, 0, 0)
@@ -165,6 +163,7 @@ class TestDateTimeTextPrinting extends FunSuite with AssertionsHelper with Befor
   test("appendTextMapIncomplete") {
     val map: java.util.Map[Long, String] = new java.util.HashMap[Long, String]
     map.put(1L, "JNY")
+    val builder = new DateTimeFormatterBuilder
     builder.appendText(MONTH_OF_YEAR, map)
     val f: DateTimeFormatter = builder.toFormatter
     val dt: LocalDateTime = LocalDateTime.of(2010, 2, 1, 0, 0)
