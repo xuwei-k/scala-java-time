@@ -31,28 +31,25 @@
  */
 package org.threeten.bp.temporal
 
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
+
 import org.scalatest.FunSuite
-import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.{AbstractTest, AssertionsHelper}
 
 /** Test. */
-class TestChronoField extends FunSuite with AssertionsHelper {
-  test("isDateBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
-      }
-    }
+class TestValueRangeSerialization extends FunSuite with AssertionsHelper {
+  ignore("immutable") {
+    AbstractTest.assertImmutable(classOf[ValueRange])
   }
 
-  test("isTimeBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
-      }
-    }
+  test("serialization") {
+    val obj: AnyRef = ValueRange.of(1, 2, 3, 4)
+    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+    val oos: ObjectOutputStream = new ObjectOutputStream(baos)
+    oos.writeObject(obj)
+    oos.close()
+    val ois: ObjectInputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray))
+    assertEquals(ois.readObject, obj)
   }
+
 }

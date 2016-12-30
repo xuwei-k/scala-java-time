@@ -28,7 +28,10 @@ lazy val commonSettings = Seq(
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     },
   pomExtra := pomData,
-  pomIncludeRepository := { _ => false }
+  pomIncludeRepository := { _ => false },
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+  )
 )
 
 lazy val root = project.in(file("."))
@@ -91,7 +94,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     baseDirectory in Test := baseDirectory.value.getParentFile,
     // Use CLDR provider for locales
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Djava.locale.providers=CLDR"),
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR"),
     TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
   ).jsSettings(
     sourceGenerators in Compile += Def.task {
@@ -99,6 +102,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
+    parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "io.github.cquiroz" %%% "scala-java-locales" % "0.5.0-cldr30"
     )
@@ -153,10 +157,6 @@ lazy val pomData =
    </developer>
   </developers>
   <contributors>
-    <contributor>
-      <name>Carlos Quiroz</name>
-      <url>https://github.com/cquiroz/</url>
-    </contributor>
     <contributor>
       <name>Javier Fernandez-Ivern</name>
       <url>https://github.com/ivern</url>

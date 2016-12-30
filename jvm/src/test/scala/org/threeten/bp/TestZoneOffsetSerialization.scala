@@ -29,30 +29,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.temporal
+package org.threeten.bp
 
 import org.scalatest.FunSuite
-import org.threeten.bp.AssertionsHelper
 
-/** Test. */
-class TestChronoField extends FunSuite with AssertionsHelper {
-  test("isDateBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
-      }
-    }
+/** Test ZoneOffset. */
+class TestZoneOffsetSerialization extends FunSuite with AssertionsHelper {
+  test("serialization") {
+    AbstractTest.assertSerializable(ZoneOffset.of("+01:30"))
+    AbstractTest.assertSerializable(ZoneOffset.of("-02:30"))
+    AbstractTest.assertSerializable(ZoneOffset.ofTotalSeconds(53265))
   }
 
-  test("isTimeBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
-      }
-    }
+  test("serialization_form") {
+    AbstractTest.assertEqualsSerialisedForm(ZoneOffset.ofHoursMinutes(1, 30))
   }
 }

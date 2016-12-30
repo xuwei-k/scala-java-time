@@ -4,6 +4,8 @@
 #
 # For more information, see https://travis-ci.org
 
+sudo: true
+
 language: scala
 
 jdk:
@@ -33,7 +35,8 @@ env:
   - COURSIER_NO_TERM=1
 
 script:
-  - sbt scalajavatimeJVM/test scalajavatimeJS/test
+  - sbt ++$TRAVIS_SCALA_VERSION clean scalajavatimeJVM/test
+  - sbt ++$TRAVIS_SCALA_VERSION clean scalajavatimeJS/test
   - sbt docs/makeMicrosite
   #- sbt clean coverage test &&
   #  sbt coverageAggregate

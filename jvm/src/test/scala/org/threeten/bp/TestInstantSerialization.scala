@@ -29,30 +29,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.temporal
+package org.threeten.bp
 
 import org.scalatest.FunSuite
-import org.threeten.bp.AssertionsHelper
 
-/** Test. */
-class TestChronoField extends FunSuite with AssertionsHelper {
-  test("isDateBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
-      }
-    }
+class TestInstantSerialization extends FunSuite with AssertionsHelper {
+
+  test("serialization") {
+    AbstractTest.assertSerializable(Instant.ofEpochMilli(134l))
   }
 
-  test("isTimeBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
-      }
-    }
+  test("serialization_format") {
+    AbstractTest.assertEqualsSerialisedForm(Instant.ofEpochMilli(1347830279338l))
   }
+
 }

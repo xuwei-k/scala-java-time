@@ -29,30 +29,32 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.temporal
+package org.threeten.bp
 
+import java.io._
 import org.scalatest.FunSuite
-import org.threeten.bp.AssertionsHelper
 
-/** Test. */
-class TestChronoField extends FunSuite with AssertionsHelper {
-  test("isDateBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
-      }
-    }
+/** Test Duration. */
+class TestDurationSerialization extends FunSuite with AssertionsHelper {
+  test("serialization") {
+    AbstractTest.assertSerializable(Duration.ofHours(5))
+    AbstractTest.assertSerializable(Duration.ofHours(-5))
+    AbstractTest.assertSerializableAndSame(Duration.ZERO)
   }
 
-  test("isTimeBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
-      }
-    }
+  test("serialization_format") {
+    AbstractTest.assertEqualsSerialisedForm(Duration.ofSeconds(654321, 123456789))
+  }
+
+  test("deserialization") {
+    val orginal: Duration = Duration.ofSeconds(2)
+    val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+    val out: ObjectOutputStream = new ObjectOutputStream(baos)
+    out.writeObject(orginal)
+    out.close()
+    val bais: ByteArrayInputStream = new ByteArrayInputStream(baos.toByteArray)
+    val in: ObjectInputStream = new ObjectInputStream(bais)
+    val ser: Duration = in.readObject.asInstanceOf[Duration]
+    assertEquals(Duration.ofSeconds(2), ser)
   }
 }

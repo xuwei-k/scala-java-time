@@ -29,30 +29,34 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.temporal
+package org.threeten.bp
+
+import java.io._
 
 import org.scalatest.FunSuite
-import org.threeten.bp.AssertionsHelper
 
-/** Test. */
-class TestChronoField extends FunSuite with AssertionsHelper {
-  test("isDateBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isDateBased, field.getBaseUnit.isDateBased)
-      }
+class TestPeriodSerialization extends FunSuite with AssertionsHelper {
+  def data_serialization: List[List[Period]] = {
+    List(List(Period.ZERO), List(Period.ofDays(1)), List(Period.of(1, 2, 3)))
+  }
+
+  test("serialization(period: Period") {
+    data_serialization.foreach {
+      case (period: Period) :: Nil =>
+        val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+        val oos: ObjectOutputStream = new ObjectOutputStream(baos)
+        oos.writeObject(period)
+        oos.close()
+        val ois: ObjectInputStream = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray))
+        if (period.isZero) {
+          assertSame(ois.readObject, period)
+        }
+        else {
+          assertEquals(ois.readObject, period)
+        }
+      case _ =>
+        fail()
     }
   }
 
-  test("isTimeBased") {
-    for (field <- ChronoField.values) {
-      if ((field eq ChronoField.INSTANT_SECONDS) || (field eq ChronoField.OFFSET_SECONDS)) {
-        assertEquals(field.isTimeBased, false)
-      } else {
-        assertEquals(field.isTimeBased, field.getBaseUnit.isTimeBased)
-      }
-    }
-  }
 }
