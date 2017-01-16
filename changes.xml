@@ -8,6 +8,19 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M7" date="2017-01-16" description="v2.0.0-M7">
+      <action dev="cquiroz" type="update" >
+        Downgrade to scala-java-locales 0.3.1-cldr30 to reduce the exported js size
+      </action>
+    </release>
+    <release version="2.0.0-M6" date="2016-12-08" description="v2.0.0-M6">
+      <action dev="cquiroz" type="update" >
+        Exports in both org.threeten.bp and java.time packages
+      </action>
+      <action dev="cquiroz" type="update" >
+        Published under a new organization
+      </action>
+    </release>
     <release version="2.0.0-M5" date="2016-11-08" description="v2.0.0-M5">
       <action dev="cquiroz" type="fix" >
         Fix #47: Test failures on TestDateTimeFormatters on Scala 2.12
