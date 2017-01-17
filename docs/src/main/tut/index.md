@@ -17,7 +17,8 @@ The implementation is based on the original BSD-licensed reference implementatio
 
 ```tut:book
 // You can pick either java.time or org.threeten.bp package to import
-import java.time._
+//import java.time._
+import org.threeten.bp._
 
 // always returns 2009-02-13T23:31:30
 val fixedClock = Clock.fixed(Instant.ofEpochSecond(1234567890L), ZoneOffset.ofHours(0))
@@ -55,12 +56,12 @@ chrono.MinguoDate.now(fixedClock).toString       == "Minguo ROC 98-02-13"
 #### Usage
 
 The *scala-java-time* library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Both Scala 2.11 and Scala 2.12 (2.12.0-M6 and later) are supported.
+Both Scala 2.11 and Scala 2.12 (2.12.0-M7 and later) are supported.
 
 To get started with SBT, add one (or both) of these dependencies:
 
-- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M6"` (for Scala)
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M6"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M7"` (for Scala)
+- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M7"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.
@@ -109,4 +110,4 @@ Thus, this project is a fork of the original code before entry to OpenJDK.
 
 ##### What is the relation to [this](https://github.com/soc/scala-java-time/) project
 
-This is a fork from the original [project](https://github.com/soc/scala-java-time/) aim to complete the API to work on Scala.js 
+This is a fork from the original [project](https://github.com/soc/scala-java-time/) aim to complete the API to work on Scala.js

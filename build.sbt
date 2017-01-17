@@ -10,13 +10,22 @@ val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M6",
+  version      := "2.0.0-M7",
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
 
   scalaVersion       := scalaVer,
   crossScalaVersions := crossScalaVer,
+  autoAPIMappings    := true,
+
+  scalacOptions in Compile ++= Seq(
+    "-deprecation",
+    "-feature",
+    // Enable when documentation does not produce warnings
+    //"-Xfatal-warnings",
+    "-encoding", "UTF-8"
+  ),
 
   publishArtifact in Test := false,
   publishMavenStyle := true,
@@ -104,7 +113,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
       }.taskValue,
     parallelExecution in Test := false,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.5.0-cldr30"
+      "com.github.cquiroz" %%% "scala-java-locales" % "0.3.1-cldr30"
     )
   )
 
