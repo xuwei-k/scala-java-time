@@ -31,58 +31,54 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertSame
-import java.io.IOException
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
 
 /** Test fixed clock. */
 object TestClock_Fixed {
-  private val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
-  private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
-  private val INSTANT: Instant = LocalDateTime.of(2008, 6, 30, 11, 30, 10, 500).atZone(ZoneOffset.ofHours(2)).toInstant
+  val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
+  val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+  val INSTANT: Instant = LocalDateTime.of(2008, 6, 30, 11, 30, 10, 500).atZone(ZoneOffset.ofHours(2)).toInstant
 }
 
-@Test class TestClock_Fixed {
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
-  def test_isSerializable(): Unit = {
-    AbstractTest.assertSerializable(Clock.fixed(TestClock_Fixed.INSTANT, ZoneOffset.UTC))
-    AbstractTest.assertSerializable(Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS))
-  }
-
-  def test_fixed_InstantZoneId(): Unit = {
+class TestClock_Fixed extends FunSuite with AssertionsHelper {
+  test("fixed_InstantZoneId") {
     val test: Clock = Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS)
     assertEquals(test.instant, TestClock_Fixed.INSTANT)
     assertEquals(test.getZone, TestClock_Fixed.PARIS)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_fixed_InstantZoneId_nullInstant(): Unit = {
-    Clock.fixed(null, TestClock_Fixed.PARIS)
+  test("fixed_InstantZoneId_nullInstant") {
+    assertThrows[NullPointerException] {
+      Clock.fixed(null, TestClock_Fixed.PARIS)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_fixed_InstantZoneId_nullZoneId(): Unit = {
-    Clock.fixed(TestClock_Fixed.INSTANT, null)
+  test("fixed_InstantZoneId_nullZoneId") {
+    assertThrows[NullPointerException] {
+      Clock.fixed(TestClock_Fixed.INSTANT, null)
+    }
   }
 
-  def test_withZone(): Unit = {
+  test("withZone") {
     val test: Clock = Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS)
     val changed: Clock = test.withZone(TestClock_Fixed.MOSCOW)
     assertEquals(test.getZone, TestClock_Fixed.PARIS)
     assertEquals(changed.getZone, TestClock_Fixed.MOSCOW)
   }
 
-  def test_withZone_same(): Unit = {
+  test("withZone_same") {
     val test: Clock = Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS)
     val changed: Clock = test.withZone(TestClock_Fixed.PARIS)
     assertSame(test, changed)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_withZone_null(): Unit = {
-    Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS).withZone(null)
+  test("withZone_null") {
+    assertThrows[NullPointerException] {
+      Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS).withZone(null)
+    }
   }
 
-  def test_equals(): Unit = {
+  test("equals") {
     val a: Clock = Clock.fixed(TestClock_Fixed.INSTANT, ZoneOffset.UTC)
     val b: Clock = Clock.fixed(TestClock_Fixed.INSTANT, ZoneOffset.UTC)
     assertEquals(a == a, true)
@@ -94,11 +90,11 @@ object TestClock_Fixed {
     val d: Clock = Clock.fixed(TestClock_Fixed.INSTANT.minusNanos(1), ZoneOffset.UTC)
     assertEquals(a == d, false)
     assertEquals(a == null, false)
-    assertEquals(a == "other type", false)
+    assertNotEquals(a, "other type")
     assertEquals(a == Clock.systemUTC, false)
   }
 
-  def test_hashCode(): Unit = {
+  test("hashCode") {
     val a: Clock = Clock.fixed(TestClock_Fixed.INSTANT, ZoneOffset.UTC)
     val b: Clock = Clock.fixed(TestClock_Fixed.INSTANT, ZoneOffset.UTC)
     assertEquals(a.hashCode, a.hashCode)
@@ -109,7 +105,7 @@ object TestClock_Fixed {
     assertEquals(a.hashCode == d.hashCode, false)
   }
 
-  def test_toString(): Unit = {
+  test("toString") {
     val test: Clock = Clock.fixed(TestClock_Fixed.INSTANT, TestClock_Fixed.PARIS)
     assertEquals(test.toString, "FixedClock[2008-06-30T09:30:10.000000500Z,Europe/Paris]")
   }
