@@ -64,7 +64,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London") {
-    pending
     val test: ZoneRules = europeLondon
     assertEquals(test.isFixedOffset, false)
   }
@@ -82,7 +81,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffset") {
-    pending
     val test: ZoneRules = europeLondon
     assertEquals(test.getOffset(createInstant(2008, 1, 1, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_ZERO)
     assertEquals(test.getOffset(createInstant(2008, 2, 1, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_ZERO)
@@ -99,7 +97,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffset_toDST") {
-    pending
     val test: ZoneRules = europeLondon
     assertEquals(test.getOffset(createInstant(2008, 3, 24, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_ZERO)
     assertEquals(test.getOffset(createInstant(2008, 3, 25, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_ZERO)
@@ -114,7 +111,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffset_fromDST") {
-    pending
     val test: ZoneRules = europeLondon
     assertEquals(test.getOffset(createInstant(2008, 10, 24, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
     assertEquals(test.getOffset(createInstant(2008, 10, 25, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
@@ -129,7 +125,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffsetInfo") {
-    pending
     val test: ZoneRules = europeLondon
     checkOffset(test, createLDT(2008, 1, 1), TestStandardZoneRules.OFFSET_ZERO, 1)
     checkOffset(test, createLDT(2008, 2, 1), TestStandardZoneRules.OFFSET_ZERO, 1)
@@ -146,7 +141,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffsetInfo_toDST") {
-    pending
     val test: ZoneRules = europeLondon
     checkOffset(test, createLDT(2008, 3, 24), TestStandardZoneRules.OFFSET_ZERO, 1)
     checkOffset(test, createLDT(2008, 3, 25), TestStandardZoneRules.OFFSET_ZERO, 1)
@@ -161,7 +155,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffsetInfo_fromDST") {
-    pending
     val test: ZoneRules = europeLondon
     checkOffset(test, createLDT(2008, 10, 24), TestStandardZoneRules.OFFSET_PONE, 1)
     checkOffset(test, createLDT(2008, 10, 25), TestStandardZoneRules.OFFSET_PONE, 1)
@@ -176,7 +169,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffsetInfo_gap") {
-    pending
     val test: ZoneRules = europeLondon
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 30, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, TestStandardZoneRules.OFFSET_ZERO, TestStandardZoneRules.GAP)
@@ -200,7 +192,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getOffsetInfo_overlap") {
-    pending
     val test: ZoneRules = europeLondon
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 10, 26, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, TestStandardZoneRules.OFFSET_PONE, TestStandardZoneRules.OVERLAP)
@@ -225,7 +216,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getStandardOffset") {
-    pending
     val test: ZoneRules = europeLondon
     var zdt: ZonedDateTime = createZDT(1840, 1, 1, ZoneOffset.UTC)
     while (zdt.getYear < 2010) {
@@ -244,7 +234,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getTransitions") {
-    pending
     val test: ZoneRules = europeLondon
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
     val first: ZoneOffsetTransition = trans.get(0)
@@ -320,7 +309,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_getTransitionRules") {
-    pending
     val test: ZoneRules = europeLondon
     val rules: java.util.List[ZoneOffsetTransitionRule] = test.getTransitionRules
     assertEquals(rules.size, 2)
@@ -345,7 +333,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_nextTransition_historic") {
-    pending
     val test: ZoneRules = europeLondon
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
     val first: ZoneOffsetTransition = trans.get(0)
@@ -361,7 +348,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_nextTransition_rulesBased") {
-    pending
     val test: ZoneRules = europeLondon
     val rules: java.util.List[ZoneOffsetTransitionRule] = test.getTransitionRules
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
@@ -381,7 +367,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_nextTransition_lastYear") {
-    pending
     val test: ZoneRules = europeLondon
     val rules: java.util.List[ZoneOffsetTransitionRule] = test.getTransitionRules
     val zot: ZoneOffsetTransition = rules.get(1).createTransition(Year.MAX_VALUE)
@@ -389,7 +374,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_previousTransition_historic") {
-    pending
     val test: ZoneRules = europeLondon
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
     val first: ZoneOffsetTransition = trans.get(0)
@@ -407,7 +391,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("London_previousTransition_rulesBased") {
-    pending
     val test: ZoneRules = europeLondon
     val rules: java.util.List[ZoneOffsetTransitionRule] = test.getTransitionRules
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
@@ -437,7 +420,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris") {
-    pending
     val test: ZoneRules = europeParis
     assertEquals(test.isFixedOffset, false)
   }
@@ -455,7 +437,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffset") {
-    pending
     val test: ZoneRules = europeParis
     assertEquals(test.getOffset(createInstant(2008, 1, 1, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
     assertEquals(test.getOffset(createInstant(2008, 2, 1, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
@@ -472,7 +453,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffset_toDST") {
-    pending
     val test: ZoneRules = europeParis
     assertEquals(test.getOffset(createInstant(2008, 3, 24, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
     assertEquals(test.getOffset(createInstant(2008, 3, 25, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PONE)
@@ -487,7 +467,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffset_fromDST") {
-    pending
     val test: ZoneRules = europeParis
     assertEquals(test.getOffset(createInstant(2008, 10, 24, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PTWO)
     assertEquals(test.getOffset(createInstant(2008, 10, 25, ZoneOffset.UTC)), TestStandardZoneRules.OFFSET_PTWO)
@@ -502,7 +481,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffsetInfo") {
-    pending
     val test: ZoneRules = europeParis
     checkOffset(test, createLDT(2008, 1, 1), TestStandardZoneRules.OFFSET_PONE, 1)
     checkOffset(test, createLDT(2008, 2, 1), TestStandardZoneRules.OFFSET_PONE, 1)
@@ -519,7 +497,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffsetInfo_toDST") {
-    pending
     val test: ZoneRules = europeParis
     checkOffset(test, createLDT(2008, 3, 24), TestStandardZoneRules.OFFSET_PONE, 1)
     checkOffset(test, createLDT(2008, 3, 25), TestStandardZoneRules.OFFSET_PONE, 1)
@@ -534,7 +511,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffsetInfo_fromDST") {
-    pending
     val test: ZoneRules = europeParis
     checkOffset(test, createLDT(2008, 10, 24), TestStandardZoneRules.OFFSET_PTWO, 1)
     checkOffset(test, createLDT(2008, 10, 25), TestStandardZoneRules.OFFSET_PTWO, 1)
@@ -549,7 +525,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffsetInfo_gap") {
-    pending
     val test: ZoneRules = europeParis
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 30, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, TestStandardZoneRules.OFFSET_PONE, TestStandardZoneRules.GAP)
@@ -571,7 +546,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getOffsetInfo_overlap") {
-    pending
     val test: ZoneRules = europeParis
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 10, 26, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, TestStandardZoneRules.OFFSET_PTWO, TestStandardZoneRules.OVERLAP)
@@ -594,7 +568,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Paris_getStandardOffset") {
-    pending
     val test: ZoneRules = europeParis
     var zdt: ZonedDateTime = createZDT(1840, 1, 1, ZoneOffset.UTC)
     while (zdt.getYear < 2010) {
@@ -623,7 +596,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork") {
-    pending
     val test: ZoneRules = americaNewYork
     assertEquals(test.isFixedOffset, false)
   }
@@ -641,7 +613,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffset") {
-    pending
     val test: ZoneRules = americaNewYork
     val offset: ZoneOffset = ZoneOffset.ofHours(-5)
     assertEquals(test.getOffset(createInstant(2008, 1, 1, offset)), ZoneOffset.ofHours(-5))
@@ -671,7 +642,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffset_toDST") {
-    pending
     val test: ZoneRules = americaNewYork
     val offset: ZoneOffset = ZoneOffset.ofHours(-5)
     assertEquals(test.getOffset(createInstant(2008, 3, 8, offset)), ZoneOffset.ofHours(-5))
@@ -686,7 +656,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffset_fromDST") {
-    pending
     val test: ZoneRules = americaNewYork
     val offset: ZoneOffset = ZoneOffset.ofHours(-4)
     assertEquals(test.getOffset(createInstant(2008, 11, 1, offset)), ZoneOffset.ofHours(-4))
@@ -701,7 +670,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffsetInfo") {
-    pending
     val test: ZoneRules = americaNewYork
     checkOffset(test, createLDT(2008, 1, 1), ZoneOffset.ofHours(-5), 1)
     checkOffset(test, createLDT(2008, 2, 1), ZoneOffset.ofHours(-5), 1)
@@ -730,7 +698,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffsetInfo_toDST") {
-    pending
     val test: ZoneRules = americaNewYork
     checkOffset(test, createLDT(2008, 3, 8), ZoneOffset.ofHours(-5), 1)
     checkOffset(test, createLDT(2008, 3, 9), ZoneOffset.ofHours(-5), 1)
@@ -744,7 +711,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffsetInfo_fromDST") {
-    pending
     val test: ZoneRules = americaNewYork
     checkOffset(test, createLDT(2008, 11, 1), ZoneOffset.ofHours(-4), 1)
     checkOffset(test, createLDT(2008, 11, 2), ZoneOffset.ofHours(-4), 1)
@@ -758,7 +724,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffsetInfo_gap") {
-    pending
     val test: ZoneRules = americaNewYork
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 9, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, ZoneOffset.ofHours(-5), TestStandardZoneRules.GAP)
@@ -780,7 +745,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getOffsetInfo_overlap") {
-    pending
     val test: ZoneRules = americaNewYork
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 11, 2, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test, dateTime, ZoneOffset.ofHours(-4), TestStandardZoneRules.OVERLAP)
@@ -803,7 +767,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("NewYork_getStandardOffset") {
-    pending
     val test: ZoneRules = americaNewYork
     var dateTime: ZonedDateTime = createZDT(1860, 1, 1, ZoneOffset.UTC)
     while (dateTime.getYear < 2010) {
@@ -823,7 +786,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Kathmandu_nextTransition_historic") {
-    pending
     val test: ZoneRules = asiaKathmandu
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
     val first: ZoneOffsetTransition = trans.get(0)
@@ -839,7 +801,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("Kathmandu_nextTransition_noRules") {
-    pending
     val test: ZoneRules = asiaKathmandu
     val trans: java.util.List[ZoneOffsetTransition] = test.getTransitions
     val last: ZoneOffsetTransition = trans.get(trans.size - 1)
@@ -847,7 +808,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("getTransitions_immutable") {
-    pending
     assertThrows[UnsupportedOperationException] {
       val test: ZoneRules = europeParis
       test.getTransitions.clear()
@@ -855,7 +815,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("getTransitionRules_immutable") {
-    pending
     assertThrows[UnsupportedOperationException] {
       val test: ZoneRules = europeParis
       test.getTransitionRules.clear()
@@ -885,7 +844,6 @@ class TestStandardZoneRules extends FunSuite with AssertionsHelper {
   }
 
   test("toString") {
-    pending
     assertEquals(europeLondon.toString.contains("ZoneRules"), true)
   }
 
