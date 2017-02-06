@@ -31,10 +31,6 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertNotNull
-import org.testng.Assert.assertTrue
-import org.testng.Assert.fail
 import org.threeten.bp.temporal.ChronoField.AMPM_OF_DAY
 import org.threeten.bp.temporal.ChronoField.CLOCK_HOUR_OF_AMPM
 import org.threeten.bp.temporal.ChronoField.CLOCK_HOUR_OF_DAY
@@ -62,15 +58,8 @@ import org.threeten.bp.temporal.ChronoUnit.NANOS
 import org.threeten.bp.temporal.ChronoUnit.SECONDS
 import org.threeten.bp.temporal.ChronoUnit.WEEKS
 import org.threeten.bp.temporal.ChronoUnit.YEARS
-import java.io.IOException
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.EnumSet
-import java.util.Iterator
-import java.util.List
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
+
+import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.DateTimeParseException
 import org.threeten.bp.temporal.ChronoField
@@ -86,6 +75,8 @@ import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalUnit
 import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
+import scala.collection.JavaConverters._
+
 /** Test LocalTime. */
 object TestLocalTime {
   private val INVALID_UNITS: Array[TemporalUnit] =  {
@@ -96,44 +87,24 @@ object TestLocalTime {
   }
 }
 
-@Test class TestLocalTime extends AbstractDateTimeTest {
+class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper with BeforeAndAfter {
   private var TEST_12_30_40_987654321: LocalTime = null
 
-  @BeforeMethod def setUp(): Unit = {
+  before {
     TEST_12_30_40_987654321 = LocalTime.of(12, 30, 40, 987654321)
   }
 
-  protected def samples: java.util.List[TemporalAccessor] = {
-    val array: Array[TemporalAccessor] = Array(TEST_12_30_40_987654321, LocalTime.MIN, LocalTime.MAX, LocalTime.MIDNIGHT, LocalTime.NOON)
-    Arrays.asList(array: _*)
+  override protected def samples: List[TemporalAccessor] = {
+    List(TEST_12_30_40_987654321, LocalTime.MIN, LocalTime.MAX, LocalTime.MIDNIGHT, LocalTime.NOON)
   }
 
-  protected def validFields: java.util.List[TemporalField] = {
-    val array: Array[TemporalField] = Array(NANO_OF_SECOND, NANO_OF_DAY, MICRO_OF_SECOND, MICRO_OF_DAY, MILLI_OF_SECOND, MILLI_OF_DAY, SECOND_OF_MINUTE, SECOND_OF_DAY, MINUTE_OF_HOUR, MINUTE_OF_DAY, CLOCK_HOUR_OF_AMPM, HOUR_OF_AMPM, CLOCK_HOUR_OF_DAY, HOUR_OF_DAY, AMPM_OF_DAY)
-    Arrays.asList(array: _*)
+  override protected def validFields: List[TemporalField] = {
+    List(NANO_OF_SECOND, NANO_OF_DAY, MICRO_OF_SECOND, MICRO_OF_DAY, MILLI_OF_SECOND, MILLI_OF_DAY, SECOND_OF_MINUTE, SECOND_OF_DAY, MINUTE_OF_HOUR, MINUTE_OF_DAY, CLOCK_HOUR_OF_AMPM, HOUR_OF_AMPM, CLOCK_HOUR_OF_DAY, HOUR_OF_DAY, AMPM_OF_DAY)
   }
 
-  protected def invalidFields: java.util.List[TemporalField] = {
-    val list: java.util.List[TemporalField] = new java.util.ArrayList[TemporalField](Arrays.asList[TemporalField](ChronoField.values: _*))
-    list.removeAll(validFields)
-    list.add(JulianFields.JULIAN_DAY)
-    list.add(JulianFields.MODIFIED_JULIAN_DAY)
-    list.add(JulianFields.RATA_DIE)
-    list
-  }
-
-  @Test
-  @throws(classOf[ClassNotFoundException])
-  @throws(classOf[IOException])
-  def test_serialization_format(): Unit = {
-    AbstractTest.assertEqualsSerialisedForm(LocalTime.of(22, 17, 59, 460 * 1000000))
-  }
-
-  @Test
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
-  def test_serialization(): Unit = {
-    AbstractTest.assertSerializable(TEST_12_30_40_987654321)
+  override protected def invalidFields: List[TemporalField] = {
+    val list: List[TemporalField] = List(ChronoField.values: _*)
+    (list :+ JulianFields.JULIAN_DAY :+ JulianFields.MODIFIED_JULIAN_DAY :+ JulianFields.RATA_DIE).filterNot(validFields.contains)
   }
 
   private def check(time: LocalTime, h: Int, m: Int, s: Int, n: Int): Unit = {
@@ -143,53 +114,55 @@ object TestLocalTime {
     assertEquals(time.getNano, n)
   }
 
-  @Test def constant_MIDNIGHT(): Unit = {
+  test("constant_MIDNIGHT") {
     check(LocalTime.MIDNIGHT, 0, 0, 0, 0)
   }
 
-  @Test def constant_MIDNIGHT_equal(): Unit = {
+  test("constant_MIDNIGHT_equal") {
     assertEquals(LocalTime.MIDNIGHT, LocalTime.MIDNIGHT)
     assertEquals(LocalTime.MIDNIGHT, LocalTime.of(0, 0))
   }
 
-  @Test def constant_MIDDAY(): Unit = {
+  test("constant_MIDDAY") {
     check(LocalTime.NOON, 12, 0, 0, 0)
   }
 
-  @Test def constant_MIDDAY_equal(): Unit = {
+  test("constant_MIDDAY_equal") {
     assertEquals(LocalTime.NOON, LocalTime.NOON)
     assertEquals(LocalTime.NOON, LocalTime.of(12, 0))
   }
 
-  @Test def constant_MIN_TIME(): Unit = {
+  test("constant_MIN_TIME") {
     check(LocalTime.MIN, 0, 0, 0, 0)
   }
 
-  @Test def constant_MIN_TIME_equal(): Unit = {
+  test("constant_MIN_TIME_equal") {
     assertEquals(LocalTime.MIN, LocalTime.of(0, 0))
   }
 
-  @Test def constant_MAX_TIME(): Unit = {
+  test("constant_MAX_TIME") {
     check(LocalTime.MAX, 23, 59, 59, 999999999)
   }
 
-  @Test def constant_MAX_TIME_equal(): Unit = {
+  test("constant_MAX_TIME_equal") {
     assertEquals(LocalTime.NOON, LocalTime.NOON)
     assertEquals(LocalTime.NOON, LocalTime.of(12, 0))
   }
 
-  @Test def now(): Unit = {
+  test("now") {
     val expected: LocalTime = LocalTime.now(Clock.systemDefaultZone)
     val test: LocalTime = LocalTime.now
     val diff: Long = Math.abs(test.toNanoOfDay - expected.toNanoOfDay)
     assertTrue(diff < 100000000)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def now_ZoneId_nullZoneId(): Unit = {
-    LocalTime.now(null.asInstanceOf[ZoneId])
+  test("now_ZoneId_nullZoneId") {
+    assertThrows[NullPointerException] {
+      LocalTime.now(null.asInstanceOf[ZoneId])
+    }
   }
 
-  @Test def now_ZoneId(): Unit = {
+  test("now_ZoneId") {
     val zone: ZoneId = ZoneId.of("UTC+01:02:03")
     var expected: LocalTime = LocalTime.now(Clock.system(zone))
     var test: LocalTime = LocalTime.now(zone)
@@ -199,7 +172,7 @@ object TestLocalTime {
       while (i < 100) {
         {
           if (expected == test) {
-            return
+            i = 99
           }
           expected = LocalTime.now(Clock.system(zone))
           test = LocalTime.now(zone)
@@ -213,11 +186,13 @@ object TestLocalTime {
     assertEquals(test, expected)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def now_Clock_nullClock(): Unit = {
-    LocalTime.now(null.asInstanceOf[Clock])
+  test("now_Clock_nullClock") {
+    assertThrows[NullPointerException] {
+      LocalTime.now(null.asInstanceOf[Clock])
+    }
   }
 
-  @Test def now_Clock_allSecsInDay(): Unit = {
+  test("now_Clock_allSecsInDay") {
     {
       var i: Int = 0
       while (i < (2 * 24 * 60 * 60)) {
@@ -238,7 +213,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def now_Clock_beforeEpoch(): Unit = {
+  test("now_Clock_beforeEpoch") {
     {
       var i: Int = -1
       while (i >= -(24 * 60 * 60)) {
@@ -259,7 +234,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def now_Clock_max(): Unit = {
+  test("now_Clock_max") {
     val clock: Clock = Clock.fixed(Instant.MAX, ZoneOffset.UTC)
     val test: LocalTime = LocalTime.now(clock)
     assertEquals(test.getHour, 23)
@@ -268,7 +243,7 @@ object TestLocalTime {
     assertEquals(test.getNano, 999999999)
   }
 
-  @Test def now_Clock_min(): Unit = {
+  test("now_Clock_min") {
     val clock: Clock = Clock.fixed(Instant.MIN, ZoneOffset.UTC)
     val test: LocalTime = LocalTime.now(clock)
     assertEquals(test.getHour, 0)
@@ -277,204 +252,290 @@ object TestLocalTime {
     assertEquals(test.getNano, 0)
   }
 
-  @Test def factory_time_2ints(): Unit = {
+  test("factory_time_2ints") {
     val test: LocalTime = LocalTime.of(12, 30)
     check(test, 12, 30, 0, 0)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_2ints_hourTooLow(): Unit = {
-    LocalTime.of(-1, 0)
+  test("factory_time_2ints_hourTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(-1, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_2ints_hourTooHigh(): Unit = {
-    LocalTime.of(24, 0)
+  test("factory_time_2ints_hourTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(24, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_2ints_minuteTooLow(): Unit = {
-    LocalTime.of(0, -1)
+  test("factory_time_2ints_minuteTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, -1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_2ints_minuteTooHigh(): Unit = {
-    LocalTime.of(0, 60)
+  test("factory_time_2ints_minuteTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 60)
+    }
   }
 
-  @Test def factory_time_3ints(): Unit = {
+  test("factory_time_3ints") {
     val test: LocalTime = LocalTime.of(12, 30, 40)
     check(test, 12, 30, 40, 0)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_hourTooLow(): Unit = {
-    LocalTime.of(-1, 0, 0)
+  test("factory_time_3ints_hourTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(-1, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_hourTooHigh(): Unit = {
-    LocalTime.of(24, 0, 0)
+  test("factory_time_3ints_hourTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(24, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_minuteTooLow(): Unit = {
-    LocalTime.of(0, -1, 0)
+  test("factory_time_3ints_minuteTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, -1, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_minuteTooHigh(): Unit = {
-    LocalTime.of(0, 60, 0)
+  test("factory_time_3ints_minuteTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 60, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_secondTooLow(): Unit = {
-    LocalTime.of(0, 0, -1)
+  test("factory_time_3ints_secondTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, -1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_3ints_secondTooHigh(): Unit = {
-    LocalTime.of(0, 0, 60)
+  test("factory_time_3ints_secondTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, 60)
+    }
   }
 
-  @Test def factory_time_4ints(): Unit = {
+  test("factory_time_4ints") {
     var test: LocalTime = LocalTime.of(12, 30, 40, 987654321)
     check(test, 12, 30, 40, 987654321)
     test = LocalTime.of(12, 0, 40, 987654321)
     check(test, 12, 0, 40, 987654321)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_hourTooLow(): Unit = {
-    LocalTime.of(-1, 0, 0, 0)
+  test("factory_time_4ints_hourTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(-1, 0, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_hourTooHigh(): Unit = {
-    LocalTime.of(24, 0, 0, 0)
+  test("factory_time_4ints_hourTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(24, 0, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_minuteTooLow(): Unit = {
-    LocalTime.of(0, -1, 0, 0)
+  test("factory_time_4ints_minuteTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, -1, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_minuteTooHigh(): Unit = {
-    LocalTime.of(0, 60, 0, 0)
+  test("factory_time_4ints_minuteTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 60, 0, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_secondTooLow(): Unit = {
-    LocalTime.of(0, 0, -1, 0)
+  test("factory_time_4ints_secondTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, -1, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_secondTooHigh(): Unit = {
-    LocalTime.of(0, 0, 60, 0)
+  test("factory_time_4ints_secondTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, 60, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_nanoTooLow(): Unit = {
-    LocalTime.of(0, 0, 0, -1)
+  test("factory_time_4ints_nanoTooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, 0, -1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_time_4ints_nanoTooHigh(): Unit = {
-    LocalTime.of(0, 0, 0, 1000000000)
+  test("factory_time_4ints_nanoTooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.of(0, 0, 0, 1000000000)
+    }
   }
 
-  @Test def factory_ofSecondOfDay(): Unit = {
+  test("factory_ofSecondOfDay") {
     val localTime: LocalTime = LocalTime.ofSecondOfDay(2 * 60 * 60 + 17 * 60 + 23)
     check(localTime, 2, 17, 23, 0)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_tooLow(): Unit = {
-    LocalTime.ofSecondOfDay(-1)
+  test("factory_ofSecondOfDay_tooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_tooHigh(): Unit = {
-    LocalTime.ofSecondOfDay(24 * 60 * 60)
+  test("factory_ofSecondOfDay_tooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(24 * 60 * 60)
+    }
   }
 
-  @Test def factory_ofSecondOfDay_long_int(): Unit = {
+  test("factory_ofSecondOfDay_long_int") {
     val localTime: LocalTime = LocalTime.ofSecondOfDay(2 * 60 * 60 + 17 * 60 + 23, 987)
     check(localTime, 2, 17, 23, 987)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_long_int_tooLowSecs(): Unit = {
-    LocalTime.ofSecondOfDay(-1, 0)
+  test("factory_ofSecondOfDay_long_int_tooLowSecs") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(-1, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_long_int_tooHighSecs(): Unit = {
-    LocalTime.ofSecondOfDay(24 * 60 * 60, 0)
+  test("factory_ofSecondOfDay_long_int_tooHighSecs") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(24 * 60 * 60, 0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_long_int_tooLowNanos(): Unit = {
-    LocalTime.ofSecondOfDay(0, -1)
+  test("factory_ofSecondOfDay_long_int_tooLowNanos") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(0, -1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofSecondOfDay_long_int_tooHighNanos(): Unit = {
-    LocalTime.ofSecondOfDay(0, 1000000000)
+  test("factory_ofSecondOfDay_long_int_tooHighNanos") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofSecondOfDay(0, 1000000000)
+    }
   }
 
-  @Test def factory_ofNanoOfDay(): Unit = {
+  test("factory_ofNanoOfDay") {
     val localTime: LocalTime = LocalTime.ofNanoOfDay(60 * 60 * 1000000000L + 17)
     check(localTime, 1, 0, 0, 17)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofNanoOfDay_tooLow(): Unit = {
-    LocalTime.ofNanoOfDay(-1)
+  test("factory_ofNanoOfDay_tooLow") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofNanoOfDay(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_ofNanoOfDay_tooHigh(): Unit = {
-    LocalTime.ofNanoOfDay(24 * 60 * 60 * 1000000000L)
+  test("factory_ofNanoOfDay_tooHigh") {
+    assertThrows[DateTimeException] {
+      LocalTime.ofNanoOfDay(24 * 60 * 60 * 1000000000L)
+    }
   }
 
-  @Test def factory_from_DateTimeAccessor(): Unit = {
+  test("factory_from_DateTimeAccessor") {
     assertEquals(LocalTime.from(LocalTime.of(17, 30)), LocalTime.of(17, 30))
     assertEquals(LocalTime.from(LocalDateTime.of(2012, 5, 1, 17, 30)), LocalTime.of(17, 30))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def factory_from_DateTimeAccessor_invalid_noDerive(): Unit = {
-    LocalTime.from(LocalDate.of(2007, 7, 15))
+  test("factory_from_DateTimeAccessor_invalid_noDerive") {
+    assertThrows[DateTimeException] {
+      LocalTime.from(LocalDate.of(2007, 7, 15))
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_from_DateTimeAccessor_null(): Unit = {
-    LocalTime.from(null.asInstanceOf[TemporalAccessor])
+  test("factory_from_DateTimeAccessor_null") {
+    assertThrows[Platform.NPE] {
+      LocalTime.from(null.asInstanceOf[TemporalAccessor])
+    }
   }
 
-  @Test(dataProvider = "sampleToString") def factory_parse_validText(h: Int, m: Int, s: Int, n: Int, parsable: String): Unit = {
-    val t: LocalTime = LocalTime.parse(parsable)
-    assertNotNull(t, parsable)
-    assertEquals(t.getHour, h)
-    assertEquals(t.getMinute, m)
-    assertEquals(t.getSecond, s)
-    assertEquals(t.getNano, n)
+  test("factory_parse_validText") {
+    provider_sampleToString.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: (parsable: String) :: Nil =>
+        val t: LocalTime = LocalTime.parse(parsable)
+        assertNotNull(t, parsable)
+        assertEquals(t.getHour, h)
+        assertEquals(t.getMinute, m)
+        assertEquals(t.getSecond, s)
+        assertEquals(t.getNano, n)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "sampleBadParse") private[bp] def provider_sampleBadParse: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array("00;00"), Array("12-00"), Array("-01:00"), Array("00:00:00-09"), Array("00:00:00,09"), Array("00:00:abs"), Array("11"), Array("11:30+01:00"), Array("11:30+01:00[Europe/Paris]"))
+  val provider_sampleBadParse: List[String] = {
+    List(
+      "00;00",
+      "12-00",
+      "-01:00",
+      "00:00:00-09",
+      "00:00:00,09",
+      "00:00:abs",
+      "11",
+      "11:30+01:00",
+      "11:30+01:00[Europe/Paris]")
   }
 
-  @Test(dataProvider = "sampleBadParse", expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parse_invalidText(unparsable: String): Unit = {
-    LocalTime.parse(unparsable)
+  test("factory_parse_invalidText") {
+    provider_sampleBadParse.foreach { unparsable =>
+      assertThrows[DateTimeException] {
+        LocalTime.parse(unparsable)
+      }
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parse_illegalHour(): Unit = {
-    LocalTime.parse("25:00")
+  test("factory_parse_illegalHour") {
+    assertThrows[DateTimeParseException] {
+      LocalTime.parse("25:00")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parse_illegalMinute(): Unit = {
-    LocalTime.parse("12:60")
+  test("factory_parse_illegalMinute") {
+    assertThrows[DateTimeParseException] {
+      LocalTime.parse("12:60")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parse_illegalSecond(): Unit = {
-    LocalTime.parse("12:12:60")
+  test("factory_parse_illegalSecond") {
+    assertThrows[DateTimeParseException] {
+      LocalTime.parse("12:12:60")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_nullTest(): Unit = {
-    LocalTime.parse(null.asInstanceOf[String])
+  test("factory_parse_nullTest") {
+    assertThrows[NullPointerException] {
+      LocalTime.parse(null.asInstanceOf[String])
+    }
   }
 
-  @Test def factory_parse_formatter(): Unit = {
+  test("factory_parse_formatter") {
     val f: DateTimeFormatter = DateTimeFormatter.ofPattern("H m s")
     val test: LocalTime = LocalTime.parse("14 30 40", f)
     assertEquals(test, LocalTime.of(14, 30, 40))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_formatter_nullText(): Unit = {
-    val f: DateTimeFormatter = DateTimeFormatter.ofPattern("H m s")
-    LocalTime.parse(null.asInstanceOf[String], f)
+  test("factory_parse_formatter_nullText") {
+    assertThrows[NullPointerException] {
+      val f: DateTimeFormatter = DateTimeFormatter.ofPattern("H m s")
+      LocalTime.parse(null.asInstanceOf[String], f)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_formatter_nullFormatter(): Unit = {
-    LocalTime.parse("ANY", null)
+  test("factory_parse_formatter_nullFormatter") {
+    assertThrows[NullPointerException] {
+      LocalTime.parse("ANY", null)
+    }
   }
 
-  @Test def test_get_TemporalField(): Unit = {
+  test("test_get_TemporalField") {
     val test: LocalTime = TEST_12_30_40_987654321
     assertEquals(test.get(ChronoField.HOUR_OF_DAY), 12)
     assertEquals(test.get(ChronoField.MINUTE_OF_HOUR), 30)
@@ -488,23 +549,31 @@ object TestLocalTime {
     assertEquals(test.get(ChronoField.AMPM_OF_DAY), 1)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_get_TemporalField_tooBig(): Unit = {
-    TEST_12_30_40_987654321.get(NANO_OF_DAY)
+  test("test_get_TemporalField_tooBig") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.get(NANO_OF_DAY)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_get_TemporalField_null(): Unit = {
-    TEST_12_30_40_987654321.get(null.asInstanceOf[TemporalField])
+  test("test_get_TemporalField_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.get(null.asInstanceOf[TemporalField])
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_get_TemporalField_invalidField(): Unit = {
-    TEST_12_30_40_987654321.get(MockFieldNoValue.INSTANCE)
+  test("test_get_TemporalField_invalidField") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.get(MockFieldNoValue.INSTANCE)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_get_TemporalField_dateField(): Unit = {
-    TEST_12_30_40_987654321.get(ChronoField.DAY_OF_MONTH)
+  test("test_get_TemporalField_dateField") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.get(ChronoField.DAY_OF_MONTH)
+    }
   }
 
-  @Test def test_getLong_TemporalField(): Unit = {
+  test("test_getLong_TemporalField") {
     val test: LocalTime = TEST_12_30_40_987654321
     assertEquals(test.getLong(ChronoField.HOUR_OF_DAY), 12)
     assertEquals(test.getLong(ChronoField.MINUTE_OF_HOUR), 30)
@@ -519,19 +588,25 @@ object TestLocalTime {
     assertEquals(test.getLong(ChronoField.AMPM_OF_DAY), 1)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getLong_TemporalField_null(): Unit = {
-    TEST_12_30_40_987654321.getLong(null.asInstanceOf[TemporalField])
+  test("test_getLong_TemporalField_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.getLong(null.asInstanceOf[TemporalField])
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_getLong_TemporalField_invalidField(): Unit = {
-    TEST_12_30_40_987654321.getLong(MockFieldNoValue.INSTANCE)
+  test("test_getLong_TemporalField_invalidField") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.getLong(MockFieldNoValue.INSTANCE)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_getLong_TemporalField_dateField(): Unit = {
-    TEST_12_30_40_987654321.getLong(ChronoField.DAY_OF_MONTH)
+  test("test_getLong_TemporalField_dateField") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.getLong(ChronoField.DAY_OF_MONTH)
+    }
   }
 
-  @Test def test_query(): Unit = {
+  test("test_query") {
     assertEquals(TEST_12_30_40_987654321.query(TemporalQueries.chronology), null)
     assertEquals(TEST_12_30_40_987654321.query(TemporalQueries.localDate), null)
     assertEquals(TEST_12_30_40_987654321.query(TemporalQueries.localTime), TEST_12_30_40_987654321)
@@ -541,23 +616,46 @@ object TestLocalTime {
     assertEquals(TEST_12_30_40_987654321.query(TemporalQueries.zoneId), null)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_query_null(): Unit = {
-    TEST_12_30_40_987654321.query(null)
+  test("test_query_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.query(null)
+    }
   }
 
-  @DataProvider(name = "sampleTimes") private[bp] def provider_sampleTimes: Array[Array[_ <: AnyRef]] = {
-    Array[Array[_ <: AnyRef]](Array[Integer](0, 0, 0, 0), Array[Integer](0, 0, 0, 1), Array[Integer](0, 0, 1, 0), Array[Integer](0, 0, 1, 1), Array[Integer](0, 1, 0, 0), Array[Integer](0, 1, 0, 1), Array[Integer](0, 1, 1, 0), Array[Integer](0, 1, 1, 1), Array[Integer](1, 0, 0, 0), Array[Integer](1, 0, 0, 1), Array[Integer](1, 0, 1, 0), Array[Integer](1, 0, 1, 1), Array[Integer](1, 1, 0, 0), Array[Integer](1, 1, 0, 1), Array[Integer](1, 1, 1, 0), Array[Integer](1, 1, 1, 1))
+  val provider_sampleTimes: List[List[Int]] = {
+    List(
+      List(0, 0, 0, 0),
+      List(0, 0, 0, 1),
+      List(0, 0, 1, 0),
+      List(0, 0, 1, 1),
+      List(0, 1, 0, 0),
+      List(0, 1, 0, 1),
+      List(0, 1, 1, 0),
+      List(0, 1, 1, 1),
+      List(1, 0, 0, 0),
+      List(1, 0, 0, 1),
+      List(1, 0, 1, 0),
+      List(1, 0, 1, 1),
+      List(1, 1, 0, 0),
+      List(1, 1, 0, 1),
+      List(1, 1, 1, 0),
+      List(1, 1, 1, 1))
   }
 
-  @Test(dataProvider = "sampleTimes") def test_get(h: Int, m: Int, s: Int, ns: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, ns)
-    assertEquals(a.getHour, h)
-    assertEquals(a.getMinute, m)
-    assertEquals(a.getSecond, s)
-    assertEquals(a.getNano, ns)
+  test("test_get") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (ns: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, ns)
+        assertEquals(a.getHour, h)
+        assertEquals(a.getMinute, m)
+        assertEquals(a.getSecond, s)
+        assertEquals(a.getNano, ns)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_with_adjustment(): Unit = {
+  test("test_with_adjustment") {
     val sample: LocalTime = LocalTime.of(23, 5)
     val adjuster: TemporalAdjuster = new TemporalAdjuster {
       override def adjustInto(temporal: Temporal): Temporal = sample
@@ -565,11 +663,13 @@ object TestLocalTime {
     assertEquals(TEST_12_30_40_987654321.`with`(adjuster), sample)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_with_adjustment_null(): Unit = {
-    TEST_12_30_40_987654321.`with`(null.asInstanceOf[TemporalAdjuster])
+  test("test_with_adjustment_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.`with`(null.asInstanceOf[TemporalAdjuster])
+    }
   }
 
-  @Test def test_withHour_normal(): Unit = {
+  test("test_withHour_normal") {
     var t: LocalTime = TEST_12_30_40_987654321
 
     {
@@ -587,30 +687,34 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_withHour_noChange_equal(): Unit = {
+  test("test_withHour_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.withHour(12)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_withHour_toMidnight_equal(): Unit = {
+  test("test_withHour_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(1, 0).withHour(0)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_withHour_toMidday_equal(): Unit = {
+  test("test_withHour_toMidday_equal") {
     val t: LocalTime = LocalTime.of(1, 0).withHour(12)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withHour_hourTooLow(): Unit = {
-    TEST_12_30_40_987654321.withHour(-1)
+  test("test_withHour_hourTooLow") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withHour(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withHour_hourTooHigh(): Unit = {
-    TEST_12_30_40_987654321.withHour(24)
+  test("test_withHour_hourTooHigh") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withHour(24)
+    }
   }
 
-  @Test def test_withMinute_normal(): Unit = {
+  test("test_withMinute_normal") {
     var t: LocalTime = TEST_12_30_40_987654321
 
     {
@@ -628,30 +732,34 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_withMinute_noChange_equal(): Unit = {
+  test("test_withMinute_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.withMinute(30)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_withMinute_toMidnight_equal(): Unit = {
+  test("test_withMinute_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 1).withMinute(0)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_withMinute_toMidday_equals(): Unit = {
+  test("test_withMinute_toMidday_equals") {
     val t: LocalTime = LocalTime.of(12, 1).withMinute(0)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withMinute_minuteTooLow(): Unit = {
-    TEST_12_30_40_987654321.withMinute(-1)
+  test("test_withMinute_minuteTooLow") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withMinute(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withMinute_minuteTooHigh(): Unit = {
-    TEST_12_30_40_987654321.withMinute(60)
+  test("test_withMinute_minuteTooHigh") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withMinute(60)
+    }
   }
 
-  @Test def test_withSecond_normal(): Unit = {
+  test("test_withSecond_normal") {
     var t: LocalTime = TEST_12_30_40_987654321
 
     {
@@ -669,30 +777,34 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_withSecond_noChange_equal(): Unit = {
+  test("test_withSecond_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.withSecond(40)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_withSecond_toMidnight_equal(): Unit = {
+  test("test_withSecond_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 0, 1).withSecond(0)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_withSecond_toMidday_equal(): Unit = {
+  test("test_withSecond_toMidday_equal") {
     val t: LocalTime = LocalTime.of(12, 0, 1).withSecond(0)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withSecond_secondTooLow(): Unit = {
-    TEST_12_30_40_987654321.withSecond(-1)
+  test("test_withSecond_secondTooLow") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withSecond(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withSecond_secondTooHigh(): Unit = {
-    TEST_12_30_40_987654321.withSecond(60)
+  test("test_withSecond_secondTooHigh") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withSecond(60)
+    }
   }
 
-  @Test def test_withNanoOfSecond_normal(): Unit = {
+  test("test_withNanoOfSecond_normal") {
     var t: LocalTime = TEST_12_30_40_987654321
     t = t.withNano(1)
     assertEquals(t.getNano, 1)
@@ -704,27 +816,31 @@ object TestLocalTime {
     assertEquals(t.getNano, 999999999)
   }
 
-  @Test def test_withNanoOfSecond_noChange_equal(): Unit = {
+  test("test_withNanoOfSecond_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.withNano(987654321)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_withNanoOfSecond_toMidnight_equal(): Unit = {
+  test("test_withNanoOfSecond_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 0, 0, 1).withNano(0)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_withNanoOfSecond_toMidday_equal(): Unit = {
+  test("test_withNanoOfSecond_toMidday_equal") {
     val t: LocalTime = LocalTime.of(12, 0, 0, 1).withNano(0)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withNanoOfSecond_nanoTooLow(): Unit = {
-    TEST_12_30_40_987654321.withNano(-1)
+  test("test_withNanoOfSecond_nanoTooLow") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withNano(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_withNanoOfSecond_nanoTooHigh(): Unit = {
-    TEST_12_30_40_987654321.withNano(1000000000)
+  test("test_withNanoOfSecond_nanoTooHigh") {
+    assertThrows[DateTimeException] {
+      TEST_12_30_40_987654321.withNano(1000000000)
+    }
   }
 
   private val NINETY_MINS: TemporalUnit = new TemporalUnit() {
@@ -794,75 +910,106 @@ object TestLocalTime {
     }
   }
 
-  @DataProvider(name = "truncatedToValid") private[bp] def data_truncatedToValid: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(LocalTime.of(1, 2, 3, 123456789), NANOS, LocalTime.of(1, 2, 3, 123456789)), Array(LocalTime.of(1, 2, 3, 123456789), MICROS, LocalTime.of(1, 2, 3, 123456000)), Array(LocalTime.of(1, 2, 3, 123456789), MILLIS, LocalTime.of(1, 2, 3, 123000000)), Array(LocalTime.of(1, 2, 3, 123456789), SECONDS, LocalTime.of(1, 2, 3)), Array(LocalTime.of(1, 2, 3, 123456789), MINUTES, LocalTime.of(1, 2)), Array(LocalTime.of(1, 2, 3, 123456789), HOURS, LocalTime.of(1, 0)), Array(LocalTime.of(1, 2, 3, 123456789), DAYS, LocalTime.MIDNIGHT), Array(LocalTime.of(1, 1, 1, 123456789), NINETY_MINS, LocalTime.of(0, 0)), Array(LocalTime.of(2, 1, 1, 123456789), NINETY_MINS, LocalTime.of(1, 30)), Array(LocalTime.of(3, 1, 1, 123456789), NINETY_MINS, LocalTime.of(3, 0)))
+  val data_truncatedToValid: List[List[AnyRef]] = {
+    List(
+      List(LocalTime.of(1, 2, 3, 123456789), NANOS, LocalTime.of(1, 2, 3, 123456789)),
+      List(LocalTime.of(1, 2, 3, 123456789), MICROS, LocalTime.of(1, 2, 3, 123456000)),
+      List(LocalTime.of(1, 2, 3, 123456789), MILLIS, LocalTime.of(1, 2, 3, 123000000)),
+      List(LocalTime.of(1, 2, 3, 123456789), SECONDS, LocalTime.of(1, 2, 3)),
+      List(LocalTime.of(1, 2, 3, 123456789), MINUTES, LocalTime.of(1, 2)),
+      List(LocalTime.of(1, 2, 3, 123456789), HOURS, LocalTime.of(1, 0)),
+      List(LocalTime.of(1, 2, 3, 123456789), DAYS, LocalTime.MIDNIGHT),
+      List(LocalTime.of(1, 1, 1, 123456789), NINETY_MINS, LocalTime.of(0, 0)),
+      List(LocalTime.of(2, 1, 1, 123456789), NINETY_MINS, LocalTime.of(1, 30)),
+      List(LocalTime.of(3, 1, 1, 123456789), NINETY_MINS, LocalTime.of(3, 0)))
   }
 
-  @Test(groups = Array("tck"), dataProvider = "truncatedToValid") def test_truncatedTo_valid(input: LocalTime, unit: TemporalUnit, expected: LocalTime): Unit = {
-    assertEquals(input.truncatedTo(unit), expected)
+  test("test_truncatedTo_valid") {
+    data_truncatedToValid.foreach {
+      case (input: LocalTime) :: (unit: TemporalUnit) :: (expected: LocalTime) :: Nil =>
+        assertEquals(input.truncatedTo(unit), expected)
+      case _ =>
+    }
   }
 
-  @DataProvider(name = "truncatedToInvalid") private[bp] def data_truncatedToInvalid: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(LocalTime.of(1, 2, 3, 123456789), NINETY_FIVE_MINS), Array(LocalTime.of(1, 2, 3, 123456789), WEEKS), Array(LocalTime.of(1, 2, 3, 123456789), MONTHS), Array(LocalTime.of(1, 2, 3, 123456789), YEARS))
+  val data_truncatedToInvalid: List[List[AnyRef]] = {
+    List(
+      List(LocalTime.of(1, 2, 3, 123456789), NINETY_FIVE_MINS),
+      List(LocalTime.of(1, 2, 3, 123456789), WEEKS),
+      List(LocalTime.of(1, 2, 3, 123456789), MONTHS),
+      List(LocalTime.of(1, 2, 3, 123456789), YEARS))
   }
 
-  @Test(groups = Array("tck"), dataProvider = "truncatedToInvalid", expectedExceptions = Array(classOf[DateTimeException])) def test_truncatedTo_invalid(input: LocalTime, unit: TemporalUnit): Unit = {
-    input.truncatedTo(unit)
+  test("test_truncatedTo_invalid") {
+    data_truncatedToInvalid.foreach {
+      case (input: LocalTime) :: (unit: TemporalUnit) :: Nil =>
+        assertThrows[DateTimeException] {
+          input.truncatedTo(unit)
+        }
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException]), groups = Array("tck")) def test_truncatedTo_null(): Unit = {
-    TEST_12_30_40_987654321.truncatedTo(null)
+  test("test_truncatedTo_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.truncatedTo(null)
+    }
   }
 
-  @Test def test_plus_Adjuster_positiveHours(): Unit = {
+  test("test_plus_Adjuster_positiveHours") {
     val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.HOURS)
     val t: LocalTime = TEST_12_30_40_987654321.plus(period)
     assertEquals(t, LocalTime.of(19, 30, 40, 987654321))
   }
 
-  @Test def test_plus_Adjuster_negativeMinutes(): Unit = {
+  test("test_plus_Adjuster_negativeMinutes") {
     val period: TemporalAmount = MockSimplePeriod.of(-25, ChronoUnit.MINUTES)
     val t: LocalTime = TEST_12_30_40_987654321.plus(period)
     assertEquals(t, LocalTime.of(12, 5, 40, 987654321))
   }
 
-  @Test def test_plus_Adjuster_zero(): Unit = {
+  test("test_plus_Adjuster_zero") {
     val period: TemporalAmount = Period.ZERO
     val t: LocalTime = TEST_12_30_40_987654321.plus(period)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plus_Adjuster_wrap(): Unit = {
+  test("test_plus_Adjuster_wrap") {
     val p: TemporalAmount = Duration.ofHours(1)
     val t: LocalTime = LocalTime.of(23, 30).plus(p)
     assertEquals(t, LocalTime.of(0, 30))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_plus_Adjuster_dateNotAllowed(): Unit = {
-    val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.MONTHS)
-    TEST_12_30_40_987654321.plus(period)
+  test("test_plus_Adjuster_dateNotAllowed") {
+    assertThrows[UnsupportedTemporalTypeException] {
+      val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.MONTHS)
+      TEST_12_30_40_987654321.plus(period)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_plus_Adjuster_null(): Unit = {
-    TEST_12_30_40_987654321.plus(null.asInstanceOf[TemporalAmount])
+  test("test_plus_Adjuster_null") {
+    assertThrows[NullPointerException] {
+      TEST_12_30_40_987654321.plus(null.asInstanceOf[TemporalAmount])
+    }
   }
 
-  @Test def test_plus_longPeriodUnit_positiveHours(): Unit = {
+  test("test_plus_longPeriodUnit_positiveHours") {
     val t: LocalTime = TEST_12_30_40_987654321.plus(7, ChronoUnit.HOURS)
     assertEquals(t, LocalTime.of(19, 30, 40, 987654321))
   }
 
-  @Test def test_plus_longPeriodUnit_negativeMinutes(): Unit = {
+  test("test_plus_longPeriodUnit_negativeMinutes") {
     val t: LocalTime = TEST_12_30_40_987654321.plus(-25, ChronoUnit.MINUTES)
     assertEquals(t, LocalTime.of(12, 5, 40, 987654321))
   }
 
-  @Test def test_plus_longPeriodUnit_zero(): Unit = {
+  test("test_plus_longPeriodUnit_zero") {
     val t: LocalTime = TEST_12_30_40_987654321.plus(0, ChronoUnit.MINUTES)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plus_long_unit_invalidUnit(): Unit = {
+  test("test_plus_long_unit_invalidUnit") {
     for (unit <- TestLocalTime.INVALID_UNITS) {
       try {
         TEST_12_30_40_987654321.plus(1, unit)
@@ -874,42 +1021,48 @@ object TestLocalTime {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[UnsupportedTemporalTypeException])) def test_plus_long_multiples(): Unit = {
-    TEST_12_30_40_987654321.plus(0, DAYS)
+  test("test_plus_long_multiples") {
+    assertThrows[UnsupportedTemporalTypeException] {
+      TEST_12_30_40_987654321.plus(0, DAYS)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_plus_longPeriodUnit_null(): Unit = {
-    TEST_12_30_40_987654321.plus(1, null.asInstanceOf[TemporalUnit])
+  test("test_plus_longPeriodUnit_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.plus(1, null.asInstanceOf[TemporalUnit])
+    }
   }
 
-  @Test def test_plus_adjuster(): Unit = {
+  test("test_plus_adjuster") {
     val p: Duration = Duration.ofSeconds(62, 3)
     val t: LocalTime = TEST_12_30_40_987654321.plus(p)
     assertEquals(t, LocalTime.of(12, 31, 42, 987654324))
   }
 
-  @Test def test_plus_adjuster_big(): Unit = {
+  test("test_plus_adjuster_big") {
     val p: Duration = Duration.ofNanos(Long.MaxValue)
     val t: LocalTime = TEST_12_30_40_987654321.plus(p)
     assertEquals(t, TEST_12_30_40_987654321.plusNanos(Long.MaxValue))
   }
 
-  @Test def test_plus_adjuster_zero_equal(): Unit = {
+  test("test_plus_adjuster_zero_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plus(Period.ZERO)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plus_adjuster_wrap(): Unit = {
+  test("test_plus_adjuster_wrap") {
     val p: Duration = Duration.ofHours(1)
     val t: LocalTime = LocalTime.of(23, 30).plus(p)
     assertEquals(t, LocalTime.of(0, 30))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_plus_adjuster_null(): Unit = {
-    TEST_12_30_40_987654321.plus(null.asInstanceOf[TemporalAmount])
+  test("test_plus_adjuster_null") {
+    assertThrows[NullPointerException] {
+      TEST_12_30_40_987654321.plus(null.asInstanceOf[TemporalAmount])
+    }
   }
 
-  @Test def test_plusHours_one(): Unit = {
+  test("test_plusHours_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
 
     {
@@ -927,7 +1080,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_plusHours_fromZero(): Unit = {
+  test("test_plusHours_fromZero") {
     val base: LocalTime = LocalTime.MIDNIGHT
 
     {
@@ -945,7 +1098,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_plusHours_fromOne(): Unit = {
+  test("test_plusHours_fromOne") {
     val base: LocalTime = LocalTime.of(1, 0)
 
     {
@@ -963,28 +1116,28 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_plusHours_noChange_equal(): Unit = {
+  test("test_plusHours_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusHours(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusHours_toMidnight_equal(): Unit = {
+  test("test_plusHours_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(23, 0).plusHours(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_plusHours_toMidday_equal(): Unit = {
+  test("test_plusHours_toMidday_equal") {
     val t: LocalTime = LocalTime.of(11, 0).plusHours(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_plusHours_big(): Unit = {
+  test("test_plusHours_big") {
     val t: LocalTime = LocalTime.of(2, 30).plusHours(Long.MaxValue)
     val hours: Int = (Long.MaxValue % 24L).toInt
     assertEquals(t, LocalTime.of(2, 30).plusHours(hours))
   }
 
-  @Test def test_plusMinutes_one(): Unit = {
+  test("test_plusMinutes_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1010,7 +1163,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_plusMinutes_fromZero(): Unit = {
+  test("test_plusMinutes_fromZero") {
     val base: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1047,33 +1200,33 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_plusMinutes_noChange_equal(): Unit = {
+  test("test_plusMinutes_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusMinutes(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusMinutes_noChange_oneDay_equal(): Unit = {
+  test("test_plusMinutes_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusMinutes(24 * 60)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusMinutes_toMidnight_equal(): Unit = {
+  test("test_plusMinutes_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(23, 59).plusMinutes(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_plusMinutes_toMidday_equal(): Unit = {
+  test("test_plusMinutes_toMidday_equal") {
     val t: LocalTime = LocalTime.of(11, 59).plusMinutes(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_plusMinutes_big(): Unit = {
+  test("test_plusMinutes_big") {
     val t: LocalTime = LocalTime.of(2, 30).plusMinutes(Long.MaxValue)
     val mins: Int = (Long.MaxValue % (24L * 60L)).toInt
     assertEquals(t, LocalTime.of(2, 30).plusMinutes(mins))
   }
 
-  @Test def test_plusSeconds_one(): Unit = {
+  test("test_plusSeconds_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1105,8 +1258,8 @@ object TestLocalTime {
     }
   }
 
-  @DataProvider(name = "plusSeconds_fromZero") private[bp] def plusSeconds_fromZero: java.util.Iterator[Array[Any]] = {
-    new java.util.Iterator[Array[Any]]() {
+  val plusSeconds_fromZero: java.util.Iterator[List[Int]] = {
+    new java.util.Iterator[List[Int]]() {
       private[bp] var delta: Int = 30
       private[bp] var i: Int = -3660
       private[bp] var hour: Int = 22
@@ -1115,8 +1268,7 @@ object TestLocalTime {
 
       def hasNext: Boolean = i <= 3660
 
-      def next: Array[Any] = {
-        val ret: Array[Any] = Array[Any](i, hour, min, sec)
+      def next: List[Int] = {
         i += delta
         sec += delta
         if (sec >= 60) {
@@ -1130,42 +1282,47 @@ object TestLocalTime {
             }
           }
         }
-        ret
+        List[Int](i, hour, min, sec)
       }
 
       override def remove(): Unit = throw new UnsupportedOperationException
     }
   }
 
-  @Test(dataProvider = "plusSeconds_fromZero") def test_plusSeconds_fromZero(seconds: Int, hour: Int, min: Int, sec: Int): Unit = {
-    val base: LocalTime = LocalTime.MIDNIGHT
-    val t: LocalTime = base.plusSeconds(seconds)
-    assertEquals(hour, t.getHour)
-    assertEquals(min, t.getMinute)
-    assertEquals(sec, t.getSecond)
+  test("test_plusSeconds_fromZero") {
+    plusSeconds_fromZero.asScala.toList.foreach {
+      case (seconds: Int) :: (hour: Int) :: (min: Int) :: (sec: Int) :: Nil =>
+        val base: LocalTime = LocalTime.MIDNIGHT
+        val t: LocalTime = base.plusSeconds(seconds)
+        assertEquals(hour, t.getHour)
+        assertEquals(min, t.getMinute)
+        assertEquals(sec, t.getSecond)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_plusSeconds_noChange_equal(): Unit = {
+  test("test_plusSeconds_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusSeconds(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusSeconds_noChange_oneDay_equal(): Unit = {
+  test("test_plusSeconds_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusSeconds(24 * 60 * 60)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusSeconds_toMidnight_equal(): Unit = {
+  test("test_plusSeconds_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(23, 59, 59).plusSeconds(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_plusSeconds_toMidday_equal(): Unit = {
+  test("test_plusSeconds_toMidday_equal") {
     val t: LocalTime = LocalTime.of(11, 59, 59).plusSeconds(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_plusNanos_halfABillion(): Unit = {
+  test("test_plusNanos_halfABillion") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1195,8 +1352,8 @@ object TestLocalTime {
     }
   }
 
-  @DataProvider(name = "plusNanos_fromZero") private[bp] def plusNanos_fromZero: java.util.Iterator[Array[Any]] = {
-    new java.util.Iterator[Array[Any]]() {
+  val plusNanos_fromZero: java.util.Iterator[List[Any]] = {
+    new java.util.Iterator[List[Any]]() {
       private[bp] var delta: Long = 7500000000L
       private[bp] var i: Long = -3660 * 1000000000L
       private[bp] var hour: Int = 22
@@ -1206,8 +1363,7 @@ object TestLocalTime {
 
       def hasNext: Boolean = i <= 3660 * 1000000000L
 
-      def next: Array[Any] = {
-        val ret: Array[Any] = Array[Any](i, hour, min, sec, nanos.toInt).asInstanceOf[Array[Any]]
+      def next: List[Any] = {
         i += delta
         nanos += delta
         if (nanos >= 1000000000L) {
@@ -1225,103 +1381,112 @@ object TestLocalTime {
             }
           }
         }
-        ret
+        List[Any](i, hour, min, sec, nanos.toInt)
       }
 
       override def remove(): Unit = throw new UnsupportedOperationException
     }
   }
 
-  @Test(dataProvider = "plusNanos_fromZero") def test_plusNanos_fromZero(nanoseconds: Long, hour: Int, min: Int, sec: Int, nanos: Int): Unit = {
-    val base: LocalTime = LocalTime.MIDNIGHT
-    val t: LocalTime = base.plusNanos(nanoseconds)
-    assertEquals(hour, t.getHour)
-    assertEquals(min, t.getMinute)
-    assertEquals(sec, t.getSecond)
-    assertEquals(nanos, t.getNano)
+  test("test_plusNanos_fromZero") {
+    plusNanos_fromZero.asScala.toList.foreach {
+      case (nanoseconds: Long) :: (hour: Int) :: (min: Int) :: (sec: Int) :: (nanos: Int) :: Nil =>
+        val base: LocalTime = LocalTime.MIDNIGHT
+        val t: LocalTime = base.plusNanos(nanoseconds)
+        assertEquals(hour, t.getHour)
+        assertEquals(min, t.getMinute)
+        assertEquals(sec, t.getSecond)
+        assertEquals(nanos, t.getNano)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_plusNanos_noChange_equal(): Unit = {
+  test("test_plusNanos_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusNanos(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusNanos_noChange_oneDay_equal(): Unit = {
+  test("test_plusNanos_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.plusNanos(24 * 60 * 60 * 1000000000L)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_plusNanos_toMidnight_equal(): Unit = {
+  test("test_plusNanos_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(23, 59, 59, 999999999).plusNanos(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_plusNanos_toMidday_equal(): Unit = {
+  test("test_plusNanos_toMidday_equal") {
     val t: LocalTime = LocalTime.of(11, 59, 59, 999999999).plusNanos(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_minus_Adjuster(): Unit = {
+  test("test_minus_Adjuster") {
     val p: TemporalAmount = Duration.ofSeconds(62, 3)
     val t: LocalTime = TEST_12_30_40_987654321.minus(p)
     assertEquals(t, LocalTime.of(12, 29, 38, 987654318))
   }
 
-  @Test def test_minus_Adjuster_positiveHours(): Unit = {
+  test("test_minus_Adjuster_positiveHours") {
     val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.HOURS)
     val t: LocalTime = TEST_12_30_40_987654321.minus(period)
     assertEquals(t, LocalTime.of(5, 30, 40, 987654321))
   }
 
-  @Test def test_minus_Adjuster_negativeMinutes(): Unit = {
+  test("test_minus_Adjuster_negativeMinutes") {
     val period: TemporalAmount = MockSimplePeriod.of(-25, ChronoUnit.MINUTES)
     val t: LocalTime = TEST_12_30_40_987654321.minus(period)
     assertEquals(t, LocalTime.of(12, 55, 40, 987654321))
   }
 
-  @Test def test_minus_Adjuster_big1(): Unit = {
+  test("test_minus_Adjuster_big1") {
     val p: TemporalAmount = Duration.ofNanos(Long.MaxValue)
     val t: LocalTime = TEST_12_30_40_987654321.minus(p)
     assertEquals(t, TEST_12_30_40_987654321.minusNanos(Long.MaxValue))
   }
 
-  @Test def test_minus_Adjuster_zero(): Unit = {
+  test("test_minus_Adjuster_zero") {
     val p: TemporalAmount = Period.ZERO
     val t: LocalTime = TEST_12_30_40_987654321.minus(p)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minus_Adjuster_wrap(): Unit = {
+  test("test_minus_Adjuster_wrap") {
     val p: TemporalAmount = Duration.ofHours(1)
     val t: LocalTime = LocalTime.of(0, 30).minus(p)
     assertEquals(t, LocalTime.of(23, 30))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_minus_Adjuster_dateNotAllowed(): Unit = {
-    val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.MONTHS)
-    TEST_12_30_40_987654321.minus(period)
+  test("test_minus_Adjuster_dateNotAllowed") {
+    assertThrows[UnsupportedTemporalTypeException] {
+      val period: TemporalAmount = MockSimplePeriod.of(7, ChronoUnit.MONTHS)
+      TEST_12_30_40_987654321.minus(period)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_minus_Adjuster_null(): Unit = {
-    TEST_12_30_40_987654321.minus(null.asInstanceOf[TemporalAmount])
+  test("test_minus_Adjuster_null") {
+    assertThrows[NullPointerException] {
+      TEST_12_30_40_987654321.minus(null.asInstanceOf[TemporalAmount])
+    }
   }
 
-  @Test def test_minus_longPeriodUnit_positiveHours(): Unit = {
+  test("test_minus_longPeriodUnit_positiveHours") {
     val t: LocalTime = TEST_12_30_40_987654321.minus(7, ChronoUnit.HOURS)
     assertEquals(t, LocalTime.of(5, 30, 40, 987654321))
   }
 
-  @Test def test_minus_longPeriodUnit_negativeMinutes(): Unit = {
+  test("test_minus_longPeriodUnit_negativeMinutes") {
     val t: LocalTime = TEST_12_30_40_987654321.minus(-25, ChronoUnit.MINUTES)
     assertEquals(t, LocalTime.of(12, 55, 40, 987654321))
   }
 
-  @Test def test_minus_longPeriodUnit_zero(): Unit = {
+  test("test_minus_longPeriodUnit_zero") {
     val t: LocalTime = TEST_12_30_40_987654321.minus(0, ChronoUnit.MINUTES)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minus_long_unit_invalidUnit(): Unit = {
+  test("test_minus_long_unit_invalidUnit") {
     for (unit <- TestLocalTime.INVALID_UNITS) {
       try {
         TEST_12_30_40_987654321.minus(1, unit)
@@ -1333,15 +1498,19 @@ object TestLocalTime {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[UnsupportedTemporalTypeException])) def test_minus_long_multiples(): Unit = {
-    TEST_12_30_40_987654321.minus(0, DAYS)
+  test("test_minus_long_multiples") {
+    assertThrows[UnsupportedTemporalTypeException] {
+      TEST_12_30_40_987654321.minus(0, DAYS)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_minus_longPeriodUnit_null(): Unit = {
-    TEST_12_30_40_987654321.minus(1, null.asInstanceOf[TemporalUnit])
+  test("test_minus_longPeriodUnit_null") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.minus(1, null.asInstanceOf[TemporalUnit])
+    }
   }
 
-  @Test def test_minusHours_one(): Unit = {
+  test("test_minusHours_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
 
     {
@@ -1359,7 +1528,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_minusHours_fromZero(): Unit = {
+  test("test_minusHours_fromZero") {
     val base: LocalTime = LocalTime.MIDNIGHT
 
     {
@@ -1377,7 +1546,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_minusHours_fromOne(): Unit = {
+  test("test_minusHours_fromOne") {
     val base: LocalTime = LocalTime.of(1, 0)
 
     {
@@ -1395,28 +1564,28 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_minusHours_noChange_equal(): Unit = {
+  test("test_minusHours_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusHours(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusHours_toMidnight_equal(): Unit = {
+  test("test_minusHours_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(1, 0).minusHours(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_minusHours_toMidday_equal(): Unit = {
+  test("test_minusHours_toMidday_equal") {
     val t: LocalTime = LocalTime.of(13, 0).minusHours(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_minusHours_big(): Unit = {
+  test("test_minusHours_big") {
     val t: LocalTime = LocalTime.of(2, 30).minusHours(Long.MaxValue)
     val hours: Int = (Long.MaxValue % 24L).toInt
     assertEquals(t, LocalTime.of(2, 30).minusHours(hours))
   }
 
-  @Test def test_minusMinutes_one(): Unit = {
+  test("test_minusMinutes_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1445,7 +1614,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_minusMinutes_fromZero(): Unit = {
+  test("test_minusMinutes_fromZero") {
     val base: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 22
     var min: Int = 49
@@ -1474,33 +1643,33 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_minusMinutes_noChange_equal(): Unit = {
+  test("test_minusMinutes_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusMinutes(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusMinutes_noChange_oneDay_equal(): Unit = {
+  test("test_minusMinutes_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusMinutes(24 * 60)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusMinutes_toMidnight_equal(): Unit = {
+  test("test_minusMinutes_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 1).minusMinutes(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_minusMinutes_toMidday_equals(): Unit = {
+  test("test_minusMinutes_toMidday_equals") {
     val t: LocalTime = LocalTime.of(12, 1).minusMinutes(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_minusMinutes_big(): Unit = {
+  test("test_minusMinutes_big") {
     val t: LocalTime = LocalTime.of(2, 30).minusMinutes(Long.MaxValue)
     val mins: Int = (Long.MaxValue % (24L * 60L)).toInt
     assertEquals(t, LocalTime.of(2, 30).minusMinutes(mins))
   }
 
-  @Test def test_minusSeconds_one(): Unit = {
+  test("test_minusSeconds_one") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1535,8 +1704,8 @@ object TestLocalTime {
     }
   }
 
-  @DataProvider(name = "minusSeconds_fromZero") private[bp] def minusSeconds_fromZero: java.util.Iterator[Array[Any]] = {
-    new java.util.Iterator[Array[Any]]() {
+  val minusSeconds_fromZero: java.util.Iterator[List[Int]] = {
+    new java.util.Iterator[List[Int]]() {
       private[bp] var delta: Int = 30
       private[bp] var i: Int = 3660
       private[bp] var hour: Int = 22
@@ -1545,8 +1714,7 @@ object TestLocalTime {
 
       def hasNext: Boolean = i >= -3660
 
-      def next: Array[Any] = {
-        val ret: Array[Any] = Array[Any](i, hour, min, sec)
+      def next: List[Int] = {
         i -= delta
         sec += delta
         if (sec >= 60) {
@@ -1560,48 +1728,53 @@ object TestLocalTime {
             }
           }
         }
-        ret
+        List[Int](i, hour, min, sec)
       }
 
       override def remove(): Unit = throw new UnsupportedOperationException
     }
   }
 
-  @Test(dataProvider = "minusSeconds_fromZero") def test_minusSeconds_fromZero(seconds: Int, hour: Int, min: Int, sec: Int): Unit = {
-    val base: LocalTime = LocalTime.MIDNIGHT
-    val t: LocalTime = base.minusSeconds(seconds)
-    assertEquals(t.getHour, hour)
-    assertEquals(t.getMinute, min)
-    assertEquals(t.getSecond, sec)
+  test("test_minusSeconds_fromZero") {
+    minusSeconds_fromZero.asScala.toList.foreach {
+      case (seconds: Int) :: (hour: Int) :: (min: Int) :: (sec: Int) :: Nil =>
+        val base: LocalTime = LocalTime.MIDNIGHT
+        val t: LocalTime = base.minusSeconds(seconds)
+        assertEquals(t.getHour, hour)
+        assertEquals(t.getMinute, min)
+        assertEquals(t.getSecond, sec)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_minusSeconds_noChange_equal(): Unit = {
+  test("test_minusSeconds_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusSeconds(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusSeconds_noChange_oneDay_equal(): Unit = {
+  test("test_minusSeconds_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusSeconds(24 * 60 * 60)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusSeconds_toMidnight_equal(): Unit = {
+  test("test_minusSeconds_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 0, 1).minusSeconds(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_minusSeconds_toMidday_equal(): Unit = {
+  test("test_minusSeconds_toMidday_equal") {
     val t: LocalTime = LocalTime.of(12, 0, 1).minusSeconds(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @Test def test_minusSeconds_big(): Unit = {
+  test("test_minusSeconds_big") {
     val t: LocalTime = LocalTime.of(2, 30).minusSeconds(Long.MaxValue)
     val secs: Int = (Long.MaxValue % (24L * 60L * 60L)).toInt
     assertEquals(t, LocalTime.of(2, 30).minusSeconds(secs))
   }
 
-  @Test def test_minusNanos_halfABillion(): Unit = {
+  test("test_minusNanos_halfABillion") {
     var t: LocalTime = LocalTime.MIDNIGHT
     var hour: Int = 0
     var min: Int = 0
@@ -1639,8 +1812,8 @@ object TestLocalTime {
     }
   }
 
-  @DataProvider(name = "minusNanos_fromZero") private[bp] def minusNanos_fromZero: java.util.Iterator[Array[_ <: AnyRef]] = {
-    new java.util.Iterator[Array[_ <: AnyRef]]() {
+  val minusNanos_fromZero: java.util.Iterator[List[Any]] = {
+    new java.util.Iterator[List[Any]]() {
       private[bp] var delta: Long = 7500000000L
       private[bp] var i: Long = 3660 * 1000000000L
       private[bp] var hour: Int = 22
@@ -1650,8 +1823,7 @@ object TestLocalTime {
 
       def hasNext: Boolean = i >= -3660 * 1000000000L
 
-      def next: Array[_ <: AnyRef] = {
-        val ret: Array[_ <: AnyRef] = Array(i: java.lang.Long, hour: Integer, min: Integer, sec: Integer, nanos.toInt: Integer)
+      def next: List[Any] = {
         i -= delta
         nanos += delta
         if (nanos >= 1000000000L) {
@@ -1669,63 +1841,96 @@ object TestLocalTime {
             }
           }
         }
-        ret
+        List(i, hour, min, sec, nanos)
       }
 
       override def remove(): Unit = throw new UnsupportedOperationException
     }
   }
 
-  @Test(dataProvider = "minusNanos_fromZero") def test_minusNanos_fromZero(nanoseconds: Long, hour: Int, min: Int, sec: Int, nanos: Int): Unit = {
-    val base: LocalTime = LocalTime.MIDNIGHT
-    val t: LocalTime = base.minusNanos(nanoseconds)
-    assertEquals(hour, t.getHour)
-    assertEquals(min, t.getMinute)
-    assertEquals(sec, t.getSecond)
-    assertEquals(nanos, t.getNano)
+  test("test_minusNanos_fromZero") {
+    minusNanos_fromZero.asScala.toList.foreach {
+      case (nanoseconds: Long) :: (hour: Long) :: (min: Long) :: (sec: Long) :: (nanos: Long) :: Nil =>
+        val base: LocalTime = LocalTime.MIDNIGHT
+        val t: LocalTime = base.minusNanos(nanoseconds)
+        assertEquals(hour, t.getHour)
+        assertEquals(min, t.getMinute)
+        assertEquals(sec, t.getSecond)
+        assertEquals(nanos, t.getNano)
+      case x =>
+        fail()
+    }
   }
 
-  @Test def test_minusNanos_noChange_equal(): Unit = {
+  test("test_minusNanos_noChange_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusNanos(0)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusNanos_noChange_oneDay_equal(): Unit = {
+  test("test_minusNanos_noChange_oneDay_equal") {
     val t: LocalTime = TEST_12_30_40_987654321.minusNanos(24 * 60 * 60 * 1000000000L)
     assertEquals(t, TEST_12_30_40_987654321)
   }
 
-  @Test def test_minusNanos_toMidnight_equal(): Unit = {
+  test("test_minusNanos_toMidnight_equal") {
     val t: LocalTime = LocalTime.of(0, 0, 0, 1).minusNanos(1)
     assertEquals(t, LocalTime.MIDNIGHT)
   }
 
-  @Test def test_minusNanos_toMidday_equal(): Unit = {
+  test("test_minusNanos_toMidday_equal") {
     val t: LocalTime = LocalTime.of(12, 0, 0, 1).minusNanos(1)
     assertEquals(t, LocalTime.NOON)
   }
 
-  @DataProvider(name = "until") private[bp] def provider_until: Array[Array[Any]] = {
-    Array[Array[Any]](Array("00:00", "00:00", NANOS, 0), Array("00:00", "00:00", MICROS, 0), Array("00:00", "00:00", MILLIS, 0), Array("00:00", "00:00", SECONDS, 0), Array("00:00", "00:00", MINUTES, 0), Array("00:00", "00:00", HOURS, 0), Array("00:00", "00:00", HALF_DAYS, 0), Array("00:00", "00:00:01", NANOS, 1000000000), Array("00:00", "00:00:01", MICROS, 1000000), Array("00:00", "00:00:01", MILLIS, 1000), Array("00:00", "00:00:01", SECONDS, 1), Array("00:00", "00:00:01", MINUTES, 0), Array("00:00", "00:00:01", HOURS, 0), Array("00:00", "00:00:01", HALF_DAYS, 0), Array("00:00", "00:01", NANOS, 60000000000L), Array("00:00", "00:01", MICROS, 60000000), Array("00:00", "00:01", MILLIS, 60000), Array("00:00", "00:01", SECONDS, 60), Array("00:00", "00:01", MINUTES, 1), Array("00:00", "00:01", HOURS, 0), Array("00:00", "00:01", HALF_DAYS, 0))
+  val provider_until: List[List[Any]] = {
+    List(
+      List("00:00", "00:00", NANOS, 0L),
+      List("00:00", "00:00", MICROS, 0L),
+      List("00:00", "00:00", MILLIS, 0L),
+      List("00:00", "00:00", SECONDS, 0L),
+      List("00:00", "00:00", MINUTES, 0L),
+      List("00:00", "00:00", HOURS, 0L),
+      List("00:00", "00:00", HALF_DAYS, 0L),
+      List("00:00", "00:00:01", NANOS, 1000000000L),
+      List("00:00", "00:00:01", MICROS, 1000000L),
+      List("00:00", "00:00:01", MILLIS, 1000L),
+      List("00:00", "00:00:01", SECONDS, 1L),
+      List("00:00", "00:00:01", MINUTES, 0L),
+      List("00:00", "00:00:01", HOURS, 0L),
+      List("00:00", "00:00:01", HALF_DAYS, 0L),
+      List("00:00", "00:01", NANOS, 60000000000L),
+      List("00:00", "00:01", MICROS, 60000000L),
+      List("00:00", "00:01", MILLIS, 60000L),
+      List("00:00", "00:01", SECONDS, 60L),
+      List("00:00", "00:01", MINUTES, 1L),
+      List("00:00", "00:01", HOURS, 0L),
+      List("00:00", "00:01", HALF_DAYS, 0L))
   }
 
-  @Test(dataProvider = "until") def test_until(startStr: String, endStr: String, unit: TemporalUnit, expected: Long): Unit = {
-    val start: LocalTime = LocalTime.parse(startStr)
-    val end: LocalTime = LocalTime.parse(endStr)
-    assertEquals(start.until(end, unit), expected)
-    assertEquals(end.until(start, unit), -expected)
+  test("test_until") {
+    provider_until.foreach {
+      case (startStr: String) :: (endStr: String) :: (unit: TemporalUnit) :: (expected: Long) :: Nil =>
+        val start: LocalTime = LocalTime.parse(startStr)
+        val end: LocalTime = LocalTime.parse(endStr)
+        assertEquals(start.until(end, unit), expected)
+        assertEquals(end.until(start, unit), -expected)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_atDate(): Unit = {
+  test("test_atDate") {
     val t: LocalTime = LocalTime.of(11, 30)
     assertEquals(t.atDate(LocalDate.of(2012, 6, 30)), LocalDateTime.of(2012, 6, 30, 11, 30))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_atDate_nullDate(): Unit = {
-    TEST_12_30_40_987654321.atDate(null.asInstanceOf[LocalDate])
+  test("test_atDate_nullDate") {
+    assertThrows[NullPointerException] {
+      TEST_12_30_40_987654321.atDate(null.asInstanceOf[LocalDate])
+    }
   }
 
-  @Test def test_toSecondOfDay(): Unit = {
+  test("test_toSecondOfDay") {
     var t: LocalTime = LocalTime.of(0, 0)
     var i: Int = 0
     while (i < 24 * 60 * 60) {
@@ -1735,7 +1940,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_toSecondOfDay_fromNanoOfDay_symmetry(): Unit = {
+  test("test_toSecondOfDay_fromNanoOfDay_symmetry") {
     var t: LocalTime = LocalTime.of(0, 0)
     var i: Int = 0
     while (i < 24 * 60 * 60) {
@@ -1745,7 +1950,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_toNanoOfDay(): Unit = {
+  test("test_toNanoOfDay") {
     var t: LocalTime = LocalTime.of(0, 0)
 
     {
@@ -1768,7 +1973,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_toNanoOfDay_fromNanoOfDay_symmetry(): Unit = {
+  test("test_toNanoOfDay_fromNanoOfDay_symmetry") {
     var t: LocalTime = LocalTime.of(0, 0)
 
     {
@@ -1791,7 +1996,7 @@ object TestLocalTime {
     }
   }
 
-  @Test def test_comparisons(): Unit = {
+  test("test_comparisons") {
     doTest_comparisons_LocalTime(LocalTime.MIDNIGHT, LocalTime.of(0, 0, 0, 999999999), LocalTime.of(0, 0, 59, 0), LocalTime.of(0, 0, 59, 999999999), LocalTime.of(0, 59, 0, 0), LocalTime.of(0, 59, 0, 999999999), LocalTime.of(0, 59, 59, 0), LocalTime.of(0, 59, 59, 999999999), LocalTime.NOON, LocalTime.of(12, 0, 0, 999999999), LocalTime.of(12, 0, 59, 0), LocalTime.of(12, 0, 59, 999999999), LocalTime.of(12, 59, 0, 0), LocalTime.of(12, 59, 0, 999999999), LocalTime.of(12, 59, 59, 0), LocalTime.of(12, 59, 59, 999999999), LocalTime.of(23, 0, 0, 0), LocalTime.of(23, 0, 0, 999999999), LocalTime.of(23, 0, 59, 0), LocalTime.of(23, 0, 59, 999999999), LocalTime.of(23, 59, 0, 0), LocalTime.of(23, 59, 0, 999999999), LocalTime.of(23, 59, 59, 0), LocalTime.of(23, 59, 59, 999999999))
   }
 
@@ -1803,13 +2008,13 @@ object TestLocalTime {
       while (j < localTimes.length) {
         val b: LocalTime = localTimes(j)
         if (i < j) {
-          assertTrue(a.compareTo(b) < 0, a + " <=> " + b)
+          assertTrue(a.compareTo(b) < 0)
           assertEquals(a.isBefore(b), true, a + " <=> " + b)
           assertEquals(a.isAfter(b), false, a + " <=> " + b)
           assertEquals(a == b, false, a + " <=> " + b)
         }
         else if (i > j) {
-          assertTrue(a.compareTo(b) > 0, a + " <=> " + b)
+          assertTrue(a.compareTo(b) > 0)
           assertEquals(a.isBefore(b), false, a + " <=> " + b)
           assertEquals(a.isAfter(b), true, a + " <=> " + b)
           assertEquals(a == b, false, a + " <=> " + b)
@@ -1827,107 +2032,196 @@ object TestLocalTime {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_compareTo_ObjectNull(): Unit = {
-    TEST_12_30_40_987654321.compareTo(null)
+  test("test_compareTo_ObjectNull") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.compareTo(null)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_isBefore_ObjectNull(): Unit = {
-    TEST_12_30_40_987654321.isBefore(null)
+  test("test_isBefore_ObjectNull") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.isBefore(null)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_isAfter_ObjectNull(): Unit = {
-    TEST_12_30_40_987654321.isAfter(null)
+  test("test_isAfter_ObjectNull") {
+    assertThrows[Platform.NPE] {
+      TEST_12_30_40_987654321.isAfter(null)
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_equals_true(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s, n)
-    assertEquals(a == b, true)
+  test("test_equals_true") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s, n)
+        assertEquals(a == b, true)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_equals_false_hour_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h + 1, m, s, n)
-    assertEquals(a == b, false)
+  test("test_equals_false_hour_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h + 1, m, s, n)
+        assertEquals(a == b, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_equals_false_minute_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m + 1, s, n)
-    assertEquals(a == b, false)
+  test("test_equals_false_minute_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m + 1, s, n)
+        assertEquals(a == b, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_equals_false_second_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s + 1, n)
-    assertEquals(a == b, false)
+  test("test_equals_false_second_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s + 1, n)
+        assertEquals(a == b, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_equals_false_nano_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s, n + 1)
-    assertEquals(a == b, false)
+  test("test_equals_false_nano_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s, n + 1)
+        assertEquals(a == b, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_equals_itself_true(): Unit = {
+  test("test_equals_itself_true") {
     assertEquals(TEST_12_30_40_987654321 == TEST_12_30_40_987654321, true)
   }
 
-  @Test def test_equals_string_false(): Unit = {
-    assertEquals(TEST_12_30_40_987654321 == "2007-07-15", false)
+  test("test_equals_string_false") {
+    assertNotEquals(TEST_12_30_40_987654321, "2007-07-15")
   }
 
-  @Test def test_equals_null_false(): Unit = {
+  test("test_equals_null_false") {
     assertEquals(TEST_12_30_40_987654321 == null, false)
   }
 
-  @Test(dataProvider = "sampleTimes") def test_hashCode_same(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s, n)
-    assertEquals(a.hashCode, b.hashCode)
+  test("test_hashCode_same") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s, n)
+        assertEquals(a.hashCode, b.hashCode)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_hashCode_hour_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h + 1, m, s, n)
-    assertEquals(a.hashCode == b.hashCode, false)
+  test("test_hashCode_hour_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h + 1, m, s, n)
+        assertEquals(a.hashCode == b.hashCode, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_hashCode_minute_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m + 1, s, n)
-    assertEquals(a.hashCode == b.hashCode, false)
+  test("test_hashCode_minute_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+      val a: LocalTime = LocalTime.of(h, m, s, n)
+      val b: LocalTime = LocalTime.of(h, m + 1, s, n)
+      assertEquals(a.hashCode == b.hashCode, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_hashCode_second_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s + 1, n)
-    assertEquals(a.hashCode == b.hashCode, false)
+  test("test_hashCode_second_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s + 1, n)
+        assertEquals(a.hashCode == b.hashCode, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "sampleTimes") def test_hashCode_nano_differs(h: Int, m: Int, s: Int, n: Int): Unit = {
-    val a: LocalTime = LocalTime.of(h, m, s, n)
-    val b: LocalTime = LocalTime.of(h, m, s, n + 1)
-    assertEquals(a.hashCode == b.hashCode, false)
+  test("test_hashCode_nano_differs") {
+    provider_sampleTimes.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: Nil =>
+        val a: LocalTime = LocalTime.of(h, m, s, n)
+        val b: LocalTime = LocalTime.of(h, m, s, n + 1)
+        assertEquals(a.hashCode == b.hashCode, false)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "sampleToString") private[bp] def provider_sampleToString: Array[Array[Any]] = {
-    Array[Array[Any]](Array(0, 0, 0, 0, "00:00"), Array(1, 0, 0, 0, "01:00"), Array(23, 0, 0, 0, "23:00"), Array(0, 1, 0, 0, "00:01"), Array(12, 30, 0, 0, "12:30"), Array(23, 59, 0, 0, "23:59"), Array(0, 0, 1, 0, "00:00:01"), Array(0, 0, 59, 0, "00:00:59"), Array(0, 0, 0, 100000000, "00:00:00.100"), Array(0, 0, 0, 10000000, "00:00:00.010"), Array(0, 0, 0, 1000000, "00:00:00.001"), Array(0, 0, 0, 100000, "00:00:00.000100"), Array(0, 0, 0, 10000, "00:00:00.000010"), Array(0, 0, 0, 1000, "00:00:00.000001"), Array(0, 0, 0, 100, "00:00:00.000000100"), Array(0, 0, 0, 10, "00:00:00.000000010"), Array(0, 0, 0, 1, "00:00:00.000000001"), Array(0, 0, 0, 999999999, "00:00:00.999999999"), Array(0, 0, 0, 99999999, "00:00:00.099999999"), Array(0, 0, 0, 9999999, "00:00:00.009999999"), Array(0, 0, 0, 999999, "00:00:00.000999999"), Array(0, 0, 0, 99999, "00:00:00.000099999"), Array(0, 0, 0, 9999, "00:00:00.000009999"), Array(0, 0, 0, 999, "00:00:00.000000999"), Array(0, 0, 0, 99, "00:00:00.000000099"), Array(0, 0, 0, 9, "00:00:00.000000009"))
+  val provider_sampleToString: List[List[Any]] = {
+    List(
+      List(0, 0, 0, 0, "00:00"),
+      List(1, 0, 0, 0, "01:00"),
+      List(23, 0, 0, 0, "23:00"),
+      List(0, 1, 0, 0, "00:01"),
+      List(12, 30, 0, 0, "12:30"),
+      List(23, 59, 0, 0, "23:59"),
+      List(0, 0, 1, 0, "00:00:01"),
+      List(0, 0, 59, 0, "00:00:59"),
+      List(0, 0, 0, 100000000, "00:00:00.100"),
+      List(0, 0, 0, 10000000, "00:00:00.010"),
+      List(0, 0, 0, 1000000, "00:00:00.001"),
+      List(0, 0, 0, 100000, "00:00:00.000100"),
+      List(0, 0, 0, 10000, "00:00:00.000010"),
+      List(0, 0, 0, 1000, "00:00:00.000001"),
+      List(0, 0, 0, 100, "00:00:00.000000100"),
+      List(0, 0, 0, 10, "00:00:00.000000010"),
+      List(0, 0, 0, 1, "00:00:00.000000001"),
+      List(0, 0, 0, 999999999, "00:00:00.999999999"),
+      List(0, 0, 0, 99999999, "00:00:00.099999999"),
+      List(0, 0, 0, 9999999, "00:00:00.009999999"),
+      List(0, 0, 0, 999999, "00:00:00.000999999"),
+      List(0, 0, 0, 99999, "00:00:00.000099999"),
+      List(0, 0, 0, 9999, "00:00:00.000009999"),
+      List(0, 0, 0, 999, "00:00:00.000000999"),
+      List(0, 0, 0, 99, "00:00:00.000000099"),
+      List(0, 0, 0, 9, "00:00:00.000000009"))
   }
 
-  @Test(dataProvider = "sampleToString") def test_toString(h: Int, m: Int, s: Int, n: Int, expected: String): Unit = {
-    val t: LocalTime = LocalTime.of(h, m, s, n)
-    val str: String = t.toString
-    assertEquals(str, expected)
+  test("test_toString") {
+    provider_sampleToString.foreach {
+      case (h: Int) :: (m: Int) :: (s: Int) :: (n: Int) :: (expected: String) :: Nil =>
+        val t: LocalTime = LocalTime.of(h, m, s, n)
+        val str: String = t.toString
+        assertEquals(str, expected)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_format_formatter(): Unit = {
+  test("test_format_formatter") {
     val f: DateTimeFormatter = DateTimeFormatter.ofPattern("H m s")
     val t: String = LocalTime.of(11, 30, 45).format(f)
     assertEquals(t, "11 30 45")
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_format_formatter_null(): Unit = {
-    LocalTime.of(11, 30, 45).format(null)
+  test("test_format_formatter_null") {
+    assertThrows[NullPointerException] {
+      LocalTime.of(11, 30, 45).format(null)
+    }
   }
 }
