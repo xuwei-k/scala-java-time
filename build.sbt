@@ -64,7 +64,7 @@ lazy val tzDbSettings = Seq(
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
       println(s"tzdb data missing. downloading latest...")
       IO.download(
-        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata2016i.tar.gz"),
+        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata2016j.tar.gz"),
         tzdbTarball)
       Unpack.gunzipTar(tzdbTarball, tzdbDir)
       tzdbTarball.delete()
