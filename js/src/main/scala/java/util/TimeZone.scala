@@ -6,7 +6,10 @@ object TimeZone {
   final val SHORT = 0
   final val LONG  = 1
 
-  private var default: TimeZone = null
+  private var default: TimeZone = {
+    // TODO This may not be correct according to the specs, review
+    new SimpleTimeZone(0, "GMT")
+  }
 
   def getDefault: TimeZone = default
   def setDefault(timeZone: TimeZone): Unit = default = timeZone

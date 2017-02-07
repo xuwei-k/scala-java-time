@@ -31,118 +31,107 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertSame
-import org.testng.Assert.fail
-import java.io.IOException
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
 
 /** Test system clock. */
 object TestClock_System {
-  private val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
-  private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+  val MOSCOW: ZoneId = ZoneId.of("Europe/Moscow")
+  val PARIS: ZoneId = ZoneId.of("Europe/Paris")
 }
 
-@Test class TestClock_System {
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
-  def test_isSerializable(): Unit = {
-    AbstractTest.assertSerializable(Clock.systemUTC)
-    AbstractTest.assertSerializable(Clock.systemDefaultZone)
-    AbstractTest.assertSerializable(Clock.system(TestClock_System.PARIS))
-  }
-
-  def test_instant(): Unit = {
+class TestClock_System extends FunSuite with AssertionsHelper {
+  test("instant") {
     val system: Clock = Clock.systemUTC
     assertEquals(system.getZone, ZoneOffset.UTC)
 
-    {
-      var i: Int = 0
-      while (i < 10000) {
-        {
-          val instant: Instant = system.instant
-          val systemMillis: Long = System.currentTimeMillis
-          if (systemMillis - instant.toEpochMilli < 10) {
-            return
-          }
-        }
-        {
-          i += 1
-          i - 1
+    var i: Int = 0
+    while (i < 10000) {
+      {
+        val instant: Instant = system.instant
+        val systemMillis: Long = System.currentTimeMillis
+        if (systemMillis - instant.toEpochMilli < 10) {
+          i = 9999
         }
       }
+      {
+        i += 1
+        i - 1
+      }
     }
-    fail()
+
+    assert(i == 10000)
   }
 
-  def test_millis(): Unit = {
+  test("millis") {
     val system: Clock = Clock.systemUTC
     assertEquals(system.getZone, ZoneOffset.UTC)
 
-    {
-      var i: Int = 0
-      while (i < 10000) {
-        {
-          val instant: Long = system.millis
-          val systemMillis: Long = System.currentTimeMillis
-          if (systemMillis - instant < 10) {
-            return
-          }
-        }
-        {
-          i += 1
-          i - 1
+    var i: Int = 0
+    while (i < 10000) {
+      {
+        val instant: Long = system.millis
+        val systemMillis: Long = System.currentTimeMillis
+        if (systemMillis - instant < 10) {
+          i = 9999
         }
       }
+      {
+        i += 1
+        i - 1
+      }
     }
-    fail()
+    assert(i == 10000)
   }
 
-  def test_systemUTC(): Unit = {
+  test("systemUTC") {
     val test: Clock = Clock.systemUTC
     assertEquals(test.getZone, ZoneOffset.UTC)
     assertEquals(test, Clock.system(ZoneOffset.UTC))
   }
 
-  def test_systemDefaultZone(): Unit = {
+  test("systemDefaultZone") {
     val test: Clock = Clock.systemDefaultZone
     assertEquals(test.getZone, ZoneId.systemDefault)
     assertEquals(test, Clock.system(ZoneId.systemDefault))
   }
 
-  def test_system_ZoneId(): Unit = {
+  test("system_ZoneId") {
     val test: Clock = Clock.system(TestClock_System.PARIS)
     assertEquals(test.getZone, TestClock_System.PARIS)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_zoneId_nullZoneId(): Unit = {
-    Clock.system(null)
+  test("zoneId_nullZoneId") {
+    assertThrows[NullPointerException] {
+      Clock.system(null)
+    }
   }
 
-  def test_withZone(): Unit = {
+  test("withZone") {
     val test: Clock = Clock.system(TestClock_System.PARIS)
     val changed: Clock = test.withZone(TestClock_System.MOSCOW)
     assertEquals(test.getZone, TestClock_System.PARIS)
     assertEquals(changed.getZone, TestClock_System.MOSCOW)
   }
 
-  def test_withZone_same(): Unit = {
+  test("withZone_same") {
     val test: Clock = Clock.system(TestClock_System.PARIS)
     val changed: Clock = test.withZone(TestClock_System.PARIS)
     assertSame(test, changed)
   }
 
-  def test_withZone_fromUTC(): Unit = {
+  test("withZone_fromUTC") {
     val test: Clock = Clock.systemUTC
     val changed: Clock = test.withZone(TestClock_System.PARIS)
     assertEquals(changed.getZone, TestClock_System.PARIS)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_withZone_null(): Unit = {
-    Clock.systemUTC.withZone(null)
+  test("withZone_null") {
+    assertThrows[NullPointerException] {
+      Clock.systemUTC.withZone(null)
+    }
   }
 
-  def test_equals(): Unit = {
+  test("equals") {
     val a: Clock = Clock.systemUTC
     val b: Clock = Clock.systemUTC
     assertEquals(a == a, true)
@@ -158,11 +147,11 @@ object TestClock_System {
     assertEquals(a == c, false)
     assertEquals(c == a, false)
     assertEquals(a == null, false)
-    assertEquals(a == "other type", false)
+    assertNotEquals(a, "other type")
     assertEquals(a == Clock.fixed(Instant.now, ZoneOffset.UTC), false)
   }
 
-  def test_hashCode(): Unit = {
+  test("hashCode") {
     val a: Clock = Clock.system(ZoneOffset.UTC)
     val b: Clock = Clock.system(ZoneOffset.UTC)
     assertEquals(a.hashCode, a.hashCode)
@@ -171,7 +160,7 @@ object TestClock_System {
     assertEquals(a.hashCode == c.hashCode, false)
   }
 
-  def test_toString(): Unit = {
+  test("toString") {
     val test: Clock = Clock.system(TestClock_System.PARIS)
     assertEquals(test.toString, "SystemClock[Europe/Paris]")
   }

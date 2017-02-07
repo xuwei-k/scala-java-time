@@ -895,8 +895,9 @@ final class TzdbZoneRulesCompiler(private val version: String, private val sourc
     private[zone] def addToBuilder(bld: ZoneRulesBuilder, rules: java.util.Map[String, java.util.List[TzdbZoneRulesCompiler#TZDBRule]]): ZoneRulesBuilder = {
       if (year != null)
         bld.addWindow(standardOffset, toDateTime(year.getValue), timeDefinition)
-      else
+      else {
         bld.addWindowForever(standardOffset)
+      }
       if (fixedSavingsSecs != null)
         bld.setFixedSavingsToWindow(fixedSavingsSecs)
       else {

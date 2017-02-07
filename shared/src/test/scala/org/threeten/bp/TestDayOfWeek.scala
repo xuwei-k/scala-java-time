@@ -53,7 +53,6 @@ class TestDayOfWeek extends FunSuite with GenDateTimeTest with AssertionsHelper 
   protected def invalidFields: List[TemporalField] = {
     val list: List[TemporalField] = List(ChronoField.values: _*)
     (list :+ JulianFields.JULIAN_DAY :+ JulianFields.MODIFIED_JULIAN_DAY :+ JulianFields.RATA_DIE).filterNot(validFields.contains)
-
   }
 
   test("factory_int_singleton") {

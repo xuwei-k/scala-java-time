@@ -31,18 +31,11 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertFalse
-import org.testng.Assert.assertNotNull
-import org.testng.Assert.assertTrue
-import java.io.IOException
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 import java.util.Locale
 import java.util.SimpleTimeZone
 import java.util.TimeZone
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
+
+import org.scalatest.FunSuite
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.zone.ZoneOffsetTransition
@@ -57,51 +50,32 @@ object TestZoneId {
   private val GAP: Int = 0
 }
 
-@Test class TestZoneId {
-  def test_immutable(): Unit = {
-    val cls: Class[ZoneId] = classOf[ZoneId]
-    assertTrue(Modifier.isPublic(cls.getModifiers))
-    val fields: Array[Field] = cls.getDeclaredFields
-    for (field <- fields) {
-      if (!Modifier.isStatic(field.getModifiers)) {
-        assertTrue(Modifier.isPrivate(field.getModifiers))
-        assertTrue(Modifier.isFinal(field.getModifiers) || (Modifier.isVolatile(field.getModifiers) && Modifier.isTransient(field.getModifiers)))
+class TestZoneId extends FunSuite with AssertionsHelper {
+  test("systemDefault_unableToConvert_badFormat") {
+    assertThrows[DateTimeException] {
+      val current: TimeZone = TimeZone.getDefault
+      try {
+        TimeZone.setDefault(new SimpleTimeZone(127, "Something Weird"))
+        ZoneId.systemDefault
+      } finally {
+        TimeZone.setDefault(current)
       }
     }
   }
 
-  @throws(classOf[Exception])
-  def test_serialization_UTC(): Unit = {
-    val test: ZoneId = ZoneOffset.UTC
-    AbstractTest.assertSerializableAndSame(test)
+  test("systemDefault_unableToConvert_unknownId") {
+    assertThrows[ZoneRulesException] {
+      val current: TimeZone = TimeZone.getDefault
+      try {
+        TimeZone.setDefault(new SimpleTimeZone(127, "SomethingWeird"))
+        ZoneId.systemDefault
+      } finally {
+        TimeZone.setDefault(current)
+      }
+    }
   }
 
-  @throws(classOf[Exception])
-  def test_serialization_fixed(): Unit = {
-    val test: ZoneId = ZoneId.of("UTC+01:30")
-    AbstractTest.assertSerializable(test)
-  }
-
-  @throws(classOf[Exception])
-  def test_serialization_Europe(): Unit = {
-    val test: ZoneId = ZoneId.of("Europe/London")
-    AbstractTest.assertSerializable(test)
-  }
-
-  @throws(classOf[Exception])
-  def test_serialization_America(): Unit = {
-    val test: ZoneId = ZoneId.of("America/Chicago")
-    AbstractTest.assertSerializable(test)
-  }
-
-  @Test
-  @throws(classOf[ClassNotFoundException])
-  @throws(classOf[IOException])
-  def test_serialization_format(): Unit = {
-    AbstractTest.assertEqualsSerialisedForm(ZoneId.of("Europe/London"), classOf[ZoneId])
-  }
-
-  def test_constant_UTC(): Unit = {
+  test("constant_UTC") {
     val test: ZoneId = ZoneOffset.UTC
     assertEquals(test.getId, "Z")
     assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "Z")
@@ -110,7 +84,7 @@ object TestZoneId {
     checkOffset(test.getRules, createLDT(2008, 6, 30), ZoneOffset.UTC, 1)
   }
 
-  def test_constant_SHORT_IDS(): Unit = {
+  test("constant_SHORT_IDS") {
     val ids: java.util.Map[String, String] = ZoneId.SHORT_IDS
     assertEquals(ids.get("EST"), "-05:00")
     assertEquals(ids.get("MST"), "-07:00")
@@ -142,34 +116,16 @@ object TestZoneId {
     assertEquals(ids.get("VST"), "Asia/Ho_Chi_Minh")
   }
 
-  @Test(expectedExceptions = Array(classOf[UnsupportedOperationException])) def test_constant_SHORT_IDS_immutable(): Unit = {
-    val ids: java.util.Map[String, String] = ZoneId.SHORT_IDS
-    ids.clear()
+  test("constant_SHORT_IDS_immutable") {
+    assertThrows[UnsupportedOperationException] {
+      val ids: java.util.Map[String, String] = ZoneId.SHORT_IDS
+      ids.clear()
+    }
   }
 
-  def test_systemDefault(): Unit = {
+  test("systemDefault") {
     val test: ZoneId = ZoneId.systemDefault
     assertEquals(test.getId, TimeZone.getDefault.getID)
-  }
-
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_systemDefault_unableToConvert_badFormat(): Unit = {
-    val current: TimeZone = TimeZone.getDefault
-    try {
-      TimeZone.setDefault(new SimpleTimeZone(127, "Something Weird"))
-      ZoneId.systemDefault
-    } finally {
-      TimeZone.setDefault(current)
-    }
-  }
-
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_systemDefault_unableToConvert_unknownId(): Unit = {
-    val current: TimeZone = TimeZone.getDefault
-    try {
-      TimeZone.setDefault(new SimpleTimeZone(127, "SomethingWeird"))
-      ZoneId.systemDefault
-    } finally {
-      TimeZone.setDefault(current)
-    }
   }
 
   def test_of_string_Map(): Unit = {
@@ -194,138 +150,352 @@ object TestZoneId {
     assertEquals(test.getId, "Europe/Madrid")
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_of_string_Map_badFormat(): Unit = {
-    val map: java.util.Map[String, String] = new java.util.HashMap[String, String]
-    ZoneId.of("Not kknown", map)
+  test("of_string_Map_badFormat") {
+    assertThrows[DateTimeException] {
+      val map: java.util.Map[String, String] = new java.util.HashMap[String, String]
+      ZoneId.of("Not kknown", map)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_of_string_Map_unknown(): Unit = {
-    val map: java.util.Map[String, String] = new java.util.HashMap[String, String]
-    ZoneId.of("Unknown", map)
+  test("of_string_Map_unknown") {
+    assertThrows[ZoneRulesException] {
+      val map: java.util.Map[String, String] = new java.util.HashMap[String, String]
+      ZoneId.of("Unknown", map)
+    }
   }
 
-  @DataProvider(name = "String_UTC") private[bp] def data_of_string_UTC: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(""), Array("+00"), Array("+0000"), Array("+00:00"), Array("+000000"), Array("+00:00:00"), Array("-00"), Array("-0000"), Array("-00:00"), Array("-000000"), Array("-00:00:00"))
+  val data_of_string_UTC: List[String] = {
+    List("", "+00", "+0000", "+00:00", "+000000", "+00:00:00", "-00", "-0000", "-00:00", "-000000", "-00:00:00")
   }
 
-  @Test(dataProvider = "String_UTC") def test_of_string_UTC(id: String): Unit = {
-    val test: ZoneId = ZoneId.of("UTC" + id)
-    assertEquals(test.getId, "UTC")
-    assertEquals(test.normalized, ZoneOffset.UTC)
+  test("of_string_UTC") {
+    data_of_string_UTC.foreach { id =>
+      val test: ZoneId = ZoneId.of("UTC" + id)
+      assertEquals(test.getId, "UTC")
+      assertEquals(test.normalized, ZoneOffset.UTC)
+    }
   }
 
-  @Test(dataProvider = "String_UTC") def test_of_string_GMT(id: String): Unit = {
-    val test: ZoneId = ZoneId.of("GMT" + id)
-    assertEquals(test.getId, "GMT")
-    assertEquals(test.normalized, ZoneOffset.UTC)
+  test("of_string_GMT") {
+    data_of_string_UTC.foreach { id =>
+      val test: ZoneId = ZoneId.of("GMT" + id)
+      assertEquals(test.getId, "GMT")
+      assertEquals(test.normalized, ZoneOffset.UTC)
+    }
   }
 
-  @Test(dataProvider = "String_UTC") def test_of_string_UT(id: String): Unit = {
-    val test: ZoneId = ZoneId.of("UT" + id)
-    assertEquals(test.getId, "UT")
-    assertEquals(test.normalized, ZoneOffset.UTC)
+  test("of_string_UT") {
+    data_of_string_UTC.foreach { id =>
+      val test: ZoneId = ZoneId.of("UT" + id)
+      assertEquals(test.getId, "UT")
+      assertEquals(test.normalized, ZoneOffset.UTC)
+    }
   }
 
-  @DataProvider(name = "String_Fixed") private[bp] def data_of_string_Fixed: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array("+0", ""), Array("+5", "+05:00"), Array("+01", "+01:00"), Array("+0100", "+01:00"), Array("+01:00", "+01:00"), Array("+010000", "+01:00"), Array("+01:00:00", "+01:00"), Array("+12", "+12:00"), Array("+1234", "+12:34"), Array("+12:34", "+12:34"), Array("+123456", "+12:34:56"), Array("+12:34:56", "+12:34:56"), Array("-02", "-02:00"), Array("-5", "-05:00"), Array("-0200", "-02:00"), Array("-02:00", "-02:00"), Array("-020000", "-02:00"), Array("-02:00:00", "-02:00"))
+  val data_of_string_Fixed: List[List[String]] =
+    List(
+      List("+0", ""),
+      List("+5", "+05:00"),
+      List("+01", "+01:00"),
+      List("+0100", "+01:00"),
+      List("+01:00", "+01:00"),
+      List("+010000", "+01:00"),
+      List("+01:00:00", "+01:00"),
+      List("+12", "+12:00"),
+      List("+1234", "+12:34"),
+      List("+12:34", "+12:34"),
+      List("+123456", "+12:34:56"),
+      List("+12:34:56", "+12:34:56"),
+      List("-02", "-02:00"),
+      List("-5", "-05:00"),
+      List("-0200", "-02:00"),
+      List("-02:00", "-02:00"),
+      List("-020000", "-02:00"),
+      List("-02:00:00", "-02:00"))
+
+  test("of_string_offset") {
+    data_of_string_Fixed.foreach {
+      case input :: id :: Nil =>
+        val test: ZoneId = ZoneId.of(input)
+        val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
+        assertEquals(test, offset)
+      case _ => fail()
+    }
   }
 
-  @Test(dataProvider = "String_Fixed") def test_of_string_offset(input: String, id: String): Unit = {
-    val test: ZoneId = ZoneId.of(input)
-    val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
-    assertEquals(test, offset)
+  test("of_string_FixedUTC") {
+    data_of_string_Fixed.foreach {
+      case input :: id :: Nil =>
+        val test: ZoneId = ZoneId.of("UTC" + input)
+        assertEquals(test.getId, "UTC" + id)
+        assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "UTC" + id)
+        assertEquals(test.getRules.isFixedOffset, true)
+        val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
+        assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
+        checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+      case _ => fail()
+    }
   }
 
-  @Test(dataProvider = "String_Fixed") def test_of_string_FixedUTC(input: String, id: String): Unit = {
-    val test: ZoneId = ZoneId.of("UTC" + input)
-    assertEquals(test.getId, "UTC" + id)
-    assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "UTC" + id)
-    assertEquals(test.getRules.isFixedOffset, true)
-    val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
-    assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
-    checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+  test("of_string_FixedGMT") {
+    data_of_string_Fixed.foreach {
+      case input :: id :: Nil =>
+        val test: ZoneId = ZoneId.of("GMT" + input)
+        assertEquals(test.getId, "GMT" + id)
+        assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "GMT" + id)
+        assertEquals(test.getRules.isFixedOffset, true)
+        val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
+        assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
+        checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+      case _ => fail()
+    }
   }
 
-  @Test(dataProvider = "String_Fixed") def test_of_string_FixedGMT(input: String, id: String): Unit = {
-    val test: ZoneId = ZoneId.of("GMT" + input)
-    assertEquals(test.getId, "GMT" + id)
-    assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "GMT" + id)
-    assertEquals(test.getRules.isFixedOffset, true)
-    val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
-    assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
-    checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+  test("of_string_FixedUT") {
+    data_of_string_Fixed.foreach {
+      case input :: id :: Nil =>
+        val test: ZoneId = ZoneId.of("UT" + input)
+        assertEquals(test.getId, "UT" + id)
+        assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "UT" + id)
+        assertEquals(test.getRules.isFixedOffset, true)
+        val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
+        assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
+        checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+      case _ => fail()
+    }
   }
 
-  @Test(dataProvider = "String_Fixed") def test_of_string_FixedUT(input: String, id: String): Unit = {
-    val test: ZoneId = ZoneId.of("UT" + input)
-    assertEquals(test.getId, "UT" + id)
-    assertEquals(test.getDisplayName(TextStyle.FULL, Locale.UK), "UT" + id)
-    assertEquals(test.getRules.isFixedOffset, true)
-    val offset: ZoneOffset = ZoneOffset.of(if (id.isEmpty) "Z" else id)
-    assertEquals(test.getRules.getOffset(Instant.ofEpochSecond(0L)), offset)
-    checkOffset(test.getRules, createLDT(2008, 6, 30), offset, 1)
+  val data_of_string_UTC_invalid: List[String] = {
+    List("A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "+0:00",
+        "+00:0",
+        "+0:0",
+        "+000",
+        "+00000",
+        "+0:00:00",
+        "+00:0:00",
+        "+00:00:0",
+        "+0:0:0",
+        "+0:0:00",
+        "+00:0:0",
+        "+0:00:0",
+        "+01_00",
+        "+01;00",
+        "+01@00",
+        "+01:AA",
+        "+19",
+        "+19:00",
+        "+18:01",
+        "+18:00:01",
+        "+1801",
+        "+180001",
+        "-0:00",
+        "-00:0",
+        "-0:0",
+        "-000",
+        "-00000",
+        "-0:00:00",
+        "-00:0:00",
+        "-00:00:0",
+        "-0:0:0",
+        "-0:0:00",
+        "-00:0:0",
+        "-0:00:0",
+        "-19",
+        "-19:00",
+        "-18:01",
+        "-18:00:01",
+        "-1801",
+        "-180001",
+        "-01_00",
+        "-01;00",
+        "-01@00",
+        "-01:AA",
+        "@01:00")
   }
 
-  @DataProvider(name = "String_UTC_Invalid") private[bp] def data_of_string_UTC_invalid: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array("A"), Array("B"), Array("C"), Array("D"), Array("E"), Array("F"), Array("G"), Array("H"), Array("I"), Array("J"), Array("K"), Array("L"), Array("M"), Array("N"), Array("O"), Array("P"), Array("Q"), Array("R"), Array("S"), Array("T"), Array("U"), Array("V"), Array("W"), Array("X"), Array("Y"), Array("+0:00"), Array("+00:0"), Array("+0:0"), Array("+000"), Array("+00000"), Array("+0:00:00"), Array("+00:0:00"), Array("+00:00:0"), Array("+0:0:0"), Array("+0:0:00"), Array("+00:0:0"), Array("+0:00:0"), Array("+01_00"), Array("+01;00"), Array("+01@00"), Array("+01:AA"), Array("+19"), Array("+19:00"), Array("+18:01"), Array("+18:00:01"), Array("+1801"), Array("+180001"), Array("-0:00"), Array("-00:0"), Array("-0:0"), Array("-000"), Array("-00000"), Array("-0:00:00"), Array("-00:0:00"), Array("-00:00:0"), Array("-0:0:0"), Array("-0:0:00"), Array("-00:0:0"), Array("-0:00:0"), Array("-19"), Array("-19:00"), Array("-18:01"), Array("-18:00:01"), Array("-1801"), Array("-180001"), Array("-01_00"), Array("-01;00"), Array("-01@00"), Array("-01:AA"), Array("@01:00"))
+  test("of_string_UTC_invalid") {
+    data_of_string_UTC_invalid.foreach { id =>
+      assertThrows[DateTimeException] {
+        ZoneId.of("UTC" + id)
+      }
+    }
   }
 
-  @Test(dataProvider = "String_UTC_Invalid", expectedExceptions = Array(classOf[DateTimeException])) def test_of_string_UTC_invalid(id: String): Unit = {
-    ZoneId.of("UTC" + id)
+  test("of_string_GMT_invalid") {
+    data_of_string_UTC_invalid.foreach { id =>
+      assertThrows[DateTimeException] {
+        ZoneId.of("GMT" + id)
+      }
+    }
   }
 
-  @Test(dataProvider = "String_UTC_Invalid", expectedExceptions = Array(classOf[DateTimeException])) def test_of_string_GMT_invalid(id: String): Unit = {
-    ZoneId.of("GMT" + id)
+  val data_of_string_invalid: List[String] =
+    List(
+      "",
+      ":",
+      "#",
+      "\u00ef",
+      "`",
+      "!",
+      "\"",
+      "\u00ef",
+      "$",
+      "^",
+      "&",
+      "*",
+      "(",
+      ")",
+      "=",
+      "\\",
+      "|",
+      ",",
+      "<",
+      ">",
+      "?",
+      ";",
+      "'",
+      "[",
+      "]",
+      "{",
+      "}",
+      "\u00ef:A",
+      "`:A",
+      "!:A",
+      "\":A",
+      "\u00ef:A",
+      "$:A",
+      "^:A",
+      "&:A",
+      "*:A",
+      "(:A",
+      "):A",
+      "=:A",
+      "+:A",
+      "\\:A",
+      "|:A",
+      ",:A",
+      "<:A",
+      ">:A",
+      "?:A",
+      ";:A",
+      "::A",
+      "':A",
+      "@:A",
+      "~:A",
+      "[:A",
+      "]:A",
+      "{:A",
+      "}:A",
+      "A:B#\u00ef",
+      "A:B#`",
+      "A:B#!",
+      "A:B#\"",
+      "A:B#\u00ef",
+      "A:B#$",
+      "A:B#^",
+      "A:B#&",
+      "A:B#*",
+      "A:B#(",
+      "A:B#)",
+      "A:B#=",
+      "A:B#+",
+      "A:B#\\",
+      "A:B#|",
+      "A:B#,",
+      "A:B#<",
+      "A:B#>",
+      "A:B#?",
+      "A:B#;",
+      "A:B#:",
+      "A:B#'",
+      "A:B#@",
+      "A:B#~",
+      "A:B#[",
+      "A:B#]",
+      "A:B#{",
+      "A:B#}")
+
+  test("of_string_invalid") {
+    data_of_string_invalid.foreach { id =>
+      assertThrows[DateTimeException] {
+        ZoneId.of(id)
+      }
+    }
   }
 
-  @DataProvider(name = "String_Invalid") private[bp] def data_of_string_invalid: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(""), Array(":"), Array("#"), Array("\u00ef"), Array("`"), Array("!"), Array("\""), Array("\u00ef"), Array("$"), Array("^"), Array("&"), Array("*"), Array("("), Array(")"), Array("="), Array("\\"), Array("|"), Array(","), Array("<"), Array(">"), Array("?"), Array(";"), Array("'"), Array("["), Array("]"), Array("{"), Array("}"), Array("\u00ef:A"), Array("`:A"), Array("!:A"), Array("\":A"), Array("\u00ef:A"), Array("$:A"), Array("^:A"), Array("&:A"), Array("*:A"), Array("(:A"), Array("):A"), Array("=:A"), Array("+:A"), Array("\\:A"), Array("|:A"), Array(",:A"), Array("<:A"), Array(">:A"), Array("?:A"), Array(";:A"), Array("::A"), Array("':A"), Array("@:A"), Array("~:A"), Array("[:A"), Array("]:A"), Array("{:A"), Array("}:A"), Array("A:B#\u00ef"), Array("A:B#`"), Array("A:B#!"), Array("A:B#\""), Array("A:B#\u00ef"), Array("A:B#$"), Array("A:B#^"), Array("A:B#&"), Array("A:B#*"), Array("A:B#("), Array("A:B#)"), Array("A:B#="), Array("A:B#+"), Array("A:B#\\"), Array("A:B#|"), Array("A:B#,"), Array("A:B#<"), Array("A:B#>"), Array("A:B#?"), Array("A:B#;"), Array("A:B#:"), Array("A:B#'"), Array("A:B#@"), Array("A:B#~"), Array("A:B#["), Array("A:B#]"), Array("A:B#{"), Array("A:B#}"))
-  }
-
-  @Test(dataProvider = "String_Invalid", expectedExceptions = Array(classOf[DateTimeException])) def test_of_string_invalid(id: String): Unit = {
-    ZoneId.of(id)
-  }
-
-  def test_of_string_GMT0(): Unit = {
+  test("of_string_GMT0") {
     val test: ZoneId = ZoneId.of("GMT0")
     assertEquals(test.getId, "GMT0")
     assertEquals(test.getRules.isFixedOffset, true)
     assertEquals(test.normalized, ZoneOffset.UTC)
   }
 
-  def test_of_string_London(): Unit = {
+  test("of_string_London") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getId, "Europe/London")
     assertEquals(test.getRules.isFixedOffset, false)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_of_string_null(): Unit = {
-    ZoneId.of(null.asInstanceOf[String])
+  test("of_string_null") {
+    assertThrows[NullPointerException] {
+      ZoneId.of(null.asInstanceOf[String])
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_of_string_unknown_simple(): Unit = {
-    ZoneId.of("Unknown")
+  test("of_string_unknown_simple") {
+    assertThrows[ZoneRulesException] {
+      ZoneId.of("Unknown")
+    }
   }
 
-  def test_factory_CalendricalObject(): Unit = {
+  test("factory_CalendricalObject") {
     assertEquals(ZoneId.from(createZDT(2007, 7, 15, 17, 30, 0, 0, TestZoneId.ZONE_PARIS)), TestZoneId.ZONE_PARIS)
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_CalendricalObject_invalid_noDerive(): Unit = {
-    ZoneId.from(LocalTime.of(12, 30))
+  test("factory_CalendricalObject_invalid_noDerive") {
+    assertThrows[DateTimeException] {
+      ZoneId.from(LocalTime.of(12, 30))
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_factory_CalendricalObject_null(): Unit = {
-    ZoneId.from(null.asInstanceOf[TemporalAccessor])
+  test("factory_CalendricalObject_null") {
+    assertThrows[Platform.NPE] {
+      ZoneId.from(null.asInstanceOf[TemporalAccessor])
+    }
   }
 
-  def test_London(): Unit = {
+  test("London") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getId, "Europe/London")
     assertEquals(test.getRules.isFixedOffset, false)
   }
 
-  def test_London_getOffset(): Unit = {
+  test("London_getOffset") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getRules.getOffset(createInstant(2008, 1, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
     assertEquals(test.getRules.getOffset(createInstant(2008, 2, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
@@ -341,7 +511,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 12, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
   }
 
-  def test_London_getOffset_toDST(): Unit = {
+  test("London_getOffset_toDST") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 24, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 25, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
@@ -355,7 +525,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 30, 1, 0, 0, 0, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
   }
 
-  def test_London_getOffset_fromDST(): Unit = {
+  test("London_getOffset_fromDST") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 24, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 25, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
@@ -369,7 +539,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 26, 1, 0, 0, 0, ZoneOffset.UTC)), ZoneOffset.ofHours(0))
   }
 
-  def test_London_getOffsetInfo(): Unit = {
+  test("London_getOffsetInfo") {
     val test: ZoneId = ZoneId.of("Europe/London")
     checkOffset(test.getRules, createLDT(2008, 1, 1), ZoneOffset.ofHours(0), 1)
     checkOffset(test.getRules, createLDT(2008, 2, 1), ZoneOffset.ofHours(0), 1)
@@ -385,7 +555,7 @@ object TestZoneId {
     checkOffset(test.getRules, createLDT(2008, 12, 1), ZoneOffset.ofHours(0), 1)
   }
 
-  def test_London_getOffsetInfo_toDST(): Unit = {
+  test("London_getOffsetInfo_toDST") {
     val test: ZoneId = ZoneId.of("Europe/London")
     checkOffset(test.getRules, createLDT(2008, 3, 24), ZoneOffset.ofHours(0), 1)
     checkOffset(test.getRules, createLDT(2008, 3, 25), ZoneOffset.ofHours(0), 1)
@@ -400,7 +570,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 3, 30, 2, 0, 0, 0), ZoneOffset.ofHours(1), 1)
   }
 
-  def test_London_getOffsetInfo_fromDST(): Unit = {
+  test("London_getOffsetInfo_fromDST") {
     val test: ZoneId = ZoneId.of("Europe/London")
     checkOffset(test.getRules, createLDT(2008, 10, 24), ZoneOffset.ofHours(1), 1)
     checkOffset(test.getRules, createLDT(2008, 10, 25), ZoneOffset.ofHours(1), 1)
@@ -415,7 +585,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 10, 26, 2, 0, 0, 0), ZoneOffset.ofHours(0), 1)
   }
 
-  def test_London_getOffsetInfo_gap(): Unit = {
+  test("London_getOffsetInfo_gap") {
     val test: ZoneId = ZoneId.of("Europe/London")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 30, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(0), TestZoneId.GAP)
@@ -432,14 +602,14 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(2)), false)
     assertEquals(trans.toString, "Transition[Gap at 2008-03-30T01:00Z to +01:00]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(0))
+    assertNotEquals(trans, ZoneOffset.ofHours(0))
     assertTrue(trans == trans)
     val otherTrans: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherTrans)
     assertEquals(trans.hashCode, otherTrans.hashCode)
   }
 
-  def test_London_getOffsetInfo_overlap(): Unit = {
+  test("London_getOffsetInfo_overlap") {
     val test: ZoneId = ZoneId.of("Europe/London")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 10, 26, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(1), TestZoneId.OVERLAP)
@@ -456,20 +626,20 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(2)), false)
     assertEquals(trans.toString, "Transition[Overlap at 2008-10-26T02:00+01:00 to Z]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(1))
+    assertNotEquals(trans, ZoneOffset.ofHours(1))
     assertTrue(trans == trans)
     val otherTrans: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherTrans)
     assertEquals(trans.hashCode, otherTrans.hashCode)
   }
 
-  def test_Paris(): Unit = {
+  test("Paris") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     assertEquals(test.getId, "Europe/Paris")
     assertEquals(test.getRules.isFixedOffset, false)
   }
 
-  def test_Paris_getOffset(): Unit = {
+  test("Paris_getOffset") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     assertEquals(test.getRules.getOffset(createInstant(2008, 1, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
     assertEquals(test.getRules.getOffset(createInstant(2008, 2, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
@@ -485,7 +655,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 12, 1, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
   }
 
-  def test_Paris_getOffset_toDST(): Unit = {
+  test("Paris_getOffset_toDST") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 24, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 25, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
@@ -499,7 +669,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 30, 1, 0, 0, 0, ZoneOffset.UTC)), ZoneOffset.ofHours(2))
   }
 
-  def test_Paris_getOffset_fromDST(): Unit = {
+  test("Paris_getOffset_fromDST") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 24, ZoneOffset.UTC)), ZoneOffset.ofHours(2))
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 25, ZoneOffset.UTC)), ZoneOffset.ofHours(2))
@@ -513,7 +683,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 10, 26, 1, 0, 0, 0, ZoneOffset.UTC)), ZoneOffset.ofHours(1))
   }
 
-  def test_Paris_getOffsetInfo(): Unit = {
+  test("Paris_getOffsetInfo") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     checkOffset(test.getRules, createLDT(2008, 1, 1), ZoneOffset.ofHours(1), 1)
     checkOffset(test.getRules, createLDT(2008, 2, 1), ZoneOffset.ofHours(1), 1)
@@ -529,7 +699,7 @@ object TestZoneId {
     checkOffset(test.getRules, createLDT(2008, 12, 1), ZoneOffset.ofHours(1), 1)
   }
 
-  def test_Paris_getOffsetInfo_toDST(): Unit = {
+  test("Paris_getOffsetInfo_toDST") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     checkOffset(test.getRules, createLDT(2008, 3, 24), ZoneOffset.ofHours(1), 1)
     checkOffset(test.getRules, createLDT(2008, 3, 25), ZoneOffset.ofHours(1), 1)
@@ -544,7 +714,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 3, 30, 3, 0, 0, 0), ZoneOffset.ofHours(2), 1)
   }
 
-  def test_Paris_getOffsetInfo_fromDST(): Unit = {
+  test("Paris_getOffsetInfo_fromDST") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     checkOffset(test.getRules, createLDT(2008, 10, 24), ZoneOffset.ofHours(2), 1)
     checkOffset(test.getRules, createLDT(2008, 10, 25), ZoneOffset.ofHours(2), 1)
@@ -559,7 +729,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 10, 26, 3, 0, 0, 0), ZoneOffset.ofHours(1), 1)
   }
 
-  def test_Paris_getOffsetInfo_gap(): Unit = {
+  test("Paris_getOffsetInfo_gap") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 30, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(1), TestZoneId.GAP)
@@ -574,14 +744,14 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(3)), false)
     assertEquals(trans.toString, "Transition[Gap at 2008-03-30T02:00+01:00 to +02:00]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(1))
+    assertNotEquals(trans, ZoneOffset.ofHours(1))
     assertTrue(trans == trans)
     val otherDis: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherDis)
     assertEquals(trans.hashCode, otherDis.hashCode)
   }
 
-  def test_Paris_getOffsetInfo_overlap(): Unit = {
+  test("Paris_getOffsetInfo_overlap") {
     val test: ZoneId = ZoneId.of("Europe/Paris")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 10, 26, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(2), TestZoneId.OVERLAP)
@@ -596,20 +766,20 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(3)), false)
     assertEquals(trans.toString, "Transition[Overlap at 2008-10-26T03:00+02:00 to +01:00]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(2))
+    assertNotEquals(trans, ZoneOffset.ofHours(2))
     assertTrue(trans == trans)
     val otherDis: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherDis)
     assertEquals(trans.hashCode, otherDis.hashCode)
   }
 
-  def test_NewYork(): Unit = {
+  test("NewYork") {
     val test: ZoneId = ZoneId.of("America/New_York")
     assertEquals(test.getId, "America/New_York")
     assertEquals(test.getRules.isFixedOffset, false)
   }
 
-  def test_NewYork_getOffset(): Unit = {
+  test("NewYork_getOffset") {
     val test: ZoneId = ZoneId.of("America/New_York")
     val offset: ZoneOffset = ZoneOffset.ofHours(-5)
     assertEquals(test.getRules.getOffset(createInstant(2008, 1, 1, offset)), ZoneOffset.ofHours(-5))
@@ -638,7 +808,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 12, 28, offset)), ZoneOffset.ofHours(-5))
   }
 
-  def test_NewYork_getOffset_toDST(): Unit = {
+  test("NewYork_getOffset_toDST") {
     val test: ZoneId = ZoneId.of("America/New_York")
     val offset: ZoneOffset = ZoneOffset.ofHours(-5)
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 8, offset)), ZoneOffset.ofHours(-5))
@@ -652,7 +822,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 3, 9, 2, 0, 0, 0, offset)), ZoneOffset.ofHours(-4))
   }
 
-  def test_NewYork_getOffset_fromDST(): Unit = {
+  test("NewYork_getOffset_fromDST") {
     val test: ZoneId = ZoneId.of("America/New_York")
     val offset: ZoneOffset = ZoneOffset.ofHours(-4)
     assertEquals(test.getRules.getOffset(createInstant(2008, 11, 1, offset)), ZoneOffset.ofHours(-4))
@@ -666,7 +836,7 @@ object TestZoneId {
     assertEquals(test.getRules.getOffset(createInstant(2008, 11, 2, 2, 0, 0, 0, offset)), ZoneOffset.ofHours(-5))
   }
 
-  def test_NewYork_getOffsetInfo(): Unit = {
+  test("NewYork_getOffsetInfo") {
     val test: ZoneId = ZoneId.of("America/New_York")
     checkOffset(test.getRules, createLDT(2008, 1, 1), ZoneOffset.ofHours(-5), 1)
     checkOffset(test.getRules, createLDT(2008, 2, 1), ZoneOffset.ofHours(-5), 1)
@@ -694,7 +864,7 @@ object TestZoneId {
     checkOffset(test.getRules, createLDT(2008, 12, 28), ZoneOffset.ofHours(-5), 1)
   }
 
-  def test_NewYork_getOffsetInfo_toDST(): Unit = {
+  test("NewYork_getOffsetInfo_toDST") {
     val test: ZoneId = ZoneId.of("America/New_York")
     checkOffset(test.getRules, createLDT(2008, 3, 8), ZoneOffset.ofHours(-5), 1)
     checkOffset(test.getRules, createLDT(2008, 3, 9), ZoneOffset.ofHours(-5), 1)
@@ -708,7 +878,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 3, 9, 3, 0, 0, 0), ZoneOffset.ofHours(-4), 1)
   }
 
-  def test_NewYork_getOffsetInfo_fromDST(): Unit = {
+  test("NewYork_getOffsetInfo_fromDST") {
     val test: ZoneId = ZoneId.of("America/New_York")
     checkOffset(test.getRules, createLDT(2008, 11, 1), ZoneOffset.ofHours(-4), 1)
     checkOffset(test.getRules, createLDT(2008, 11, 2), ZoneOffset.ofHours(-4), 1)
@@ -722,7 +892,7 @@ object TestZoneId {
     checkOffset(test.getRules, LocalDateTime.of(2008, 11, 2, 2, 0, 0, 0), ZoneOffset.ofHours(-5), 1)
   }
 
-  def test_NewYork_getOffsetInfo_gap(): Unit = {
+  test("NewYork_getOffsetInfo_gap") {
     val test: ZoneId = ZoneId.of("America/New_York")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 3, 9, 2, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(-5), TestZoneId.GAP)
@@ -735,14 +905,14 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(-3)), false)
     assertEquals(trans.toString, "Transition[Gap at 2008-03-09T02:00-05:00 to -04:00]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(-5))
+    assertNotEquals(trans, ZoneOffset.ofHours(-5))
     assertTrue(trans == trans)
     val otherTrans: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherTrans)
     assertEquals(trans.hashCode, otherTrans.hashCode)
   }
 
-  def test_NewYork_getOffsetInfo_overlap(): Unit = {
+  test("NewYork_getOffsetInfo_overlap") {
     val test: ZoneId = ZoneId.of("America/New_York")
     val dateTime: LocalDateTime = LocalDateTime.of(2008, 11, 2, 1, 0, 0, 0)
     val trans: ZoneOffsetTransition = checkOffset(test.getRules, dateTime, ZoneOffset.ofHours(-4), TestZoneId.OVERLAP)
@@ -755,26 +925,26 @@ object TestZoneId {
     assertEquals(trans.isValidOffset(ZoneOffset.ofHours(2)), false)
     assertEquals(trans.toString, "Transition[Overlap at 2008-11-02T02:00-04:00 to -05:00]")
     assertFalse(trans == null)
-    assertFalse(trans == ZoneOffset.ofHours(-4))
+    assertNotEquals(trans, ZoneOffset.ofHours(-4))
     assertTrue(trans == trans)
     val otherTrans: ZoneOffsetTransition = test.getRules.getTransition(dateTime)
     assertTrue(trans == otherTrans)
     assertEquals(trans.hashCode, otherTrans.hashCode)
   }
 
-  def test_get_Tzdb(): Unit = {
+  test("get_Tzdb") {
     val test: ZoneId = ZoneId.of("Europe/London")
     assertEquals(test.getId, "Europe/London")
     assertEquals(test.getRules.isFixedOffset, false)
   }
 
-  def test_get_TzdbFixed(): Unit = {
+  test("get_TzdbFixed") {
     val test: ZoneId = ZoneId.of("+01:30")
     assertEquals(test.getId, "+01:30")
     assertEquals(test.getRules.isFixedOffset, true)
   }
 
-  def test_equals(): Unit = {
+  test("equals") {
     val test1: ZoneId = ZoneId.of("Europe/London")
     val test2: ZoneId = ZoneId.of("Europe/Paris")
     val test2b: ZoneId = ZoneId.of("Europe/Paris")
@@ -788,21 +958,33 @@ object TestZoneId {
     assertEquals(test2.hashCode == test2b.hashCode, true)
   }
 
-  def test_equals_null(): Unit = {
+  test("equals_null") {
     assertEquals(ZoneId.of("Europe/London") == null, false)
   }
 
-  def test_equals_notTimeZone(): Unit = {
-    assertEquals(ZoneId.of("Europe/London") == "Europe/London", false)
+  test("equals_notTimeZone") {
+    assertNotEquals(ZoneId.of("Europe/London"), "Europe/London")
   }
 
-  @DataProvider(name = "ToString") private[bp] def data_toString: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array("Europe/London", "Europe/London"), Array("Europe/Paris", "Europe/Paris"), Array("Europe/Berlin", "Europe/Berlin"), Array("Z", "Z"), Array("UTC", "UTC"), Array("UTC+01:00", "UTC+01:00"), Array("GMT+01:00", "GMT+01:00"), Array("UT+01:00", "UT+01:00"))
-  }
+  val data_toString: List[(String, String)] =
+    List(
+      ("Europe/London", "Europe/London"),
+      ("Europe/Paris", "Europe/Paris"),
+      ("Europe/Berlin", "Europe/Berlin"),
+      ("Z", "Z"),
+      ("UTC", "UTC"),
+      ("UTC+01:00", "UTC+01:00"),
+      ("GMT+01:00", "GMT+01:00"),
+      ("UT+01:00", "UT+01:00"))
 
-  @Test(dataProvider = "ToString") def test_toString(id: String, expected: String): Unit = {
-    val test: ZoneId = ZoneId.of(id)
-    assertEquals(test.toString, expected)
+  test("toString") {
+    data_toString.foreach {
+      case (id: String, expected: String) =>
+        val test: ZoneId = ZoneId.of(id)
+        assertEquals(test.toString, expected)
+      case _ =>
+        fail()
+    }
   }
 
   private def createInstant(year: Int, month: Int, day: Int, offset: ZoneOffset): Instant = {

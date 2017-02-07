@@ -31,16 +31,13 @@
  */
 package org.threeten.bp.zone
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertNotNull
-import org.testng.Assert.assertTrue
 import java.util.Collections
-import org.testng.annotations.Test
-import org.threeten.bp.ZoneOffset
+
+import org.scalatest.FunSuite
+import org.threeten.bp.{AssertionsHelper, ZoneOffset}
 
 /** Test ZoneRulesProvider. */
 object TestZoneRulesProvider {
-
   private[zone] class MockTempProvider extends ZoneRulesProvider {
     private[zone] final val rules: ZoneRules = ZoneOffset.of("+01:45").getRules
 
@@ -49,7 +46,7 @@ object TestZoneRulesProvider {
     }
 
     protected def provideVersions(zoneId: String): java.util.NavigableMap[String, ZoneRules] = {
-      val result: java.util.NavigableMap[String, ZoneRules] = new java.util.TreeMap[String, ZoneRules]
+      val result: java.util.NavigableMap[String, ZoneRules] = new ZoneMap()
       result.put("BarVersion", rules)
       result
     }
@@ -64,62 +61,76 @@ object TestZoneRulesProvider {
 
 }
 
-@Test class TestZoneRulesProvider {
-  @Test def test_getAvailableGroupIds(): Unit = {
+class TestZoneRulesProvider extends FunSuite with AssertionsHelper {
+  test("getAvailableGroupIds") {
     val zoneIds: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(zoneIds.contains("Europe/London"), true)
+    assertTrue(zoneIds.contains("Europe/London"))
     zoneIds.clear()
-    assertEquals(zoneIds.size, 0)
+    assertTrue(zoneIds.size == 0)
     val zoneIds2: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(zoneIds2.contains("Europe/London"), true)
+    assertTrue(zoneIds2.contains("Europe/London"))
   }
 
-  @Test def test_getRules_String(): Unit = {
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertNotNull(rules)
-    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertEquals(rules2, rules)
+  test("contains derived zone ids") {
+    val zoneIds: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
+    assertTrue(zoneIds.contains("US/Hawaii"))
+    assertTrue(zoneIds.contains("Pacific/Honolulu"))
   }
 
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_getRules_String_unknownId(): Unit = {
-    ZoneRulesProvider.getRules("Europe/Lon", false)
+  test("getRules_String") {
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    assertTrue(rules != null)
+    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    assertTrue(rules2 == rules)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getRules_String_null(): Unit = {
-    ZoneRulesProvider.getRules(null, false)
+  test("getRules_String_unknownId") {
+    assertThrows[ZoneRulesException] {
+      ZoneRulesProvider.getRules("Europe/Lon", forCaching = false)
+    }
   }
 
-  @Test def test_getVersions_String(): Unit = {
+  test("getRules_String_null") {
+    assertThrows[NullPointerException] {
+      ZoneRulesProvider.getRules(null, forCaching = false)
+    }
+  }
+
+  test("getVersions_String") {
     val versions: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
     assertTrue(versions.size >= 1)
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", false)
-    assertEquals(versions.lastEntry.getValue, rules)
-    val copy: java.util.NavigableMap[String, ZoneRules] = new java.util.TreeMap[String, ZoneRules](versions)
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    assertTrue(versions.lastEntry.getValue == rules)
+    val copy = new java.util.HashMap[String, ZoneRules](versions)
     versions.clear()
-    assertEquals(versions.size, 0)
+    assertTrue(versions.size == 0)
     val versions2: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
-    assertEquals(versions2, copy)
+    assertTrue(versions2 == copy)
   }
 
-  @Test(expectedExceptions = Array(classOf[ZoneRulesException])) def test_getVersions_String_unknownId(): Unit = {
-    ZoneRulesProvider.getVersions("Europe/Lon")
+  test("getVersions_String_unknownId") {
+    assertThrows[ZoneRulesException] {
+      ZoneRulesProvider.getVersions("Europe/Lon")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_getVersions_String_null(): Unit = {
-    ZoneRulesProvider.getVersions(null)
+  test("getVersions_String_null") {
+    assertThrows[NullPointerException] {
+      ZoneRulesProvider.getVersions(null)
+    }
   }
 
-  @Test def test_refresh(): Unit = {
-    assertEquals(ZoneRulesProvider.refresh, false)
+  test("refresh") {
+    assertTrue(!ZoneRulesProvider.refresh)
   }
 
-  @Test def test_registerProvider(): Unit = {
+  test("registerProvider") {
     val pre: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(pre.contains("FooLocation"), false)
+    assertTrue(!pre.contains("FooLocation"))
     ZoneRulesProvider.registerProvider(new TestZoneRulesProvider.MockTempProvider)
-    assertEquals(pre.contains("FooLocation"), false)
+    assertTrue(!pre.contains("FooLocation"))
     val post: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    assertEquals(post.contains("FooLocation"), true)
-    assertEquals(ZoneRulesProvider.getRules("FooLocation", false), ZoneOffset.of("+01:45").getRules)
+    assertTrue(post.contains("FooLocation"))
+    assertTrue(ZoneRulesProvider.getRules("FooLocation", forCaching = false) == ZoneOffset.of("+01:45").getRules)
   }
 }

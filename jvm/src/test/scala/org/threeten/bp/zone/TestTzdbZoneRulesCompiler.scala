@@ -31,17 +31,13 @@
  */
 package org.threeten.bp.zone
 
-import org.testng.Assert.assertEquals
 import java.io.File
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.StringTokenizer
-import org.testng.annotations.Test
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalTime
-import org.threeten.bp.Month
-import org.threeten.bp.Year
+
+import org.scalatest.FunSuite
+import org.threeten.bp._
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition
 
 object TestTzdbZoneRulesCompiler {
@@ -92,134 +88,107 @@ object TestTzdbZoneRulesCompiler {
 
 /** Test TzdbZoneRulesCompiler.
   */
-@Test class TestTzdbZoneRulesCompiler {
-  @Test
-  @throws[Exception]
-  def test_parseYear_specific(): Unit = {
+class TestTzdbZoneRulesCompiler extends FunSuite with AssertionsHelper {
+  test("parseYear_specific") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "2010", 2000), 2010)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_min(): Unit = {
+  test("parseYear_min") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "min", 2000), Year.MIN_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_mini(): Unit = {
+  test("parseYear_mini") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "mini", 2000), Year.MIN_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_minim(): Unit = {
+  test("parseYear_minim") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "minim", 2000), Year.MIN_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_minimu(): Unit = {
+  test("parseYear_minimu") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "minimu", 2000), Year.MIN_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_minimum(): Unit = {
+  test("parseYear_minimum") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "minimum", 2000), Year.MIN_VALUE)
   }
 
-  @Test(expectedExceptions = Array(classOf[NumberFormatException]))
-  @throws[Exception]
-  def test_parseYear_minTooShort(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseYear(test, "mi", 2000)
+  test("parseYear_minTooShort") {
+    assertThrows[NumberFormatException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseYear(test, "mi", 2000)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NumberFormatException]))
-  @throws[Exception]
-  def test_parseYear_minTooLong(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseYear(test, "minimuma", 2000)
+  test("parseYear_minTooLong") {
+    assertThrows[NumberFormatException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseYear(test, "minimuma", 2000)
+    }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_max(): Unit = {
+  test("parseYear_max") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "max", 2000), Year.MAX_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_maxi(): Unit = {
+  test("parseYear_maxi") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "maxi", 2000), Year.MAX_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_maxim(): Unit = {
+  test("parseYear_maxim") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "maxim", 2000), Year.MAX_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_maximu(): Unit = {
+  test("parseYear_maximu") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "maximu", 2000), Year.MAX_VALUE)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_maximum(): Unit = {
+  test("parseYear_maximum") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "maximum", 2000), Year.MAX_VALUE)
   }
 
-  @Test(expectedExceptions = Array(classOf[NumberFormatException]))
-  @throws[Exception]
-  def test_parseYear_maxTooShort(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseYear(test, "ma", 2000)
+  test("parseYear_maxTooShort") {
+    assertThrows[NumberFormatException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseYear(test, "ma", 2000)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NumberFormatException]))
-  @throws[Exception]
-  def test_parseYear_maxTooLong(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseYear(test, "maximuma", 2000)
+  test("parseYear_maxTooLong") {
+    assertThrows[NumberFormatException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseYear(test, "maximuma", 2000)
+    }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_only(): Unit = {
+  test("parseYear_only") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "only", 2000), 2000)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseYear_only_uppercase(): Unit = {
+  test("parseYear_only_uppercase") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseYear(test, "ONLY", 2000), 2000)
   }
 
-  @Test(expectedExceptions = Array(classOf[NumberFormatException]))
-  @throws[Exception]
-  def test_parseYear_invalidYear(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseYear(test, "ABC", 2000)
+  test("parseYear_invalidYear") {
+    assertThrows[NumberFormatException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseYear(test, "ABC", 2000)
+    }
   }
 
-  @throws[Exception]
   private def parseYear(test: TzdbZoneRulesCompiler, str: String, year: Int): Int = {
     try TestTzdbZoneRulesCompiler.PARSE_YEAR.invoke(test, str, year.asInstanceOf[AnyRef]).asInstanceOf[Integer]
     catch {
@@ -230,9 +199,7 @@ object TestTzdbZoneRulesCompiler {
     }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonth(): Unit = {
+  test("parseMonth") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseMonth(test, "Jan"), Month.JANUARY)
     assertEquals(parseMonth(test, "Feb"), Month.FEBRUARY)
@@ -263,14 +230,13 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(parseMonth(test, "Januar"), Month.JANUARY)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException]))
-  @throws[Exception]
-  def test_parseMonth_invalidMonth(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseMonth(test, "ABC")
+  test("parseMonth_invalidMonth") {
+    assertThrows[IllegalArgumentException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseMonth(test, "ABC")
+    }
   }
 
-  @throws[Exception]
   private def parseMonth(test: TzdbZoneRulesCompiler, str: String): Month = {
     try {
       TestTzdbZoneRulesCompiler.PARSE_MONTH.invoke(test, str).asInstanceOf[Month]
@@ -284,9 +250,7 @@ object TestTzdbZoneRulesCompiler {
     }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseDayOfWeek(): Unit = {
+  test("parseDayOfWeek") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     assertEquals(parseDayOfWeek(test, "Mon"), DayOfWeek.MONDAY)
     assertEquals(parseDayOfWeek(test, "Tue"), DayOfWeek.TUESDAY)
@@ -306,14 +270,13 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(parseDayOfWeek(test, "Monda"), DayOfWeek.MONDAY)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException]))
-  @throws[Exception]
-  def test_parseDayOfWeek_invalidMonth(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseMonth(test, "ABC")
+  test("parseDayOfWeek_invalidMonth") {
+    assertThrows[IllegalArgumentException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseMonth(test, "ABC")
+    }
   }
 
-  @throws[Exception]
   private def parseDayOfWeek(test: TzdbZoneRulesCompiler, str: String): DayOfWeek = {
     try {
       TestTzdbZoneRulesCompiler.PARSE_DOW.invoke(test, str).asInstanceOf[DayOfWeek]
@@ -327,9 +290,7 @@ object TestTzdbZoneRulesCompiler {
     }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_marLastSun0220(): Unit = {
+  test("parseMonthDayTime_marLastSun0220") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "Mar lastSun 2:20")
     assertEquals(mdt.month, Month.MARCH)
@@ -341,9 +302,7 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.WALL)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_jun50220s(): Unit = {
+  test("parseMonthDayTime_jun50220s") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "Jun 5 2:20s")
     assertEquals(mdt.month, Month.JUNE)
@@ -355,9 +314,7 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.STANDARD)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_maySatAfter50220u(): Unit = {
+  test("parseMonthDayTime_maySatAfter50220u") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "May Sat>=5 2:20u")
     assertEquals(mdt.month, Month.MAY)
@@ -369,9 +326,7 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.UTC)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_maySatBefore50220u(): Unit = {
+  test("parseMonthDayTime_maySatBefore50220u") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "May Sat<=5 24:00g")
     assertEquals(mdt.month, Month.MAY)
@@ -383,9 +338,7 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.UTC)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_maySatBefore15Dash(): Unit = {
+  test("parseMonthDayTime_maySatBefore15Dash") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "May Sat<=15 -")
     assertEquals(mdt.month, Month.MAY)
@@ -397,9 +350,7 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.WALL)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseMonthDayTime_maylastSunShortTime(): Unit = {
+  test("parseMonthDayTime_maylastSunShortTime") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val mdt: TzdbZoneRulesCompiler#TZDBRule = parseMonthDayTime(test, "May lastSun 3z")
     assertEquals(mdt.month, Month.MAY)
@@ -411,7 +362,6 @@ object TestTzdbZoneRulesCompiler {
     assertEquals(mdt.timeDefinition, TimeDefinition.UTC)
   }
 
-  @throws[Exception]
   private def parseMonthDayTime(test: TzdbZoneRulesCompiler, str: String): TzdbZoneRulesCompiler#TZDBRule = {
     try {
       val mdt: TzdbZoneRulesCompiler#TZDBRule = new test.TZDBRule
@@ -426,46 +376,41 @@ object TestTzdbZoneRulesCompiler {
     }
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseLeapSecondRule_at_midnight(): Unit = {
+  test("parseLeapSecondRule_at_midnight") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val lsr: TzdbZoneRulesCompiler.LeapSecondRule = parseLeapSecondRule(test, "Leap\t1972 Jun\t30   23:59:60 +   S")
     assertEquals(lsr.leapDate, LocalDate.of(1972, Month.JUNE, 30))
     assertEquals(lsr.secondAdjustment, +1)
   }
 
-  @Test
-  @throws[Exception]
-  def test_parseLeapSecondRule_just_before_midnight(): Unit = {
+  test("parseLeapSecondRule_just_before_midnight") {
     val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
     val lsr: TzdbZoneRulesCompiler.LeapSecondRule = parseLeapSecondRule(test, "Leap\t2009 May\t1   23:59:59 - S")
     assertEquals(lsr.leapDate, LocalDate.of(2009, Month.MAY, 1))
     assertEquals(lsr.secondAdjustment, -1)
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException]))
-  @throws[Exception]
-  def test_parseLeapSecondRule_too_short(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseLeapSecondRule(test, "Leap\t2009 May\t1  23:59:60 S")
+  test("parseLeapSecondRule_too_short") {
+    assertThrows[IllegalArgumentException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseLeapSecondRule(test, "Leap\t2009 May\t1  23:59:60 S")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException]))
-  @throws[Exception]
-  def test_parseLeapSecondRule_bad_adjustment(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseLeapSecondRule(test, "Leap\t2009 May\t1   23:59:60 % S")
+  test("parseLeapSecondRule_bad_adjustment") {
+    assertThrows[IllegalArgumentException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseLeapSecondRule(test, "Leap\t2009 May\t1   23:59:60 % S")
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException]))
-  @throws[Exception]
-  def test_parseLeapSecondRule_rolling(): Unit = {
-    val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
-    parseLeapSecondRule(test, "Leap\t2009 May\t1   23:59:60 - R")
+  test("parseLeapSecondRule_rolling") {
+    assertThrows[IllegalArgumentException] {
+      val test: TzdbZoneRulesCompiler = new TzdbZoneRulesCompiler("2010c", new java.util.ArrayList[File], null, false)
+      parseLeapSecondRule(test, "Leap\t2009 May\t1   23:59:60 - R")
+    }
   }
 
-  @throws[Exception]
   private def parseLeapSecondRule(test: TzdbZoneRulesCompiler, str: String): TzdbZoneRulesCompiler.LeapSecondRule = {
     try {
       TestTzdbZoneRulesCompiler.PARSE_LSR.invoke(test, str).asInstanceOf[TzdbZoneRulesCompiler.LeapSecondRule]
