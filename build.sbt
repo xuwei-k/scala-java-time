@@ -41,7 +41,6 @@ lazy val commonSettings = Seq(
     },
   pomExtra := pomData,
   pomIncludeRepository := { _ => false },
-  resolvers += Resolver.sonatypeRepo("snapshots"),
   libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
   )
