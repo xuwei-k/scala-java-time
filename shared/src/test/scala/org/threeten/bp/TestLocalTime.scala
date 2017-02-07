@@ -173,9 +173,10 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
         {
           if (expected == test) {
             i = 99
+          } else {
+            expected = LocalTime.now(Clock.system(zone))
+            test = LocalTime.now(zone)
           }
-          expected = LocalTime.now(Clock.system(zone))
-          test = LocalTime.now(zone)
         }
         {
           i += 1
