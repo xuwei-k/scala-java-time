@@ -1,69 +1,57 @@
 package org.threeten.bp.zone
-import java.util
 
-import org.threeten.bp.DateTimeException
+import org.threeten.bp._
+import scala.scalajs.js
 
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   import zonedb.threeten.tzdb._
   import scala.collection.JavaConverters._
 
-  /** SPI method to get the available zone IDs.
-    *
-    * This obtains the IDs that this {@code ZoneRulesProvider} provides.
-    * A provider should provide data for at least one region.
-    *
-    * The returned regions remain available and valid for the lifetime of the application.
-    * A dynamic provider may increase the set of regions as more data becomes available.
-    *
-    * @return the unmodifiable set of region IDs being provided, not null
-    * @throws ZoneRulesException if a problem occurs while providing the IDs
-    */
-  override protected def provideZoneIds: util.Set[String] = new java.util.HashSet((allZones.keySet ++ zoneLinks.keySet).asJava)
+  private val stdZonesMap = stdZones.asInstanceOf[js.Dictionary[js.Dynamic]].toMap
+  private val fixedZonesMap = fixedZones.asInstanceOf[js.Dictionary[Int]].toMap
 
-  /** SPI method to get the rules for the zone ID.
-    *
-    * This loads the rules for the region and version specified.
-    * The version may be null to indicate the "latest" version.
-    *
-    * @param regionId the time-zone region ID, not null
-    * @return the rules, not null
-    * @throws java.time.DateTimeException if rules cannot be obtained
-    */
-  override protected def provideRules(regionId: String, forCaching: Boolean): ZoneRules = {
-    val actualRegion = zoneLinks.getOrElse(regionId, regionId)
-    allZones.get(actualRegion).fold(throw new DateTimeException(s"TimeZone Region $actualRegion unknown"))(identity)
+  override protected def provideZoneIds: java.util.Set[String] = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
+
+  private def toLocalTime(lt: Int): LocalTime =
+    LocalTime.ofSecondOfDay(lt)
+
+  private def toZoneOffsetTransition(zr: js.Array[Int]): ZoneOffsetTransition = {
+    val jointDate = zr(0)
+    // year is the first 4 digits
+    val year = jointDate.toString.substring(0, 4).toInt
+    val dayOfYear = jointDate.toString.substring(4, 7).toInt
+    val transition = LocalDateTime.of(LocalDate.ofYearDay(year, dayOfYear), toLocalTime(zr(1)))
+    ZoneOffsetTransition.of(transition, ZoneOffset.ofTotalSeconds(zr(2)), ZoneOffset.ofTotalSeconds(zr(3)))
   }
 
-  /** SPI method to get the history of rules for the zone ID.
-    *
-    * This returns a map of historical rules keyed by a version string.
-    * The exact meaning and format of the version is provider specific.
-    * The version must follow lexicographical order, thus the returned map will
-    * be order from the oldest known rules to the newest available rules.
-    * The default 'TZDB' group uses version numbering consisting of the year
-    * followed by a letter, such as '2009e' or '2012f'.
-    *
-    * Implementations must provide a result for each valid zone ID, however
-    * they do not have to provide a history of rules.
-    * Thus the map will always contain one element, and will only contain more
-    * than one element if historical rule information is available.
-    *
-    * The returned versions remain available and valid for the lifetime of the application.
-    * A dynamic provider may increase the set of versions as more data becomes available.
-    *
-    * @param zoneId the zone region ID as used by { @code ZoneId}, not null
-    * @return a modifiable copy of the history of the rules for the ID, sorted
-    *         from oldest to newest, not null
-    * @throws ZoneRulesException if history cannot be obtained for the zone ID
-    */
-  override protected def provideVersions(zoneId: String): util.NavigableMap[String, ZoneRules] = {
+  private def toZoneOffsetTransitionRule(zor: js.Array[Int]): ZoneOffsetTransitionRule = {
+    val time = toLocalTime(zor(3))
+    val dayOfWeek = if (zor(2) >= 0) DayOfWeek.of(zor(2)) else null
+    ZoneOffsetTransitionRule.of(Month.of(zor(0)), zor(1), dayOfWeek, time, zor(4) == 1, ZoneOffsetTransitionRule.TimeDefinition.values.apply(zor(5)), ZoneOffset.ofTotalSeconds(zor(6)), ZoneOffset.ofTotalSeconds(zor(7)), ZoneOffset.ofTotalSeconds(zor(8)))
+  }
+
+  private def toZoneRules(zr: scala.scalajs.js.Dynamic): ZoneRules = {
+    // Get the values from a dynamic object to save code generated space
+    val bso = ZoneOffset.ofTotalSeconds(zr.s.asInstanceOf[Int])
+    val bwo = ZoneOffset.ofTotalSeconds(zr.w.asInstanceOf[Int])
+    val standardTransitions = zr.t.asInstanceOf[js.Array[js.Array[Int]]].map(toZoneOffsetTransition)
+    val transitionList = zr.l.asInstanceOf[js.Array[js.Array[Int]]].map(toZoneOffsetTransition)
+    val lastRules = zr.r.asInstanceOf[js.Array[js.Array[Int]]].map(toZoneOffsetTransitionRule)
+    ZoneRules.of(bso, bwo, standardTransitions.toList.asJava, transitionList.toList.asJava, lastRules.toList.asJava)
+  }
+
+  override protected def provideRules(regionId: String, forCaching: Boolean): ZoneRules = {
+    val actualRegion = zoneLinks.getOrElse(regionId, regionId)
+    stdZonesMap.get(actualRegion).map(toZoneRules).orElse(fixedZonesMap.get(actualRegion).map(i => ZoneRules.of(ZoneOffset.ofTotalSeconds(i)))).getOrElse(throw new DateTimeException(s"TimeZone Region $actualRegion unknown"))
+  }
+
+  override protected def provideVersions(zoneId: String): java.util.NavigableMap[String, ZoneRules] = {
     val actualRegion = zoneLinks.getOrElse(zoneId, zoneId)
-    allZones.get(actualRegion).fold(throw new DateTimeException(s"TimeZone Region $actualRegion unknown")) {
-      x =>
+    stdZonesMap.get(actualRegion).map(toZoneRules).orElse(fixedZonesMap.get(actualRegion).map(i => ZoneRules.of(ZoneOffset.ofTotalSeconds(i)))).map {z =>
         val r = new ZoneMap[String, ZoneRules]
         // FIXME the version should be provided by the db
-        r.put("2016j", x)
+        r.put("2016j", z)
         r
-    }
+    }.getOrElse(throw new DateTimeException(s"TimeZone Region $actualRegion unknown"))
   }
 }

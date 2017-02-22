@@ -1,6 +1,7 @@
 import java.io.File
 
 import kuyfi.TZDBCodeGenerator
+import kuyfi.TZDBCodeGenerator.OptimizedTreeGenerator._
 
 object TZDBTasks {
 
