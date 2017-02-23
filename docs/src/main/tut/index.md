@@ -56,12 +56,12 @@ chrono.MinguoDate.now(fixedClock).toString       == "Minguo ROC 98-02-13"
 #### Usage
 
 The *scala-java-time* library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Both Scala 2.11 and Scala 2.12 (2.12.0-M7 and later) are supported.
+Both Scala 2.11 and Scala 2.12 (2.12.0-M8 and later) are supported.
 
 To get started with SBT, add one (or both) of these dependencies:
 
-- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M7"` (for Scala)
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M7"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M8"` (for Scala)
+- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M8"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.
@@ -71,15 +71,15 @@ Run `sbt scalajavatimeCrossJVM/test` to run the test suite on the JVM and
 #### Status
 
 Most parts of this library work perfectly fine with Scala.js in the browser.
-timezone support is limited and providing these missing pieces are the current focus of this project.
 
 #### Contributing
 
 We welcome all contributions, including ideas, suggestions, bug reports, bug fixes and code!
 We are especially interested in contributions that tackle the following issues:
 
- - *Support for timezones:* The timezone information is read from a binary blob, which won't work in the browser.
-   We will have a look at other projects like moment.js and decide whether we want to use the same format, or come up with our own.
+* Complete the port of tests to scalatest
+* Modularize the tzdb database
+* Find ways to reduce the size of the library
 
 Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) or [issues](https://github.com/soc/scala-java-time/issues) to find something to work on! Let us know if you need help!
 

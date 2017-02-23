@@ -8,6 +8,11 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M8" date="2017-02-19" description="v2.0.0-M8">
+      <action dev="cquiroz" type="update" >
+        Added support for timezones
+      </action>
+    </release>
     <release version="2.0.0-M7" date="2017-01-16" description="v2.0.0-M7">
       <action dev="cquiroz" type="update" >
         Downgrade to scala-java-locales 0.3.1-cldr30 to reduce the exported js size

@@ -13,7 +13,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M8-SNAPSHOT",
+  version      := "2.0.0-M8",
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -62,7 +62,7 @@ lazy val tzDbSettings = Seq(
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading latest...")
+      println(s"tzdb data missing. downloading 2016j version...")
       IO.download(
         new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata2016j.tar.gz"),
         tzdbTarball)
