@@ -86,13 +86,13 @@ The implementation is based on the original BSD-licensed reference implementatio
 <h4 id="usage">Usage</h4>
 
 <p>The <em>scala-java-time</em> library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Both Scala 2.11 and Scala 2.12 (2.12.0-M7 and later) are supported.</p>
+Both Scala 2.11 and Scala 2.12 (2.12.0-M8 and later) are supported.</p>
 
 <p>To get started with SBT, add one (or both) of these dependencies:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M7"</code> (for Scala)</li>
-  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M7"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M8"</code> (for Scala)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M8"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
 </ul>
 
 <h4 id="building">Building</h4>
@@ -102,8 +102,7 @@ Run <code class="highlighter-rouge">sbt scalajavatimeCrossJVM/test</code> to run
 
 <h4 id="status">Status</h4>
 
-<p>Most parts of this library work perfectly fine with Scala.js in the browser.
-timezone support is limited and providing these missing pieces are the current focus of this project.</p>
+<p>Most parts of this library work perfectly fine with Scala.js in the browser.</p>
 
 <h4 id="contributing">Contributing</h4>
 
@@ -111,8 +110,9 @@ timezone support is limited and providing these missing pieces are the current f
 We are especially interested in contributions that tackle the following issues:</p>
 
 <ul>
-  <li><em>Support for timezones:</em> The timezone information is read from a binary blob, which won’t work in the browser.
-We will have a look at other projects like moment.js and decide whether we want to use the same format, or come up with our own.</li>
+  <li>Complete the port of tests to scalatest</li>
+  <li>Modularize the tzdb database</li>
+  <li>Find ways to reduce the size of the library</li>
 </ul>
 
 <p>Have a look at the <a href="https://github.com/cquiroz/scala-java-time/issues">issues</a> or <a href="https://github.com/soc/scala-java-time/issues">issues</a> to find something to work on! Let us know if you need help!</p>
