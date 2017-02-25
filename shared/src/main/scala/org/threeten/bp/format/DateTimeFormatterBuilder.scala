@@ -375,6 +375,11 @@ object DateTimeFormatterBuilder {
       val length: Int = text.length
       if (position == length)
         return ~position
+      // Workaround for non-conforming Scala.js behavior
+      if (position < 0 || position > length) {
+        throw new StringIndexOutOfBoundsException
+      }
+
       val ch: Char = text.charAt(position)
       if (!context.charEquals(literal, ch))
         return ~position
