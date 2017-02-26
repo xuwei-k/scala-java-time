@@ -2,13 +2,22 @@ package java.util
 
 import org.threeten.bp.ZoneId
 
+import scala.util.Try
+
 object TimeZone {
   final val SHORT = 0
   final val LONG  = 1
 
   private var default: TimeZone = {
-    // TODO This may not be correct according to the specs, review
-    new SimpleTimeZone(0, "GMT")
+    Try {
+      val browserDate = new scalajs.js.Date()
+      val offsetInMillis = browserDate.getTimezoneOffset() * 60 * 1000
+      val id = browserDate.toTimeString().split(' ')(1).takeWhile(e => e != '+' && e != '-')
+
+      new SimpleTimeZone(offsetInMillis, id)
+    } getOrElse {
+      new SimpleTimeZone(0, "UTC")
+    }
   }
 
   def getDefault: TimeZone = default
