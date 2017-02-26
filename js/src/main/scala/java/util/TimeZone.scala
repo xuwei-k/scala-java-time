@@ -7,8 +7,11 @@ object TimeZone {
   final val LONG  = 1
 
   private var default: TimeZone = {
-    // TODO This may not be correct according to the specs, review
-    new SimpleTimeZone(0, "GMT")
+    val browserDate = new scalajs.js.Date()
+    val offsetInMillis = browserDate.getTimezoneOffset() * 60 * 1000
+    val id = browserDate.toTimeString().split(' ')(1).takeWhile(e => e != '+' && e != '-')
+
+    new SimpleTimeZone(offsetInMillis, id)
   }
 
   def getDefault: TimeZone = default
