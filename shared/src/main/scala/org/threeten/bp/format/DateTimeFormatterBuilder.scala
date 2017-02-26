@@ -524,6 +524,9 @@ object DateTimeFormatterBuilder {
       val length: Int = text.length
       if (_position == length)
         return ~_position
+      if (_position < 0 || position > length) {
+        throw new StringIndexOutOfBoundsException
+      }
       val sign: Char = text.charAt(_position)
       var negative: Boolean = false
       var positive: Boolean = false

@@ -33,7 +33,7 @@ package org.threeten.bp.format
 
 import java.util.Locale
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSuite}
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -51,13 +51,13 @@ object GenTestPrinterParser {
   }
 }
 
-trait GenTestPrinterParser extends BeforeAndAfter { this: FunSuite =>
+trait GenTestPrinterParser extends BeforeAndAfterEach { this: FunSuite =>
   protected var printEmptyContext: DateTimePrintContext = null
   protected var printContext: DateTimePrintContext = null
   protected var parseContext: DateTimeParseContext = null
   protected var buf: java.lang.StringBuilder = null
 
-  before {
+  override def beforeEach() {
     printEmptyContext = new DateTimePrintContext(GenTestPrinterParser.EMPTY, Locale.ENGLISH, DecimalStyle.STANDARD)
     val zdt: ZonedDateTime = LocalDateTime.of(2011, 6, 30, 12, 30, 40, 0).atZone(ZoneId.of("Europe/Paris"))
     printContext = new DateTimePrintContext(zdt, Locale.ENGLISH, DecimalStyle.STANDARD)
