@@ -8,6 +8,11 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M9" date="2017-02-19" description="v2.0.0-M9">
+      <action dev="Daxten" type="update" >
+        Attempt to guess the default timezone
+      </action>
+    </release>
     <release version="2.0.0-M8" date="2017-02-19" description="v2.0.0-M8">
       <action dev="cquiroz" type="update" >
         Added support for timezones
