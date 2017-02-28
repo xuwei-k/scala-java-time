@@ -133,6 +133,11 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
+    sourceGenerators in Test += Def.task {
+        val srcDirs = (sourceDirectories in Test).value
+        val destinationDir = (sourceManaged in Test).value
+        copyAndReplace(srcDirs, destinationDir)
+      }.taskValue,
     parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "com.github.cquiroz" %%% "scala-java-locales" % "0.3.1-cldr30"
