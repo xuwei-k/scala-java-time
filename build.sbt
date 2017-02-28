@@ -117,11 +117,6 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
   .jvmSettings(
-    sourceGenerators in Compile += Def.task {
-        val srcDirs = (sourceDirectories in Compile).value
-        val destinationDir = (sourceManaged in Compile).value
-        copyAndReplace(srcDirs, destinationDir)
-      }.taskValue,
     resolvers += Resolver.sbtPluginRepo("releases"),
     // Fork the JVM test to ensure that the custom flags are set
     fork in Test := true,
