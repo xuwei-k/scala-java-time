@@ -16,7 +16,7 @@ The implementation is based on the original BSD-licensed reference implementatio
 #### Example
 
 ```tut:book
-// You can pick either java.time or org.threeten.bp package to import
+// On scala.js you can pick either java.time or org.threeten.bp package to import
 //import java.time._
 import org.threeten.bp._
 
