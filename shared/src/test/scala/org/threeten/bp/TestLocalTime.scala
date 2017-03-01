@@ -865,7 +865,7 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
       true
     }
 
-    def isSupportedBy(temporal: Temporal): Boolean = {
+    override def isSupportedBy(temporal: Temporal): Boolean = {
       false
     }
 
@@ -898,7 +898,7 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
       true
     }
 
-    def isSupportedBy(temporal: Temporal): Boolean = {
+    override def isSupportedBy(temporal: Temporal): Boolean = {
       false
     }
 

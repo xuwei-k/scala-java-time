@@ -53,7 +53,7 @@ final class MockFieldNoValue(name: String, ordinal: Int) extends Enum[MockFieldN
   def rangeRefinedBy(dateTime: TemporalAccessor): ValueRange = ValueRange.of(1, 20)
   def getFrom(dateTime: TemporalAccessor): Long = throw new DateTimeException("Mock")
   def adjustInto[R <: Temporal](dateTime: R, newValue: Long): R = throw new DateTimeException("Mock")
-  def getDisplayName(locale: Locale): String = "Mock"
-  def resolve(fieldValues: java.util.Map[TemporalField, java.lang.Long], partialTemporal: TemporalAccessor, resolverStyle: ResolverStyle): TemporalAccessor =
+  override def getDisplayName(locale: Locale): String = "Mock"
+  override def resolve(fieldValues: java.util.Map[TemporalField, java.lang.Long], partialTemporal: TemporalAccessor, resolverStyle: ResolverStyle): TemporalAccessor =
     null
 }
