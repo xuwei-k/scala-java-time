@@ -78,28 +78,28 @@ class TestZoneRulesProvider extends FunSuite with AssertionsHelper {
   }
 
   test("getRules_String") {
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London",  false)
     assertTrue(rules != null)
-    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    val rules2: ZoneRules = ZoneRulesProvider.getRules("Europe/London",  false)
     assertTrue(rules2 == rules)
   }
 
   test("getRules_String_unknownId") {
     assertThrows[ZoneRulesException] {
-      ZoneRulesProvider.getRules("Europe/Lon", forCaching = false)
+      ZoneRulesProvider.getRules("Europe/Lon",  false)
     }
   }
 
   test("getRules_String_null") {
     assertThrows[NullPointerException] {
-      ZoneRulesProvider.getRules(null, forCaching = false)
+      ZoneRulesProvider.getRules(null,  false)
     }
   }
 
   test("getVersions_String") {
     val versions: java.util.NavigableMap[String, ZoneRules] = ZoneRulesProvider.getVersions("Europe/London")
     assertTrue(versions.size >= 1)
-    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London", forCaching = false)
+    val rules: ZoneRules = ZoneRulesProvider.getRules("Europe/London",  false)
     assertTrue(versions.lastEntry.getValue == rules)
     val copy = new java.util.HashMap[String, ZoneRules](versions)
     versions.clear()
@@ -131,6 +131,6 @@ class TestZoneRulesProvider extends FunSuite with AssertionsHelper {
     assertTrue(!pre.contains("FooLocation"))
     val post: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
     assertTrue(post.contains("FooLocation"))
-    assertTrue(ZoneRulesProvider.getRules("FooLocation", forCaching = false) == ZoneOffset.of("+01:45").getRules)
+    assertTrue(ZoneRulesProvider.getRules("FooLocation",  false) == ZoneOffset.of("+01:45").getRules)
   }
 }
