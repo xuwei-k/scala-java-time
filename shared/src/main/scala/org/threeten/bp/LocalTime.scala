@@ -1201,6 +1201,8 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     cmp
   }
 
+  override def compareTo(other: LocalTime): Int = compare(other)
+
   /** Checks if this {@code LocalTime} is after the specified time.
     *
     * The comparison is based on the time-line position of the time within a day.

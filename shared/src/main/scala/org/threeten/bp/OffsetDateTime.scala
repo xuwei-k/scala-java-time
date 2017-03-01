@@ -1418,6 +1418,8 @@ final class OffsetDateTime private(private val dateTime: LocalDateTime, private 
     cmp
   }
 
+  override def compareTo(other: OffsetDateTime): Int = compare(other)
+
   /** Checks if the instant of this date-time is after that of the specified date-time.
     *
     * This method differs from the comparison in {@link #compareTo} and {@link #equals} in that it

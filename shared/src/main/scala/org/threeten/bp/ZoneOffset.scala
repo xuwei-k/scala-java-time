@@ -561,6 +561,8 @@ final class ZoneOffset private(private val totalSeconds: Int) extends ZoneId wit
     */
   def compare(other: ZoneOffset): Int = other.totalSeconds - totalSeconds
 
+  override def compareTo(other: ZoneOffset): Int = compare(other)
+
   /** Checks if this offset is equal to another offset.
     *
     * The comparison is based on the amount of the offset in seconds.
