@@ -961,6 +961,8 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     else nanos - otherInstant.nanos
   }
 
+  override def compareTo(other: Instant): Int = compare(other)
+
   /** Checks if this instant is after the specified instant.
     *
     * The comparison is based on the time-line position of the instants.

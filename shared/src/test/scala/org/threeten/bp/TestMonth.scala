@@ -282,6 +282,6 @@ class TestMonth extends FunSuite with GenDateTimeTest with AssertionsHelper {
 
   test("enum") {
     assertEquals(Month.valueOf("JANUARY"), Month.JANUARY)
-    assertEquals(Month.values(0), Month.JANUARY)
+    assertEquals(Month.values.apply(0), Month.JANUARY)
   }
 }

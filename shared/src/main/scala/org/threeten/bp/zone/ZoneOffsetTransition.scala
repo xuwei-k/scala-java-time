@@ -269,6 +269,8 @@ final class ZoneOffsetTransition private[zone](private val transition: LocalDate
     */
   def compare(transition: ZoneOffsetTransition): Int = this.getInstant.compareTo(transition.getInstant)
 
+  override def compareTo(other: ZoneOffsetTransition): Int = compare(other)
+
   /** Checks if this object equals another.
     *
     * The entire state of the object is compared.

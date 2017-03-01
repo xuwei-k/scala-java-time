@@ -233,6 +233,6 @@ class TestDayOfWeek extends FunSuite with GenDateTimeTest with AssertionsHelper 
 
   test("enum") {
     assertEquals(DayOfWeek.valueOf("MONDAY"), DayOfWeek.MONDAY)
-    assertEquals(DayOfWeek.values(0), DayOfWeek.MONDAY)
+    assertEquals(DayOfWeek.values.apply(0), DayOfWeek.MONDAY)
   }
 }

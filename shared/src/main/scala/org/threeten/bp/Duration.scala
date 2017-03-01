@@ -957,6 +957,9 @@ final class Duration private(private val seconds: Long, private val nanos: Int) 
     else nanos - otherDuration.nanos
   }
 
+
+  override def compareTo(other: Duration): Int = compare(other)
+
   /** Checks if this duration is equal to the specified {@code Duration}.
     *
     * The comparison is based on the total length of the durations.

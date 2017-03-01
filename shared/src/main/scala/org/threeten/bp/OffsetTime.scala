@@ -977,6 +977,8 @@ final class OffsetTime(private val time: LocalTime, private val offset: ZoneOffs
       compare
     }
 
+  override def compareTo(other: OffsetTime): Int = compare(other)
+
   /** Checks if the instant of this {@code OffsetTime} is after that of the
     * specified time applying both times to a common date.
     *

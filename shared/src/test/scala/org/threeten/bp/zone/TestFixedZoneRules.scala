@@ -166,7 +166,7 @@ class TestFixedZoneRules extends FunSuite with AssertionsHelper {
   test("getTransitionRules_immutable") {
     assertThrows[UnsupportedOperationException] {
       val test: ZoneRules = make(TestFixedZoneRules.OFFSET_PTWO)
-      test.getTransitionRules.add(ZoneOffsetTransitionRule.of(Month.JULY, 2, null, LocalTime.of(12, 30), timeEndOfDay = false, TimeDefinition.STANDARD, TestFixedZoneRules.OFFSET_PONE, TestFixedZoneRules.OFFSET_PTWO, TestFixedZoneRules.OFFSET_PONE))
+      test.getTransitionRules.add(ZoneOffsetTransitionRule.of(Month.JULY, 2, null, LocalTime.of(12, 30), false, TimeDefinition.STANDARD, TestFixedZoneRules.OFFSET_PONE, TestFixedZoneRules.OFFSET_PTWO, TestFixedZoneRules.OFFSET_PONE))
     }
   }
 

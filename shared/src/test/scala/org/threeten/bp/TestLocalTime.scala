@@ -396,31 +396,31 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
   }
 
   test("factory_ofSecondOfDay_long_int") {
-    val localTime: LocalTime = LocalTime.ofSecondOfDay(2 * 60 * 60 + 17 * 60 + 23, 987)
+    val localTime: LocalTime = LocalTime.ofSecondOfDay(2 * 60 * 60 + 17 * 60 + 23).withNano(987)
     check(localTime, 2, 17, 23, 987)
   }
 
   test("factory_ofSecondOfDay_long_int_tooLowSecs") {
     assertThrows[DateTimeException] {
-      LocalTime.ofSecondOfDay(-1, 0)
+      LocalTime.ofSecondOfDay(-1).withNano(0)
     }
   }
 
   test("factory_ofSecondOfDay_long_int_tooHighSecs") {
     assertThrows[DateTimeException] {
-      LocalTime.ofSecondOfDay(24 * 60 * 60, 0)
+      LocalTime.ofSecondOfDay(24 * 60 * 60).withNano(0)
     }
   }
 
   test("factory_ofSecondOfDay_long_int_tooLowNanos") {
     assertThrows[DateTimeException] {
-      LocalTime.ofSecondOfDay(0, -1)
+      LocalTime.ofSecondOfDay(0).withNano(-1)
     }
   }
 
   test("factory_ofSecondOfDay_long_int_tooHighNanos") {
     assertThrows[DateTimeException] {
-      LocalTime.ofSecondOfDay(0, 1000000000)
+      LocalTime.ofSecondOfDay(0).withNano(1000000000)
     }
   }
 
@@ -865,7 +865,7 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
       true
     }
 
-    def isSupportedBy(temporal: Temporal): Boolean = {
+    override def isSupportedBy(temporal: Temporal): Boolean = {
       false
     }
 
@@ -898,7 +898,7 @@ class TestLocalTime extends FunSuite with GenDateTimeTest with AssertionsHelper 
       true
     }
 
-    def isSupportedBy(temporal: Temporal): Boolean = {
+    override def isSupportedBy(temporal: Temporal): Boolean = {
       false
     }
 
