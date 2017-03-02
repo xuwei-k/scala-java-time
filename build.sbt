@@ -59,12 +59,13 @@ lazy val root = project.in(file("."))
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
+    val version = "2017a"
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading 2016j version...")
+      println(s"tzdb data missing. downloading $version version...")
       IO.download(
-        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata2016j.tar.gz"),
+        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"),
         tzdbTarball)
       Unpack.gunzipTar(tzdbTarball, tzdbDir)
       tzdbTarball.delete()

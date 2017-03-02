@@ -12,6 +12,9 @@
       <action dev="cquiroz" type="update" >
         Don't include the java.time package on the jvm bundle
       </action>
+      <action dev="cquiroz" type="update" >
+        Update time zone db to 2017a
+      </action>
       <action dev="Daxten" type="update" >
         Attempt to guess the default timezone
       </action>
