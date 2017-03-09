@@ -132,7 +132,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     scalacOptions ++= {
       val tagOrHash =
         if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lines_!.head
-        else version.value
+        else s"v${version.value}"
       (sourceDirectories in Compile).value.map { f =>
         val a = f.toURI.toString
         val g = "https://raw.githubusercontent.com/cquiroz/scala-java-time/" + tagOrHash + "/shared/src/main/scala/"
