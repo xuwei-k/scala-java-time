@@ -129,14 +129,15 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   ).jsSettings(
     tzDbSettings: _*
   ).jsSettings(
-    scalacOptions += {
+    scalacOptions ++= {
       val tagOrHash =
         if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lines_!.head
         else version.value
-      val a = (baseDirectory in LocalRootProject).value.toURI.toString
-      val g = "https://raw.githubusercontent.com/cquiroz/scala-java-time/" + tagOrHash
-      println(g)
-      s"-P:scalajs:mapSourceURI:$a->$g/"
+      (sourceDirectories in Compile).value.map { f =>
+        val a = f.toURI.toString
+        val g = "https://raw.githubusercontent.com/cquiroz/scala-java-time/" + tagOrHash + "/shared/src/main/scala/"
+        s"-P:scalajs:mapSourceURI:$a->$g/"
+      }
     },
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value
