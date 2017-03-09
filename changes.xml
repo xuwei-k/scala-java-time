@@ -13,6 +13,9 @@
         Provide source map mappings
       </action>
       <action dev="cquiroz" type="update" >
+        Fixed missing compareTo methods
+      </action>
+      <action dev="cquiroz" type="update" >
         Updated to scala-java-locales 0.3.2
       </action>
       <action dev="cquiroz" type="update" >
