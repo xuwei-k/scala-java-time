@@ -12,7 +12,7 @@ object TimeZone {
     Try {
       val browserDate = new scalajs.js.Date()
       val offsetInMillis = browserDate.getTimezoneOffset() * 60 * 1000
-      val id = browserDate.toTimeString().split(' ')(1).takeWhile(e => e != '+' && e != '-')
+      val id = browserDate.toTimeString().split(' ')(1).takeWhile(e => e != ' ')
 
       new SimpleTimeZone(offsetInMillis, id)
     } getOrElse {
