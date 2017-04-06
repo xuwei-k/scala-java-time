@@ -59,7 +59,7 @@ lazy val root = project.in(file("."))
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
-    val version = "2017a"
+    val version = "2017b"
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
