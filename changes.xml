@@ -12,6 +12,9 @@
       <action dev="cquiroz" type="update" >
         Updated to scala.js 0.6.15
       </action>
+      <action dev="cquiroz" type="update" >
+        Updated time zone db to 2017b
+      </action>
     </release>
     <release version="2.0.0-M9" date="2017-02-19" description="v2.0.0-M9">
       <action dev="cquiroz" type="update" >
