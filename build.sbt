@@ -159,7 +159,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
       }.taskValue,
     parallelExecution in Test := false,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.2-cldr30"
+      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.3-cldr31"
     )
   )
 
