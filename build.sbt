@@ -22,13 +22,18 @@ lazy val commonSettings = Seq(
   crossScalaVersions := crossScalaVer,
   autoAPIMappings    := true,
 
-  scalacOptions in Compile ++= Seq(
-    "-deprecation",
-    "-feature",
-    // Enable when documentation does not produce warnings
-    //"-Xfatal-warnings",
+  scalacOptions ++= Seq("-deprecation", "-feature",
     "-encoding", "UTF-8"
   ),
+  scalacOptions := {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings")
+      case Some((2, 10)) =>
+        scalacOptions.value
+    }
+  },
+  javaOptions        ++= Seq("-Dfile.encoding=UTF8"),
 
   publishArtifact in Test := false,
   publishMavenStyle := true,
