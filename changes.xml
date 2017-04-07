@@ -15,6 +15,9 @@
       <action dev="cquiroz" type="update" >
         Updated time zone db to 2017b
       </action>
+      <action dev="cquiroz" type="update" >
+        Updated to scala-java-locales 0.3.3
+      </action>
     </release>
     <release version="2.0.0-M9" date="2017-02-19" description="v2.0.0-M9">
       <action dev="cquiroz" type="update" >
