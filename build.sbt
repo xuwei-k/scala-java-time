@@ -33,7 +33,16 @@ lazy val commonSettings = Seq(
         scalacOptions.value
     }
   },
-  javaOptions        ++= Seq("-Dfile.encoding=UTF8"),
+  scalacOptions in (Compile, doc) := {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+        Seq("-deprecation:false")
+      case Some((2, 10)) =>
+        Seq.empty
+    }
+  },
+  javaOptions ++= Seq("-Dfile.encoding=UTF8"),
+  autoAPIMappings := true,
 
   publishArtifact in Test := false,
   publishMavenStyle := true,
