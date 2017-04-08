@@ -4,20 +4,49 @@ import org.threeten.bp.ZoneId
 
 import scala.util.Try
 
+import scala.scalajs.js
+import js.annotation._
+
+@js.native
+trait DateTimeFormatOptions extends js.Object {
+  val timeZone: js.UndefOr[String]
+}
+
+@js.native
+@JSGlobal("Intl.DateTimeFormat")
+class DateTimeFormat() extends js.Object {
+  def resolvedOptions(): DateTimeFormatOptions = js.native
+}
+
 object TimeZone {
   final val SHORT = 0
   final val LONG  = 1
 
   private var default: TimeZone = {
-    Try {
+    // This is supported since EcmaScript 1
+    def offsetInMillis: Int = {
       val browserDate = new scalajs.js.Date()
-      val offsetInMillis = browserDate.getTimezoneOffset() * 60 * 1000
-      val id = browserDate.toTimeString().split(' ')(1).takeWhile(e => e != '+' && e != '-')
-
-      new SimpleTimeZone(offsetInMillis, id)
-    } getOrElse {
-      new SimpleTimeZone(0, "UTC")
+      browserDate.getTimezoneOffset() * 60 * 1000
     }
+
+    def timeZone: String = {
+      def browserTZ: Try[String] = {
+        Try {
+          val browserDate = new scalajs.js.Date()
+          browserDate.toTimeString().split(' ')(1).takeWhile(e => e != ' ')
+        }
+      }
+  
+      Try {
+        // First try with the intl API
+        new DateTimeFormat().resolvedOptions().timeZone.getOrElse(browserTZ.getOrElse("UTC"))
+      }.orElse {
+        // If it fails try to parse it from the date string
+        browserTZ
+      }.getOrElse("UTC") // Fallback to UTC
+    }
+
+    new SimpleTimeZone(offsetInMillis, timeZone)
   }
 
   def getDefault: TimeZone = default
