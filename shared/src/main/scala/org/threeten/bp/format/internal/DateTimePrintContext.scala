@@ -136,7 +136,7 @@ private object DateTimePrintContext {
   * Usage of the class is thread-safe within standard printing as the framework creates
   * a new instance of the class for each print and printing is single-threaded.
   */
-final class DateTimePrintContext private[format](private var temporal: TemporalAccessor, private var locale: Locale, private var symbols: DecimalStyle) {
+final class DateTimePrintContext(private var temporal: TemporalAccessor, private var locale: Locale, private var symbols: DecimalStyle) {
   /** Whether the current formatter is optional. */
   private var optional: Int = 0
 
@@ -145,7 +145,7 @@ final class DateTimePrintContext private[format](private var temporal: TemporalA
     * @param temporal  the temporal object being output, not null
     * @param formatter  the formatter controlling the print, not null
     */
-  private[format] def this(temporal: TemporalAccessor, formatter: DateTimeFormatter) {
+  def this(temporal: TemporalAccessor, formatter: DateTimeFormatter) {
     this(DateTimePrintContext.adjust(temporal, formatter), formatter.getLocale, formatter.getDecimalStyle)
   }
 

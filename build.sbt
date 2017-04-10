@@ -105,7 +105,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   // Copy the source files from the base project, exclude classes on java.util and dirs
   val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
     files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
-  }.filterNot(_.isDirectory).filterNot(_.getParentFile.getName == "util").toList
+  }.filterNot(_.isDirectory).filterNot(r => {println(r.getParentFile.getName);r.getParentFile.getName == "util" || r.getParentFile.getName == "internal"}).toList
 
   // These replacements will in practice rename all the classes from
   // org.threeten to java.time
@@ -114,7 +114,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
       .replaceAll("package org.threeten$", "package java")
       .replaceAll("package object bp", "package object time")
       .replaceAll("package org.threeten.bp", "package java.time")
-      .replaceAll("import org.threeten.bp", "import java.time")
+      .replaceAll("import org.threeten.bp\\(\\?\\<!\\.internal\\)", "import java.time")
       .replaceAll("import zonedb.threeten", "import zonedb.java")
       .replaceAll("private\\s*\\[bp\\]", "private[time]")
   }
