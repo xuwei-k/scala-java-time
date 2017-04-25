@@ -38,6 +38,7 @@ import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 import org.threeten.bp.temporal.MockFieldValue
 
 /** Test ReducedPrinterParser. */
@@ -45,14 +46,14 @@ import org.threeten.bp.temporal.MockFieldValue
   @Test(expectedExceptions = Array(classOf[DateTimeException]))
   @throws(classOf[Exception])
   def test_print_emptyCalendrical(): Unit = {
-    val pp: DateTimeFormatterBuilder.ReducedPrinterParser = new DateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2010, null)
+    val pp: TTBPDateTimeFormatterBuilder.ReducedPrinterParser = new TTBPDateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2010, null)
     pp.print(printEmptyContext, buf)
   }
 
   @throws(classOf[Exception])
   def test_print_append(): Unit = {
     printContext.setDateTime(LocalDate.of(2012, 1, 1))
-    val pp: DateTimeFormatterBuilder.ReducedPrinterParser = new DateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2010, null)
+    val pp: TTBPDateTimeFormatterBuilder.ReducedPrinterParser = new TTBPDateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2010, null)
     buf.append("EXISTING")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTING12")
@@ -66,7 +67,7 @@ import org.threeten.bp.temporal.MockFieldValue
   @throws(classOf[Exception])
   def test_pivot(width: Int, baseValue: Int, value: Int, result: String): Unit = {
     printContext.setDateTime(new MockFieldValue(YEAR, value))
-    val pp: DateTimeFormatterBuilder.ReducedPrinterParser = new DateTimeFormatterBuilder.ReducedPrinterParser(YEAR, width, width, baseValue, null)
+    val pp: TTBPDateTimeFormatterBuilder.ReducedPrinterParser = new TTBPDateTimeFormatterBuilder.ReducedPrinterParser(YEAR, width, width, baseValue, null)
     try {
       pp.print(printContext, buf)
       if (result == null)
@@ -84,7 +85,7 @@ import org.threeten.bp.temporal.MockFieldValue
 
   @throws(classOf[Exception])
   def test_toString(): Unit = {
-    val pp: DateTimeFormatterBuilder.ReducedPrinterParser = new DateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2005, null)
+    val pp: TTBPDateTimeFormatterBuilder.ReducedPrinterParser = new TTBPDateTimeFormatterBuilder.ReducedPrinterParser(YEAR, 2, 2, 2005, null)
     assertEquals(pp.toString, "ReducedValue(Year,2,2,2005)")
   }
 }

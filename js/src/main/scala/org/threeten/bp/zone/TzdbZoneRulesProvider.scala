@@ -1,6 +1,13 @@
 package org.threeten.bp.zone
 
-import org.threeten.bp._
+import org.threeten.bp.LocalTime
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Month
+import org.threeten.bp.DateTimeException
+
 import scala.scalajs.js
 
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {

@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.format
+package org.threeten.bp.format.internal
 
 import java.util.{Objects, Locale}
 
@@ -46,9 +46,11 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalQuery
 import org.threeten.bp.temporal.ValueRange
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DecimalStyle
 
-private object DateTimePrintContext {
-  private def adjust(temporal: TemporalAccessor, formatter: DateTimeFormatter): TemporalAccessor = {
+object TTBPDateTimePrintContext {
+  def adjust(temporal: TemporalAccessor, formatter: DateTimeFormatter): TemporalAccessor = {
     var overrideChrono: Chronology = formatter.getChronology
     var overrideZone: ZoneId = formatter.getZone
     if (overrideChrono == null && overrideZone == null) {
@@ -136,7 +138,7 @@ private object DateTimePrintContext {
   * Usage of the class is thread-safe within standard printing as the framework creates
   * a new instance of the class for each print and printing is single-threaded.
   */
-final class DateTimePrintContext(private var temporal: TemporalAccessor, private var locale: Locale, private var symbols: DecimalStyle) {
+final class TTBPDateTimePrintContext(private var temporal: TemporalAccessor, private var locale: Locale, private var symbols: DecimalStyle) {
   /** Whether the current formatter is optional. */
   private var optional: Int = 0
 
@@ -146,14 +148,14 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     * @param formatter  the formatter controlling the print, not null
     */
   def this(temporal: TemporalAccessor, formatter: DateTimeFormatter) {
-    this(DateTimePrintContext.adjust(temporal, formatter), formatter.getLocale, formatter.getDecimalStyle)
+    this(TTBPDateTimePrintContext.adjust(temporal, formatter), formatter.getLocale, formatter.getDecimalStyle)
   }
 
   /** Gets the temporal object being output.
     *
     * @return the temporal object, not null
     */
-  private[format] def getTemporal: TemporalAccessor = temporal
+   def getTemporal: TemporalAccessor = temporal
 
   /** Gets the locale.
     *
@@ -162,7 +164,7 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     *
     * @return the locale, not null
     */
-  private[format] def getLocale: Locale = locale
+   def getLocale: Locale = locale
 
   /** Gets the formatting symbols.
     *
@@ -170,13 +172,13 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     *
     * @return the formatting symbols, not null
     */
-  private[format] def getSymbols: DecimalStyle = symbols
+   def getSymbols: DecimalStyle = symbols
 
   /** Starts the printing of an optional segment of the input. */
-  private[format] def startOptional(): Unit = this.optional += 1
+   def startOptional(): Unit = this.optional += 1
 
   /** Ends the printing of an optional segment of the input. */
-  private[format] def endOptional(): Unit = this.optional -= 1
+   def endOptional(): Unit = this.optional -= 1
 
   /** Gets a value using a query.
     *
@@ -184,7 +186,7 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     * @return the result, null if not found and optional is true
     * @throws DateTimeException if the type is not available and the section is not optional
     */
-  private[format] def getValue[R >: Null](query: TemporalQuery[R]): R = {
+   def getValue[R >: Null](query: TemporalQuery[R]): R = {
     val result: R = temporal.query(query)
     if (result == null && optional == 0)
       throw new DateTimeException(s"Unable to extract value: ${temporal.getClass}")
@@ -200,7 +202,7 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     * @return the value, null if not found and optional is true
     * @throws DateTimeException if the field is not available and the section is not optional
     */
-  private[format] def getValue(field: TemporalField): java.lang.Long = {
+   def getValue(field: TemporalField): java.lang.Long = {
     try temporal.getLong(field)
     catch {
       case ex: DateTimeException => if (optional > 0) null else throw ex
@@ -217,7 +219,7 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     *
     * @param temporal  the date-time object, not null
     */
-  private[format] def setDateTime(temporal: TemporalAccessor): Unit = {
+   def setDateTime(temporal: TemporalAccessor): Unit = {
     Objects.requireNonNull(temporal, "temporal")
     this.temporal = temporal
   }
@@ -229,7 +231,7 @@ final class DateTimePrintContext(private var temporal: TemporalAccessor, private
     *
     * @param locale  the locale, not null
     */
-  private[format] def setLocale(locale: Locale): Unit = {
+   def setLocale(locale: Locale): Unit = {
     Objects.requireNonNull(locale, "locale")
     this.locale = locale
   }

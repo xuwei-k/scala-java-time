@@ -35,18 +35,19 @@ import org.scalatest.FunSuite
 import org.threeten.bp.AssertionsHelper
 import org.threeten.bp.temporal.ChronoField.{DAY_OF_MONTH, DAY_OF_WEEK}
 import org.threeten.bp.temporal.{TemporalField, TemporalQueries}
+import org.threeten.bp.format.internal.{TTBPDateTimeFormatterBuilder, TTBPDateTimeParseContext}
 
 /** Test NumberPrinterParser. */
 class TestNumberParser extends FunSuite with GenTestPrinterParser with AssertionsHelper {
   val data_error: List[List[Any]] = {
     List[List[Any]](
-      List(new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, 1, 2, SignStyle.NEVER), "12", -1, classOf[IndexOutOfBoundsException]),
-      List(new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, 1, 2, SignStyle.NEVER), "12", 3, classOf[IndexOutOfBoundsException]))
+      List(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, 1, 2, SignStyle.NEVER), "12", -1, classOf[IndexOutOfBoundsException]),
+      List(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, 1, 2, SignStyle.NEVER), "12", 3, classOf[IndexOutOfBoundsException]))
   }
 
   test("parse_error") {
     data_error.foreach {
-      case (pp: DateTimeFormatterBuilder.NumberPrinterParser) :: (text: String) :: (pos: Int) :: (expected: Class[_]) :: Nil =>
+      case (pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser) :: (text: String) :: (pos: Int) :: (expected: Class[_]) :: Nil =>
         try {
           pp.parse(parseContext, text, pos)
         }
@@ -118,7 +119,7 @@ class TestNumberParser extends FunSuite with GenTestPrinterParser with Assertion
     provider_parseData.foreach {
       case (minWidth: Int) :: (maxWidth: Int) :: (signStyle: SignStyle) :: (subsequentWidth: Int) :: (text: String) :: (pos: Int) :: (expectedPos: Int) :: (expectedValue: Long) :: Nil =>
         super.beforeEach()
-        var pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, minWidth, maxWidth, signStyle)
+        var pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, minWidth, maxWidth, signStyle)
         if (subsequentWidth > 0) {
           pp = pp.withSubsequentWidth(subsequentWidth)
         }
@@ -140,7 +141,7 @@ class TestNumberParser extends FunSuite with GenTestPrinterParser with Assertion
     provider_parseData.foreach {
       case (minWidth: Int) :: (maxWidth: Int) :: (signStyle: SignStyle) :: (subsequentWidth: Int) :: (text: String) :: (pos: Int) :: (expectedPos: Int) :: (expectedValue: Long) :: Nil =>
         super.beforeEach()
-        var pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_WEEK, minWidth, maxWidth, signStyle)
+        var pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_WEEK, minWidth, maxWidth, signStyle)
         if (subsequentWidth > 0) {
           pp = pp.withSubsequentWidth(subsequentWidth)
         }
@@ -245,13 +246,13 @@ class TestNumberParser extends FunSuite with GenTestPrinterParser with Assertion
     provider_parseSignsStrict.foreach {
       case (input: String) :: (min: Int) :: (max: Int) :: (style: SignStyle) :: (parseLen: Int) :: (Some(parseVal: Int)) :: Nil =>
         super.beforeEach()
-        val pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
+        val pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
         val newPos: Int = pp.parse(parseContext, input, 0)
         assertEquals(newPos, parseLen)
         assertParsed(parseContext, DAY_OF_MONTH, Some(parseVal.toLong))
       case (input: String) :: (min: Int) :: (max: Int) :: (style: SignStyle) :: (parseLen: Int) :: None :: Nil =>
         super.beforeEach()
-        val pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
+        val pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
         val newPos: Int = pp.parse(parseContext, input, 0)
         assertEquals(newPos, parseLen)
         assertParsed(parseContext, DAY_OF_MONTH, None)
@@ -348,14 +349,14 @@ class TestNumberParser extends FunSuite with GenTestPrinterParser with Assertion
       case (input: String) :: (min: Int) :: (max: Int) :: (style: SignStyle) :: (parseLen: Int) :: (Some(parseVal: Int)) :: Nil =>
         super.beforeEach()
         parseContext.setStrict(false)
-        val pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
+        val pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
         val newPos: Int = pp.parse(parseContext, input, 0)
         assertEquals(newPos, parseLen)
         assertParsed(parseContext, DAY_OF_MONTH, Some(parseVal.toLong))
       case (input: String) :: (min: Int) :: (max: Int) :: (style: SignStyle) :: (parseLen: Int) :: None :: Nil =>
         super.beforeEach()
         parseContext.setStrict(false)
-        val pp: DateTimeFormatterBuilder.NumberPrinterParser = new DateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
+        val pp: TTBPDateTimeFormatterBuilder.NumberPrinterParser = new TTBPDateTimeFormatterBuilder.NumberPrinterParser(DAY_OF_MONTH, min, max, style)
         val newPos: Int = pp.parse(parseContext, input, 0)
         assertEquals(newPos, parseLen)
         assertParsed(parseContext, DAY_OF_MONTH, None)
@@ -364,7 +365,7 @@ class TestNumberParser extends FunSuite with GenTestPrinterParser with Assertion
     }
   }
 
-  private def assertParsed(context: DateTimeParseContext, field: TemporalField, value: Option[Long]): Unit = {
+  private def assertParsed(context: TTBPDateTimeParseContext, field: TemporalField, value: Option[Long]): Unit = {
     value.fold(assertEquals(context.getParsed(field), null)) {
       assertEquals(context.getParsed(field), _)
     }

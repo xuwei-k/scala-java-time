@@ -34,6 +34,7 @@ package org.threeten.bp.format
 import org.testng.Assert.assertEquals
 import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
 import org.testng.annotations.Test
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 import org.threeten.bp.temporal.TemporalField
 
 /** Test PadPrinterParserDecorator. */
@@ -41,20 +42,20 @@ import org.threeten.bp.temporal.TemporalField
   @Test(expectedExceptions = Array(classOf[IndexOutOfBoundsException]))
   @throws(classOf[Exception])
   def test_parse_negativePosition(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.CharLiteralPrinterParser('Z'), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('Z'), 3, '-')
     pp.parse(parseContext, "--Z", -1)
   }
 
   @Test(expectedExceptions = Array(classOf[IndexOutOfBoundsException]))
   @throws(classOf[Exception])
   def test_parse_offEndPosition(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.CharLiteralPrinterParser('Z'), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('Z'), 3, '-')
     pp.parse(parseContext, "--Z", 4)
   }
 
   @throws(classOf[Exception])
   def test_parse(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
     val result: Int = pp.parse(parseContext, "--2", 0)
     assertEquals(result, 3)
     assertParsed(MONTH_OF_YEAR, 2L)
@@ -62,7 +63,7 @@ import org.threeten.bp.temporal.TemporalField
 
   @throws(classOf[Exception])
   def test_parse_noReadBeyond(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
     val result: Int = pp.parse(parseContext, "--22", 0)
     assertEquals(result, 3)
     assertParsed(MONTH_OF_YEAR, 2L)
@@ -70,21 +71,21 @@ import org.threeten.bp.temporal.TemporalField
 
   @throws(classOf[Exception])
   def test_parse_textLessThanPadWidth(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
     val result: Int = pp.parse(parseContext, "-1", 0)
     assertEquals(result, ~0)
   }
 
   @throws(classOf[Exception])
   def test_parse_decoratedErrorPassedBack(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
     val result: Int = pp.parse(parseContext, "--A", 0)
     assertEquals(result, ~2)
   }
 
   @throws(classOf[Exception])
   def test_parse_decoratedDidNotParseToPadWidth(): Unit = {
-    val pp: DateTimeFormatterBuilder.PadPrinterParserDecorator = new DateTimeFormatterBuilder.PadPrinterParserDecorator(new DateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
+    val pp: TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator = new TTBPDateTimeFormatterBuilder.PadPrinterParserDecorator(new TTBPDateTimeFormatterBuilder.NumberPrinterParser(MONTH_OF_YEAR, 1, 3, SignStyle.NEVER), 3, '-')
     val result: Int = pp.parse(parseContext, "-1X", 0)
     assertEquals(result, ~1)
   }

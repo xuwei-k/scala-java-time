@@ -33,36 +33,37 @@ package org.threeten.bp.format
 
 import org.scalatest.FunSuite
 import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
 /** Test CharLiteralPrinterParser. */
 class TestCharLiteralPrinter extends FunSuite with GenTestPrinterParser with AssertionsHelper {
   test("print_emptyCalendrical") {
     buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
+    val pp: TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('a')
     pp.print(printEmptyContext, buf)
     assertEquals(buf.toString, "EXISTINGa")
   }
 
   test("print_dateTime") {
     buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
+    val pp: TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('a')
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTINGa")
   }
 
   test("print_emptyAppendable") {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
+    val pp: TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('a')
     pp.print(printContext, buf)
     assertEquals(buf.toString, "a")
   }
 
   test("toString") {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
+    val pp: TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('a')
     assertEquals(pp.toString, "'a'")
   }
 
   test("toString_apos") {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('\'')
+    val pp: TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.CharLiteralPrinterParser('\'')
     assertEquals(pp.toString, "''")
   }
 }

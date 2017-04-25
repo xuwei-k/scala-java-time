@@ -35,15 +35,16 @@ import org.testng.Assert.assertEquals
 import org.testng.Assert.assertTrue
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test StringLiteralPrinterParser. */
 @Test class TestStringLiteralParser extends AbstractTestPrinterParser {
   @DataProvider(name = "success") private[format] def data_success: Array[Array[Any]] = {
-    Array[Array[Any]](Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "hello", 0, 5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "helloOTHER", 0, 5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhelloOTHER", 5, 10), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhello", 5, 10), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "", 0, ~0), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "a", 1, ~1), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "HELLO", 0, ~0), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "hlloo", 0, ~0), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhllooOTHER", 5, ~5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhlloo", 5, ~5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "h", 0, ~0), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERh", 5, ~5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "hello", 0, 5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HELLO", 0, 5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HelLo", 0, 5), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HelLO", 0, 5))
+    Array[Array[Any]](Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "hello", 0, 5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "helloOTHER", 0, 5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhelloOTHER", 5, 10), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhello", 5, 10), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "a", 1, ~1), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "HELLO", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "hlloo", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhllooOTHER", 5, ~5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERhlloo", 5, ~5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "h", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), true, "OTHERh", 5, ~5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "hello", 0, 5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HELLO", 0, 5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HelLo", 0, 5), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), false, "HelLO", 0, 5))
   }
 
-  @Test(dataProvider = "success") def test_parse_success(pp: DateTimeFormatterBuilder.StringLiteralPrinterParser, caseSensitive: Boolean, text: String, pos: Int, expectedPos: Int): Unit = {
+  @Test(dataProvider = "success") def test_parse_success(pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser, caseSensitive: Boolean, text: String, pos: Int, expectedPos: Int): Unit = {
     parseContext.setCaseSensitive(caseSensitive)
     val result: Int = pp.parse(parseContext, text, pos)
     assertEquals(result, expectedPos)
@@ -52,10 +53,10 @@ import org.threeten.bp.temporal.TemporalQueries
   }
 
   @DataProvider(name = "error") private[format] def data_error: Array[Array[Any]] = {
-    Array[Array[Any]](Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), "hello", -1, classOf[IndexOutOfBoundsException]), Array(new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), "hello", 6, classOf[IndexOutOfBoundsException]))
+    Array[Array[Any]](Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), "hello", -1, classOf[IndexOutOfBoundsException]), Array(new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello"), "hello", 6, classOf[IndexOutOfBoundsException]))
   }
 
-  @Test(dataProvider = "error") def test_parse_error(pp: DateTimeFormatterBuilder.StringLiteralPrinterParser, text: String, pos: Int, expected: Class[_]): Unit = {
+  @Test(dataProvider = "error") def test_parse_error(pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser, text: String, pos: Int, expected: Class[_]): Unit = {
     try pp.parse(parseContext, text, pos)
     catch {
       case ex: RuntimeException =>

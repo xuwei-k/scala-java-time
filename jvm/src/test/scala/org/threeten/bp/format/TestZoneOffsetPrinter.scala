@@ -37,6 +37,7 @@ import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
 /** Test ZoneOffsetPrinterParser. */
 object TestZoneOffsetPrinter {
@@ -53,7 +54,7 @@ object TestZoneOffsetPrinter {
   def test_print(pattern: String, expected: String, offset: ZoneOffset): Unit = {
     buf.append("EXISTING")
     printContext.setDateTime(new DateTimeBuilder(OFFSET_SECONDS, offset.getTotalSeconds))
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("NO-OFFSET", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("NO-OFFSET", pattern)
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTING" + expected)
   }
@@ -61,21 +62,21 @@ object TestZoneOffsetPrinter {
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_toString(pattern: String, expected: String, offset: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("NO-OFFSET", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("NO-OFFSET", pattern)
     assertEquals(pp.toString, "Offset(" + pattern + ",'NO-OFFSET')")
   }
 
   @Test(expectedExceptions = Array(classOf[DateTimeException]))
   @throws(classOf[Exception])
   def test_print_emptyCalendrical(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     pp.print(printEmptyContext, buf)
   }
 
   @throws(classOf[Exception])
   def test_print_emptyAppendable(): Unit = {
     printContext.setDateTime(new DateTimeBuilder(OFFSET_SECONDS, TestZoneOffsetPrinter.OFFSET_0130.getTotalSeconds))
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "+01:30")
   }

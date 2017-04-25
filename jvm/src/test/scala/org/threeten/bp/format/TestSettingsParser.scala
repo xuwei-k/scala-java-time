@@ -32,15 +32,17 @@
 package org.threeten.bp.format
 
 import java.lang.StringBuilder
+
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
-import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder.SettingsParser
 
 /** Test SettingsParser. */
 @Test class TestSettingsParser extends AbstractTestPrinterParser {
   @throws(classOf[Exception])
   def test_print_sensitive(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
     val buf: StringBuilder = new StringBuilder
     pp.print(printContext, buf)
     assertEquals(buf.toString, "")
@@ -48,7 +50,7 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_print_strict(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
     val buf: StringBuilder = new StringBuilder
     pp.print(printContext, buf)
     assertEquals(buf.toString, "")
@@ -56,13 +58,13 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_print_nulls(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
     pp.print(null, null)
   }
 
   @throws(classOf[Exception])
   def test_parse_changeStyle_sensitive(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
     val result: Int = pp.parse(parseContext, "a", 0)
     assertEquals(result, 0)
     assertEquals(parseContext.isCaseSensitive, true)
@@ -70,7 +72,7 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_parse_changeStyle_insensitive(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.INSENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.INSENSITIVE
     val result: Int = pp.parse(parseContext, "a", 0)
     assertEquals(result, 0)
     assertEquals(parseContext.isCaseSensitive, false)
@@ -78,7 +80,7 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_parse_changeStyle_strict(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
     val result: Int = pp.parse(parseContext, "a", 0)
     assertEquals(result, 0)
     assertEquals(parseContext.isStrict, true)
@@ -86,7 +88,7 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_parse_changeStyle_lenient(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.LENIENT
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.LENIENT
     val result: Int = pp.parse(parseContext, "a", 0)
     assertEquals(result, 0)
     assertEquals(parseContext.isStrict, false)
@@ -94,25 +96,25 @@ import org.threeten.bp.format.DateTimeFormatterBuilder.SettingsParser
 
   @throws(classOf[Exception])
   def test_toString_sensitive(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.SENSITIVE
     assertEquals(pp.toString, "ParseCaseSensitive(true)")
   }
 
   @throws(classOf[Exception])
   def test_toString_insensitive(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.INSENSITIVE
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.INSENSITIVE
     assertEquals(pp.toString, "ParseCaseSensitive(false)")
   }
 
   @throws(classOf[Exception])
   def test_toString_strict(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.STRICT
     assertEquals(pp.toString, "ParseStrict(true)")
   }
 
   @throws(classOf[Exception])
   def test_toString_lenient(): Unit = {
-    val pp: DateTimeFormatterBuilder.SettingsParser = SettingsParser.LENIENT
+    val pp: TTBPDateTimeFormatterBuilder.SettingsParser = SettingsParser.LENIENT
     assertEquals(pp.toString, "ParseStrict(false)")
   }
 }

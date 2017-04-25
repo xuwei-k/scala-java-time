@@ -41,20 +41,21 @@ import org.threeten.bp.DateTimeException
 import org.threeten.bp.LocalTime
 import org.threeten.bp.temporal.MockFieldValue
 import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.format.internal.{TTBPDateTimeFormatterBuilder, TTBPDateTimeParseContext}
 
 /** Test FractionPrinterParser. */
 @Test class TestFractionPrinterParser extends AbstractTestPrinterParser {
   @Test(expectedExceptions = Array(classOf[DateTimeException]))
   @throws(classOf[Exception])
   def test_print_emptyCalendrical(): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 0, 9, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 0, 9, true)
     pp.print(printEmptyContext, buf)
   }
 
   @throws(classOf[Exception])
   def test_print_append(): Unit = {
     printContext.setDateTime(LocalTime.of(12, 30, 40, 3))
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 0, 9, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 0, 9, true)
     buf.append("EXISTING")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTING.000000003")
@@ -68,7 +69,7 @@ import org.threeten.bp.temporal.TemporalField
   @throws(classOf[Exception])
   def test_print_nanos(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
     printContext.setDateTime(new MockFieldValue(NANO_OF_SECOND, value))
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
     pp.print(printContext, buf)
     if (result == null) {
       fail("Expected exception")
@@ -80,7 +81,7 @@ import org.threeten.bp.temporal.TemporalField
   @throws(classOf[Exception])
   def test_print_nanos_noDecimalPoint(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
     printContext.setDateTime(new MockFieldValue(NANO_OF_SECOND, value))
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, false)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, false)
     pp.print(printContext, buf)
     if (result == null) {
       fail("Expected exception")
@@ -96,7 +97,7 @@ import org.threeten.bp.temporal.TemporalField
   @throws(classOf[Exception])
   def test_print_seconds(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
     printContext.setDateTime(new MockFieldValue(SECOND_OF_MINUTE, value))
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, true)
     pp.print(printContext, buf)
     if (result == null) {
       fail("Expected exception")
@@ -108,7 +109,7 @@ import org.threeten.bp.temporal.TemporalField
   @throws(classOf[Exception])
   def test_print_seconds_noDecimalPoint(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
     printContext.setDateTime(new MockFieldValue(SECOND_OF_MINUTE, value))
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, false)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, false)
     pp.print(printContext, buf)
     if (result == null) {
       fail("Expected exception")
@@ -119,7 +120,7 @@ import org.threeten.bp.temporal.TemporalField
   @Test(dataProvider = "Nanos")
   @throws(classOf[Exception])
   def test_reverseParse(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
     val newPos: Int = pp.parse(parseContext, result, 0)
     assertEquals(newPos, result.length)
     val expectedValue: Int = fixParsedValue(maxWidth, value)
@@ -129,7 +130,7 @@ import org.threeten.bp.temporal.TemporalField
   @Test(dataProvider = "Nanos")
   @throws(classOf[Exception])
   def test_reverseParse_noDecimalPoint(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, false)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, false)
     val newPos: Int = pp.parse(parseContext, result, if (result.startsWith(".")) 1 else 0)
     assertEquals(newPos, result.length)
     val expectedValue: Int = fixParsedValue(maxWidth, value)
@@ -139,7 +140,7 @@ import org.threeten.bp.temporal.TemporalField
   @Test(dataProvider = "Nanos")
   @throws(classOf[Exception])
   def test_reverseParse_followedByNonDigit(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
     val newPos: Int = pp.parse(parseContext, result + " ", 0)
     assertEquals(newPos, result.length)
     val expectedValue: Int = fixParsedValue(maxWidth, value)
@@ -149,7 +150,7 @@ import org.threeten.bp.temporal.TemporalField
   @Test(dataProvider = "Nanos")
   @throws(classOf[Exception])
   def test_reverseParse_preceededByNonDigit(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, minWidth, maxWidth, true)
     val newPos: Int = pp.parse(parseContext, " " + result, 1)
     assertEquals(newPos, result.length + 1)
     val expectedValue: Int = fixParsedValue(maxWidth, value)
@@ -168,13 +169,13 @@ import org.threeten.bp.temporal.TemporalField
   @Test(dataProvider = "Seconds")
   @throws(classOf[Exception])
   def test_reverseParse_seconds(minWidth: Int, maxWidth: Int, value: Int, result: String): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(SECOND_OF_MINUTE, minWidth, maxWidth, true)
     val newPos: Int = pp.parse(parseContext, result, 0)
     assertEquals(newPos, result.length)
     assertParsed(parseContext, SECOND_OF_MINUTE, if (value == 0 && minWidth == 0) null else value.toLong)
   }
 
-  private def assertParsed(context: DateTimeParseContext, field: TemporalField, value: java.lang.Long): Unit = {
+  private def assertParsed(context: TTBPDateTimeParseContext, field: TemporalField, value: java.lang.Long): Unit = {
     if (value == null) {
       assertEquals(context.getParsed(field), null)
     }
@@ -184,10 +185,10 @@ import org.threeten.bp.temporal.TemporalField
   }
 
   @DataProvider(name = "ParseNothing") private[format] def provider_parseNothing: Array[Array[Any]] = {
-    Array[Array[Any]](Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), "", 0, ~0), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), "A", 0, ~0), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".", 0, ~1), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".5", 0, ~1), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".51", 0, ~1), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".A23456", 0, ~1), Array(new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".1A3456", 0, ~1))
+    Array[Array[Any]](Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), "", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), "A", 0, ~0), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".", 0, ~1), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".5", 0, ~1), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".51", 0, ~1), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".A23456", 0, ~1), Array(new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true), ".1A3456", 0, ~1))
   }
 
-  @Test(dataProvider = "ParseNothing") def test_parse_nothing(pp: DateTimeFormatterBuilder.FractionPrinterParser, text: String, pos: Int, expected: Int): Unit = {
+  @Test(dataProvider = "ParseNothing") def test_parse_nothing(pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser, text: String, pos: Int, expected: Int): Unit = {
     val newPos: Int = pp.parse(parseContext, text, pos)
     assertEquals(newPos, expected)
     assertEquals(parseContext.getParsed(NANO_OF_SECOND), null)
@@ -195,13 +196,13 @@ import org.threeten.bp.temporal.TemporalField
 
   @throws(classOf[Exception])
   def test_toString(): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, true)
     assertEquals(pp.toString, "Fraction(NanoOfSecond,3,6,DecimalPoint)")
   }
 
   @throws(classOf[Exception])
   def test_toString_noDecimalPoint(): Unit = {
-    val pp: DateTimeFormatterBuilder.FractionPrinterParser = new DateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, false)
+    val pp: TTBPDateTimeFormatterBuilder.FractionPrinterParser = new TTBPDateTimeFormatterBuilder.FractionPrinterParser(NANO_OF_SECOND, 3, 6, false)
     assertEquals(pp.toString, "Fraction(NanoOfSecond,3,6)")
   }
 }

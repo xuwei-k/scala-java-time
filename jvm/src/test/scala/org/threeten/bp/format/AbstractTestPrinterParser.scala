@@ -41,6 +41,8 @@ import org.threeten.bp.DateTimeException
 import org.threeten.bp.chrono.IsoChronology
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.format.internal.TTBPDateTimePrintContext
+import org.threeten.bp.format.internal.TTBPDateTimeParseContext
 
 import scala.annotation.meta.setter
 
@@ -55,19 +57,19 @@ object AbstractTestPrinterParser {
 // TODO: what's going on here?
 @Test class AbstractTestPrinterParser {
   @(Test @setter)(enabled = false)
-  protected var printEmptyContext: DateTimePrintContext = null
+  protected var printEmptyContext: TTBPDateTimePrintContext = null
   @(Test @setter)(enabled = false)
-  protected var printContext: DateTimePrintContext = null
+  protected var printContext: TTBPDateTimePrintContext = null
   @(Test @setter)(enabled = false)
-  protected var parseContext: DateTimeParseContext = null
+  protected var parseContext: TTBPDateTimeParseContext = null
   @(Test @setter)(enabled = false)
   protected var buf: java.lang.StringBuilder = null
 
   @BeforeMethod def setUp(): Unit = {
-    printEmptyContext = new DateTimePrintContext(AbstractTestPrinterParser.EMPTY, Locale.ENGLISH, DecimalStyle.STANDARD)
+    printEmptyContext = new TTBPDateTimePrintContext(AbstractTestPrinterParser.EMPTY, Locale.ENGLISH, DecimalStyle.STANDARD)
     val zdt: ZonedDateTime = LocalDateTime.of(2011, 6, 30, 12, 30, 40, 0).atZone(ZoneId.of("Europe/Paris"))
-    printContext = new DateTimePrintContext(zdt, Locale.ENGLISH, DecimalStyle.STANDARD)
-    parseContext = new DateTimeParseContext(Locale.ENGLISH, DecimalStyle.STANDARD, IsoChronology.INSTANCE)
+    printContext = new TTBPDateTimePrintContext(zdt, Locale.ENGLISH, DecimalStyle.STANDARD)
+    parseContext = new TTBPDateTimeParseContext(Locale.ENGLISH, DecimalStyle.STANDARD, IsoChronology.INSTANCE)
     buf = new java.lang.StringBuilder
   }
 }

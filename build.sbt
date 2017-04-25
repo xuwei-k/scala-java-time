@@ -105,7 +105,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   // Copy the source files from the base project, exclude classes on java.util and dirs
   val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
     files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
-  }.filterNot(_.isDirectory).filterNot(r => {println(r.getParentFile.getName);r.getParentFile.getName == "util" || r.getParentFile.getName == "internal"}).toList
+  }.filterNot(_.isDirectory).filterNot(_.getParentFile.getName == "util").toList
 
   // These replacements will in practice rename all the classes from
   // org.threeten to java.time
@@ -114,7 +114,13 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
       .replaceAll("package org.threeten$", "package java")
       .replaceAll("package object bp", "package object time")
       .replaceAll("package org.threeten.bp", "package java.time")
-      .replaceAll("import org.threeten.bp\\(\\?\\<!\\.internal\\)", "import java.time")
+      .replaceAll("""import org.threeten.bp(\..*)?(\.[A-Z_{][^\.]*)""", "import java.time$1$2")
+      /*.replaceAll("""import org.threeten.bp(\.[A-Z].*)""", "import java.time$1")
+      .replaceAll("import org.threeten.bp.chrono", "import java.time.chrono")
+      .replaceAll("""import org.threeten.bp.format(\.[A-Z].*)""", "import java.time.format$1")
+      .replaceAll("""import org.threeten.bp.temporal(\.[A-Z]  .*)""", "import java.time.temporal$1")
+      .replaceAll("import org.threeten.bp.zone", "import java.time.zone")
+      .replaceAll("import org.threeten.bp", "import java.time")*/
       .replaceAll("import zonedb.threeten", "import zonedb.java")
       .replaceAll("private\\s*\\[bp\\]", "private[time]")
   }

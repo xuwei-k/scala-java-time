@@ -38,7 +38,8 @@ import org.threeten.bp.temporal.ChronoField.DAY_OF_YEAR
 import org.threeten.bp.temporal.ChronoUnit.DAYS
 import org.threeten.bp.temporal.ChronoUnit.MONTHS
 import org.threeten.bp.temporal.ChronoUnit.YEARS
-import org.threeten.bp.{LocalDate, DayOfWeek}
+import org.threeten.bp.LocalDate
+import org.threeten.bp.DayOfWeek
 
 /** Common implementations of {@code TemporalAdjuster}.
   *

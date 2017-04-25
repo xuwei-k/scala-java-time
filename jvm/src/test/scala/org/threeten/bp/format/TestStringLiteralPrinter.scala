@@ -33,13 +33,14 @@ package org.threeten.bp.format
 
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
 /** Test StringLiteralPrinterParser. */
 @Test class TestStringLiteralPrinter extends AbstractTestPrinterParser {
   @throws(classOf[Exception])
   def test_print_emptyCalendrical(): Unit = {
     buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.StringLiteralPrinterParser = new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printEmptyContext, buf)
     assertEquals(buf.toString, "EXISTINGhello")
   }
@@ -47,27 +48,27 @@ import org.testng.annotations.Test
   @throws(classOf[Exception])
   def test_print_dateTime(): Unit = {
     buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.StringLiteralPrinterParser = new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTINGhello")
   }
 
   @throws(classOf[Exception])
   def test_print_emptyAppendable(): Unit = {
-    val pp: DateTimeFormatterBuilder.StringLiteralPrinterParser = new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "hello")
   }
 
   @throws(classOf[Exception])
   def test_toString(): Unit = {
-    val pp: DateTimeFormatterBuilder.StringLiteralPrinterParser = new DateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     assertEquals(pp.toString, "'hello'")
   }
 
   @throws(classOf[Exception])
   def test_toString_apos(): Unit = {
-    val pp: DateTimeFormatterBuilder.StringLiteralPrinterParser = new DateTimeFormatterBuilder.StringLiteralPrinterParser("o'clock")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("o'clock")
     assertEquals(pp.toString, "'o''clock'")
   }
 }

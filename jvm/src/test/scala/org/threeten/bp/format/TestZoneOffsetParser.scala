@@ -37,15 +37,16 @@ import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 import org.threeten.bp.temporal.TemporalQueries
 
 /** Test OffsetIdPrinterParser. */
 @Test class TestZoneOffsetParser extends AbstractTestPrinterParser {
   @DataProvider(name = "error") private[format] def data_error: Array[Array[Any]] = {
-    Array[Array[Any]](Array(new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss"), "hello", -1, classOf[IndexOutOfBoundsException]), Array(new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss"), "hello", 6, classOf[IndexOutOfBoundsException]))
+    Array[Array[Any]](Array(new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss"), "hello", -1, classOf[IndexOutOfBoundsException]), Array(new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss"), "hello", 6, classOf[IndexOutOfBoundsException]))
   }
 
-  @Test(dataProvider = "error") def test_parse_error(pp: DateTimeFormatterBuilder.OffsetIdPrinterParser, text: String, pos: Int, expected: Class[_]): Unit = {
+  @Test(dataProvider = "error") def test_parse_error(pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser, text: String, pos: Int, expected: Class[_]): Unit = {
     try {
       pp.parse(parseContext, text, pos)
     }
@@ -59,7 +60,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_exactMatch_UTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "Z", 0)
     assertEquals(result, 1)
     assertParsed(ZoneOffset.UTC)
@@ -67,7 +68,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_startStringMatch_UTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "ZOTHER", 0)
     assertEquals(result, 1)
     assertParsed(ZoneOffset.UTC)
@@ -75,7 +76,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_midStringMatch_UTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "OTHERZOTHER", 5)
     assertEquals(result, 6)
     assertParsed(ZoneOffset.UTC)
@@ -83,7 +84,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_endStringMatch_UTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "OTHERZ", 5)
     assertEquals(result, 6)
     assertParsed(ZoneOffset.UTC)
@@ -91,7 +92,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_exactMatch_UTC_EmptyUTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "", 0)
     assertEquals(result, 0)
     assertParsed(ZoneOffset.UTC)
@@ -99,7 +100,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_startStringMatch_UTC_EmptyUTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "OTHER", 0)
     assertEquals(result, 0)
     assertParsed(ZoneOffset.UTC)
@@ -107,7 +108,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_midStringMatch_UTC_EmptyUTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "OTHEROTHER", 5)
     assertEquals(result, 5)
     assertParsed(ZoneOffset.UTC)
@@ -115,7 +116,7 @@ import org.threeten.bp.temporal.TemporalQueries
 
   @throws(classOf[Exception])
   def test_parse_endStringMatch_UTC_EmptyUTC(): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "OTHER", 5)
     assertEquals(result, 5)
     assertParsed(ZoneOffset.UTC)
@@ -128,7 +129,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_exactMatch(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, parse, 0)
     assertEquals(result, parse.length)
     assertParsed(expected)
@@ -137,7 +138,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_startStringMatch(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, parse + ":OTHER", 0)
     assertEquals(result, parse.length)
     assertParsed(expected)
@@ -146,7 +147,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_midStringMatch(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, "OTHER" + parse + ":OTHER", 5)
     assertEquals(result, parse.length + 5)
     assertParsed(expected)
@@ -155,7 +156,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_endStringMatch(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, "OTHER" + parse, 5)
     assertEquals(result, parse.length + 5)
     assertParsed(expected)
@@ -164,7 +165,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_exactMatch_EmptyUTC(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
     val result: Int = pp.parse(parseContext, parse, 0)
     assertEquals(result, parse.length)
     assertParsed(expected)
@@ -173,7 +174,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_startStringMatch_EmptyUTC(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
     val result: Int = pp.parse(parseContext, parse + ":OTHER", 0)
     assertEquals(result, parse.length)
     assertParsed(expected)
@@ -182,7 +183,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_midStringMatch_EmptyUTC(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
     val result: Int = pp.parse(parseContext, "OTHER" + parse + ":OTHER", 5)
     assertEquals(result, parse.length + 5)
     assertParsed(expected)
@@ -191,7 +192,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "offsets")
   @throws(classOf[Exception])
   def test_parse_endStringMatch_EmptyUTC(pattern: String, parse: String, expected: ZoneOffset): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("", pattern)
     val result: Int = pp.parse(parseContext, "OTHER" + parse, 5)
     assertEquals(result, parse.length + 5)
     assertParsed(expected)
@@ -204,7 +205,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "bigOffsets")
   @throws(classOf[Exception])
   def test_parse_bigOffsets(pattern: String, parse: String, offsetSecs: Long): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, parse, 0)
     assertEquals(result, parse.length)
     assertEquals(parseContext.getParsed(OFFSET_SECONDS), offsetSecs.asInstanceOf[Long])
@@ -217,7 +218,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @Test(dataProvider = "badOffsets")
   @throws(classOf[Exception])
   def test_parse_invalid(pattern: String, parse: String, expectedPosition: Int): Unit = {
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", pattern)
     val result: Int = pp.parse(parseContext, parse, 0)
     assertEquals(result, expectedPosition)
   }
@@ -225,7 +226,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @throws(classOf[Exception])
   def test_parse_caseSensitiveUTC_matchedCase(): Unit = {
     parseContext.setCaseSensitive(true)
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "Z", 0)
     assertEquals(result, 1)
     assertParsed(ZoneOffset.UTC)
@@ -234,7 +235,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @throws(classOf[Exception])
   def test_parse_caseSensitiveUTC_unmatchedCase(): Unit = {
     parseContext.setCaseSensitive(true)
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "z", 0)
     assertEquals(result, ~0)
     assertParsed(null)
@@ -243,7 +244,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @throws(classOf[Exception])
   def test_parse_caseInsensitiveUTC_matchedCase(): Unit = {
     parseContext.setCaseSensitive(false)
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "Z", 0)
     assertEquals(result, 1)
     assertParsed(ZoneOffset.UTC)
@@ -252,7 +253,7 @@ import org.threeten.bp.temporal.TemporalQueries
   @throws(classOf[Exception])
   def test_parse_caseInsensitiveUTC_unmatchedCase(): Unit = {
     parseContext.setCaseSensitive(false)
-    val pp: DateTimeFormatterBuilder.OffsetIdPrinterParser = new DateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
+    val pp: TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser = new TTBPDateTimeFormatterBuilder.OffsetIdPrinterParser("Z", "+HH:MM:ss")
     val result: Int = pp.parse(parseContext, "z", 0)
     assertEquals(result, 1)
     assertParsed(ZoneOffset.UTC)
