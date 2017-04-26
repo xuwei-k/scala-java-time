@@ -39,8 +39,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.chrono.IsoChronology
-import org.threeten.bp.temporal.TemporalAccessor
-import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.temporal.{TemporalAccessor, TemporalField, TemporalQuery}
 import org.threeten.bp.format.internal.TTBPDateTimeParseContext
 import org.threeten.bp.format.internal.TTBPDateTimePrintContext
 
@@ -49,6 +48,11 @@ object GenTestPrinterParser {
   private val EMPTY: TemporalAccessor = new TemporalAccessor() {
     def isSupported(field: TemporalField): Boolean = true
     def getLong(field: TemporalField): Long = throw new DateTimeException("Mock")
+    override def get(field: TemporalField): Int = ???
+
+    override def query[R](query: TemporalQuery[R]) = ???
+
+    override def range(field: TemporalField) = ???
   }
 }
 

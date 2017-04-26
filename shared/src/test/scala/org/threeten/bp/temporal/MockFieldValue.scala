@@ -52,4 +52,8 @@ final class MockFieldValue(private val field: TemporalField, private val value: 
       value
     else
       throw new DateTimeException("Unsupported field: " + field)
+
+  override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
+
+  override def query[R](query: TemporalQuery[R]) = ???
 }
