@@ -1856,7 +1856,6 @@ class TestLocalDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
   }
 
   test("plusNanos_fromZero") {
-
     import scala.collection.JavaConverters._
     plusNanos_fromZero.asScala.toList.foreach {
       case (nanoseconds: Long) :: (date: LocalDate) :: (hour: Int) :: (min: Int) :: (sec: Int) :: (nanos: Int) :: Nil =>
