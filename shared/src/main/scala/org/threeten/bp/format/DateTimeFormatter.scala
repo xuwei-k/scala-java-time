@@ -1284,7 +1284,7 @@ final class DateTimeFormatter private[format](private val printerParser: Composi
     * @throws IllegalArgumentException if less than 2 types are specified
     * @throws DateTimeParseException if unable to parse the requested result
     */
-  def parseBest(text: CharSequence, types: TemporalQuery[_]*): TemporalAccessor = {
+  @scala.annotation.varargs def parseBest(text: CharSequence, types: TemporalQuery[_]*): TemporalAccessor = {
     Objects.requireNonNull(text, "text")
     Objects.requireNonNull(types, "types")
     if (types.length < 2) {

@@ -17,7 +17,16 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   private val stdZonesMap = stdZones.asInstanceOf[js.Dictionary[js.Dynamic]].toMap
   private val fixedZonesMap = fixedZones.asInstanceOf[js.Dictionary[Int]].toMap
 
-  override protected def provideZoneIds: java.util.Set[String] = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
+  override protected def provideZoneIds: java.util.Set[String] = {
+    val zones = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
+    // I'm not totallly sure the reason why but TTB remove thesee ZoneIds
+    zones.remove("UTC")
+    zones.remove("GMT")
+    zones.remove("GMT0")
+    zones.remove("GMT+0")
+    zones.remove("GMT-0")
+    zones
+  }
 
   private def toLocalTime(lt: Int): LocalTime =
     LocalTime.ofSecondOfDay(lt)

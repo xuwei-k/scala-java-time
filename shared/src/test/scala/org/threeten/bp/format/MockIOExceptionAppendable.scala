@@ -35,17 +35,14 @@ import java.io.IOException
 
 /** Mock Appendable that throws IOException. */
 class MockIOExceptionAppendable extends Appendable {
-  @throws(classOf[IOException])
   def append(csq: CharSequence): Appendable = {
     throw new IOException
   }
 
-  @throws(classOf[IOException])
   def append(c: Char): Appendable = {
     throw new IOException
   }
 
-  @throws(classOf[IOException])
   def append(csq: CharSequence, start: Int, end: Int): Appendable = {
     throw new IOException
   }
