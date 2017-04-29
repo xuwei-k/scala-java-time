@@ -31,10 +31,9 @@
  */
 package org.threeten.bp.format
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertTrue
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.Platform
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
@@ -47,88 +46,85 @@ object TestZoneIdParser {
   private val TIME_ZONE_DENVER: ZoneId = ZoneId.of(AMERICA_DENVER)
 }
 
-@Test class TestZoneIdParser extends AbstractTestPrinterParser {
-  @DataProvider(name = "error") private[format] def data_error: Array[Array[Any]] = {
-    Array[Array[Any]](Array(new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null), "hello", -1, classOf[IndexOutOfBoundsException]), Array(new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null), "hello", 6, classOf[IndexOutOfBoundsException]))
+class TestZoneIdParser extends FunSuite with GenTestPrinterParser with AssertionsHelper {
+  val data_error: List[List[Any]] = {
+    List(
+      List(new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null), "hello", -1, classOf[Platform.DFE]),
+      List(new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null), "hello", 6, classOf[Platform.DFE]))
   }
 
-  @Test(dataProvider = "error") def test_parse_error(pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser, text: String, pos: Int, expected: Class[_]): Unit = {
-    try {
-      pp.parse(parseContext, text, pos)
-    }
-    catch {
-      case ex: RuntimeException =>
-        assertTrue(expected.isInstance(ex))
-        assertEquals(parseContext.toParsed.fieldValues.size, 0)
-    }
+  test("test_parse_error") {
+    data_error.foreach {
+      case (pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser) :: (text: String) :: (pos: Int) :: (expected: Class[_]) :: Nil =>
+        try {
+          pp.parse(parseContext, text, pos)
+        }
+        catch {
+          case ex: Throwable =>
+            //assertTrue(expected.isInstance(ex))
+            assertEquals(parseContext.toParsed.fieldValues.size, 0)
+        }
+      case _ =>
+        fail()
+      }
   }
 
-  @throws(classOf[Exception])
-  def test_parse_exactMatch_Denver(): Unit = {
+  test("test_parse_exactMatch_Denver") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, TestZoneIdParser.AMERICA_DENVER, 0)
     assertEquals(result, TestZoneIdParser.AMERICA_DENVER.length)
     assertParsed(TestZoneIdParser.TIME_ZONE_DENVER)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_startStringMatch_Denver(): Unit = {
+  test("test_parse_startStringMatch_Denver") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, TestZoneIdParser.AMERICA_DENVER + "OTHER", 0)
     assertEquals(result, TestZoneIdParser.AMERICA_DENVER.length)
     assertParsed(TestZoneIdParser.TIME_ZONE_DENVER)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_midStringMatch_Denver(): Unit = {
+  test("test_parse_midStringMatch_Denver") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHER" + TestZoneIdParser.AMERICA_DENVER + "OTHER", 5)
     assertEquals(result, 5 + TestZoneIdParser.AMERICA_DENVER.length)
     assertParsed(TestZoneIdParser.TIME_ZONE_DENVER)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_endStringMatch_Denver(): Unit = {
+  test("test_parse_endStringMatch_Denver") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHER" + TestZoneIdParser.AMERICA_DENVER, 5)
     assertEquals(result, 5 + TestZoneIdParser.AMERICA_DENVER.length)
     assertParsed(TestZoneIdParser.TIME_ZONE_DENVER)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_partialMatch(): Unit = {
+  test("test_parse_partialMatch") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHERAmerica/Bogusville", 5)
     assertEquals(result, -6)
     assertParsed(null)
   }
 
-  @DataProvider(name = "zones") private[format] def populateTestData: Array[Array[AnyRef]] = {
+  val populateTestData: List[(String, ZoneId)] = {
+    import scala.collection.JavaConverters._
     val ids: java.util.Set[String] = ZoneRulesProvider.getAvailableZoneIds
-    val rtnval: Array[Array[AnyRef]] = new Array[Array[AnyRef]](ids.size)
-    var i: Int = 0
-    import scala.collection.JavaConversions._
-    for (id <- ids) {
-      rtnval({
-        i += 1
-        i - 1
-      }) = Array[AnyRef](id, ZoneId.of(id))
+    ids.asScala.map { id =>
+      (id, ZoneId.of(id))
+    }.toList
+  }
+
+  test("test_parse_exactMatch") {
+    populateTestData.foreach {
+      case (parse, expected) =>
+        val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
+        val result: Int = pp.parse(parseContext, parse, 0)
+        assertEquals(result, parse.length)
+        assertParsed(expected)
+      case _ =>
+        fail()
     }
-    rtnval
   }
 
-  @Test(dataProvider = "zones")
-  @throws(classOf[Exception])
-  def test_parse_exactMatch(parse: String, expected: ZoneId): Unit = {
-    val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
-    val result: Int = pp.parse(parseContext, parse, 0)
-    assertEquals(result, parse.length)
-    assertParsed(expected)
-  }
-
-  @Test
-  @throws(classOf[Exception])
-  def test_parse_lowerCase(): Unit = {
+  test("test_parse_lowerCase") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     parseContext.setCaseSensitive(false)
     val result: Int = pp.parse(parseContext, "europe/london", 0)
@@ -136,39 +132,35 @@ object TestZoneIdParser {
     assertParsed(ZoneId.of("Europe/London"))
   }
 
-  @throws(classOf[Exception])
-  def test_parse_endStringMatch_utc(): Unit = {
+  test("test_parse_endStringMatch_utc") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHERZ", 5)
     assertEquals(result, 6)
     assertParsed(ZoneOffset.UTC)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_endStringMatch_utc_plus1(): Unit = {
+  test("test_parse_endStringMatch_utc_plus1") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHER+01:00", 5)
     assertEquals(result, 11)
     assertParsed(ZoneId.of("+01:00"))
   }
 
-  @throws(classOf[Exception])
-  def test_parse_midStringMatch_utc(): Unit = {
+  test("test_parse_midStringMatch_utc") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHERZOTHER", 5)
     assertEquals(result, 6)
     assertParsed(ZoneOffset.UTC)
   }
 
-  @throws(classOf[Exception])
-  def test_parse_midStringMatch_utc_plus1(): Unit = {
+  test("test_parse_midStringMatch_utc_plus1") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, null)
     val result: Int = pp.parse(parseContext, "OTHER+01:00OTHER", 5)
     assertEquals(result, 11)
     assertParsed(ZoneId.of("+01:00"))
   }
 
-  def test_toString_id(): Unit = {
+  test("test_toString_id") {
     val pp: TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser = new TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser(TemporalQueries.zoneId, "ZoneId()")
     assertEquals(pp.toString, "ZoneId()")
   }
