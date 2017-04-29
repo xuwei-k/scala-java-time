@@ -55,5 +55,6 @@ final class MockFieldValue(private val field: TemporalField, private val value: 
 
   override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
 
-  override def query[R](query: TemporalQuery[R]) = ???
+  override def query[R](query: TemporalQuery[R]) =
+    query.queryFrom(this)
 }
