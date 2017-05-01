@@ -1,9 +1,12 @@
 package java.util
 
-import org.threeten.bp.ZoneId
+import java.text.DateFormatSymbols
 
+import org.threeten.bp.{Instant, ZoneId}
+import org.threeten.bp.zone.ZoneRulesProvider
+
+import scala.collection.JavaConverters._
 import scala.util.Try
-
 import scala.scalajs.js
 import js.annotation._
 
@@ -52,11 +55,16 @@ object TimeZone {
   def getDefault: TimeZone = default
   def setDefault(timeZone: TimeZone): Unit = default = timeZone
 
-  def getTimeZone(timeZone: String): TimeZone = ???
-  def getTimeZone(zoneId: ZoneId): TimeZone   = ???
+  def getTimeZone(timeZone: String): TimeZone = getTimeZone(ZoneId.of(timeZone))
+  def getTimeZone(zoneId: ZoneId): TimeZone   = {
+    val rules = ZoneRulesProvider.getRules(zoneId.getId, forCaching = true)
+    val offsetInMillis = rules.getOffset(Instant.now).getTotalSeconds * 1000
+    new SimpleTimeZone(offsetInMillis, zoneId.getId)
+  }
 
-  def getAvailableIDs: Array[String] = ???
-  def getAvailableIDs(offsetMillis: Int): Array[String] = ???
+  def getAvailableIDs: Array[String] = ZoneRulesProvider.getAvailableZoneIds.asScala.toArray
+  def getAvailableIDs(offsetMillis: Int): Array[String] =
+    getAvailableIDs.view.map(getTimeZone).filter(_.getRawOffset == offsetMillis).map(_.getID).toArray
 
 }
 
@@ -84,7 +92,22 @@ abstract class TimeZone extends Serializable with Cloneable {
   def getDisplayName(daylight: Boolean, style: Int, locale: Locale): String = {
     if (style != TimeZone.SHORT || style != TimeZone.LONG)
       throw new IllegalArgumentException(s"Illegal timezone style: $style")
-    ???
+
+    val id = getID
+    val zoneName = DateFormatSymbols.getInstance(locale).getZoneStrings.find(_(0) == id).flatMap { strs =>
+      (daylight, style) match {
+        case (false, TimeZone.LONG)  => Option(strs(1))
+        case (false, TimeZone.SHORT) => Option(strs(2))
+        case (true,  TimeZone.LONG)  => Option(strs(3))
+        case (true,  TimeZone.SHORT) => Option(strs(4))
+        case _                       => None
+      }
+    }
+
+    zoneName.orElse {
+      if (id.startsWith("GMT+") || id.startsWith("GMT-")) Some(id)
+      else None
+    }.orNull
   }
 
   def getDisplayName(daylight: Boolean, style: Int): String =
@@ -104,7 +127,7 @@ abstract class TimeZone extends Serializable with Cloneable {
 
   def observesDaylightTime: Boolean = ???
 
-  def toZoneId: ZoneId = ???
+  def toZoneId: ZoneId = ZoneId.of(getID)
 
   override def clone: AnyRef = {
     val cloned = super.clone.asInstanceOf[TimeZone]
