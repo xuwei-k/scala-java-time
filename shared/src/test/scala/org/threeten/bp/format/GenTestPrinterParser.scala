@@ -50,7 +50,7 @@ object GenTestPrinterParser {
     def getLong(field: TemporalField): Long = throw new DateTimeException("Mock")
     override def get(field: TemporalField): Int = ???
 
-    override def query[R](query: TemporalQuery[R]) = ???
+    override def query[R](query: TemporalQuery[R]) = query.queryFrom(this)
 
     override def range(field: TemporalField) = ???
   }

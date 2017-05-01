@@ -364,7 +364,7 @@ final class TTBPDateTimeParseContext (private var locale: Locale,
       else
         fieldValues.get(field)
 
-    override def query[R >: Null](query: TemporalQuery[R]): R =
+    override def query[R](query: TemporalQuery[R]): R =
       if (query eq TemporalQueries.chronology)
         chrono.asInstanceOf[R]
       else if ((query eq TemporalQueries.zoneId) || (query eq TemporalQueries.zone))

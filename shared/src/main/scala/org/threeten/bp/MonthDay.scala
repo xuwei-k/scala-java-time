@@ -470,7 +470,7 @@ final class MonthDay private (private val month: Int, private val day: Int) exte
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     if (query eq TemporalQueries.chronology)
       IsoChronology.INSTANCE.asInstanceOf[R]
     else

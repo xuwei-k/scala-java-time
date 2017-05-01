@@ -558,19 +558,19 @@ final class DateTimeBuilder() extends TemporalAccessor with Cloneable {
     value
   }
 
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     if (query eq TemporalQueries.zoneId)
       zone.asInstanceOf[R]
     else if (query eq TemporalQueries.chronology)
       chrono.asInstanceOf[R]
     else if (query eq TemporalQueries.localDate)
-      if (date != null) LocalDate.from(date).asInstanceOf[R] else null
+      if (date != null) LocalDate.from(date).asInstanceOf[R] else null.asInstanceOf[R]
     else if (query eq TemporalQueries.localTime)
       time.asInstanceOf[R]
     else if ((query eq TemporalQueries.zone) || (query eq TemporalQueries.offset))
       query.queryFrom(this)
     else if (query eq TemporalQueries.precision)
-      null
+      null.asInstanceOf[R]
     else
       query.queryFrom(this)
 

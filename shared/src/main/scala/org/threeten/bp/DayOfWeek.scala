@@ -330,11 +330,11 @@ final class DayOfWeek(name: String, ordinal: Int) extends Enum[DayOfWeek](name, 
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     if (query eq TemporalQueries.precision)
       temporal.ChronoUnit.DAYS.asInstanceOf[R]
     else if ((query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime) || (query eq TemporalQueries.chronology) || (query eq TemporalQueries.zone) || (query eq TemporalQueries.zoneId) || (query eq TemporalQueries.offset))
-      null
+      null.asInstanceOf[R]
     else
       query.queryFrom(this)
 

@@ -807,7 +807,7 @@ final class OffsetTime(private val time: LocalTime, private val offset: ZoneOffs
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     query match {
       case TemporalQueries.precision  => NANOS.asInstanceOf[R]
       case TemporalQueries.offset
@@ -815,7 +815,7 @@ final class OffsetTime(private val time: LocalTime, private val offset: ZoneOffs
       case TemporalQueries.localTime  => time.asInstanceOf[R]
       case TemporalQueries.chronology
          | TemporalQueries.localDate
-         | TemporalQueries.zoneId     => null
+         | TemporalQueries.zoneId     => null.asInstanceOf[R]
       case _                          => super.query(query)
     }
 

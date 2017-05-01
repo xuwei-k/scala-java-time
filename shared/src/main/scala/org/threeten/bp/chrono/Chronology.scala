@@ -644,7 +644,7 @@ trait Chronology extends Ordered[Chronology] {
 
       def getLong(field: TemporalField): Long = throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
 
-      override def query[R >: Null](query: TemporalQuery[R]): R =
+      override def query[R](query: TemporalQuery[R]): R =
         if (query eq TemporalQueries.chronology) this.asInstanceOf[R]
         else super.query(query)
     })

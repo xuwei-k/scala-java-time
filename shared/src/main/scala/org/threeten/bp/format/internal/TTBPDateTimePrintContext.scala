@@ -116,7 +116,7 @@ object TTBPDateTimePrintContext {
         else
           temporal.getLong(field)
 
-      override def query[R >: Null](query: TemporalQuery[R]): R =
+      override def query[R](query: TemporalQuery[R]): R =
         if (query eq TemporalQueries.chronology)
           effectiveChrono.asInstanceOf[R]
         else if (query eq TemporalQueries.zoneId)
