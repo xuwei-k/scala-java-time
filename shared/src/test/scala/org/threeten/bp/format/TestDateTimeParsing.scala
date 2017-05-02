@@ -39,7 +39,8 @@ import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
 import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_DAY
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.testng.Assert.assertEquals
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -47,8 +48,6 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.temporal.TemporalAccessor
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
 
 /** Test parsing of edge cases. */
 object TestDateTimeParsing {
@@ -72,66 +71,127 @@ object TestDateTimeParsing {
   //private val INSTANT_OFFSETSECONDS_ZONE = new DateTimeFormatterBuilder().appendInstant.appendLiteral(' ').appendValue(OFFSET_SECONDS).appendLiteral(' ').appendZoneId.toFormatter
 }
 
-@Test class TestDateTimeParsing {
-  @DataProvider(name = "instantZones") private[format] def data_instantZones: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(TestDateTimeParsing.LOCALFIELDS_ZONEID, "2014-06-30 01:02:03 Europe/Paris", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.LOCALFIELDS_ZONEID, "2014-06-30 01:02:03 +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.LOCALFIELDS_OFFSETID, "2014-06-30 01:02:03 +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.LOCALFIELDS_WITH_PARIS, "2014-06-30 01:02:03", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.LOCALFIELDS_WITH_0230, "2014-06-30 01:02:03", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.INSTANT_WITH_PARIS, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.INSTANT_WITH_0230, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.INSTANT_OFFSETID, "2014-06-30T01:02:03Z +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.INSTANT_OFFSETSECONDS, "2014-06-30T01:02:03Z 9000", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)), Array(TestDateTimeParsing.INSTANTSECONDS_WITH_PARIS, "86402", Instant.ofEpochSecond(86402).atZone(TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.INSTANTSECONDS_NOS_WITH_PARIS, "86402.123456789", Instant.ofEpochSecond(86402, 123456789).atZone(TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.INSTANTSECONDS_OFFSETSECONDS, "86402 9000", Instant.ofEpochSecond(86402).atZone(TestDateTimeParsing.OFFSET_0230))/*, Array(TestDateTimeParsing.INSTANT_OFFSETSECONDS_ZONE, "2016-10-30T00:30:00Z 7200 Europe/Paris", ZonedDateTime.ofStrict(LocalDateTime.of(2016, 10, 30, 2, 30), ZoneOffset.ofHours(2), TestDateTimeParsing.PARIS)), Array(TestDateTimeParsing.INSTANT_OFFSETSECONDS_ZONE, "2016-10-30T01:30:00Z 3600 Europe/Paris", ZonedDateTime.ofStrict(LocalDateTime.of(2016, 10, 30, 2, 30), ZoneOffset.ofHours(1), TestDateTimeParsing.PARIS))*/)
+class TestDateTimeParsing extends FunSuite with GenTestPrinterParser with AssertionsHelper {
+  val data_instantZones: List[(DateTimeFormatter, String, ZonedDateTime)] = {
+    List(
+      (TestDateTimeParsing.LOCALFIELDS_ZONEID, "2014-06-30 01:02:03 Europe/Paris", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.LOCALFIELDS_ZONEID, "2014-06-30 01:02:03 +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.LOCALFIELDS_OFFSETID, "2014-06-30 01:02:03 +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.LOCALFIELDS_WITH_PARIS, "2014-06-30 01:02:03", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.LOCALFIELDS_WITH_0230, "2014-06-30 01:02:03", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.INSTANT_WITH_PARIS, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.INSTANT_WITH_0230, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.INSTANT_OFFSETID, "2014-06-30T01:02:03Z +02:30", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.INSTANT_OFFSETSECONDS, "2014-06-30T01:02:03Z 9000", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).withZoneSameInstant(TestDateTimeParsing.OFFSET_0230)),
+      (TestDateTimeParsing.INSTANTSECONDS_WITH_PARIS, "86402", Instant.ofEpochSecond(86402).atZone(TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.INSTANTSECONDS_NOS_WITH_PARIS, "86402.123456789", Instant.ofEpochSecond(86402, 123456789).atZone(TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.INSTANTSECONDS_OFFSETSECONDS, "86402 9000", Instant.ofEpochSecond(86402).atZone(TestDateTimeParsing.OFFSET_0230))/*,
+      (TestDateTimeParsing.INSTANT_OFFSETSECONDS_ZONE, "2016-10-30T00:30:00Z 7200 Europe/Paris", ZonedDateTime.ofStrict(LocalDateTime.of(2016, 10, 30, 2, 30), ZoneOffset.ofHours(2), TestDateTimeParsing.PARIS)),
+      (TestDateTimeParsing.INSTANT_OFFSETSECONDS_ZONE, "2016-10-30T01:30:00Z 3600 Europe/Paris", ZonedDateTime.ofStrict(LocalDateTime.of(2016, 10, 30, 2, 30), ZoneOffset.ofHours(1), TestDateTimeParsing.PARIS))*/)
   }
 
-  @Test(dataProvider = "instantZones") def test_parse_instantZones_ZDT(formatter: DateTimeFormatter, text: String, expected: ZonedDateTime): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(ZonedDateTime.from(actual), expected)
+  test("test_parse_instantZones_ZDT") {
+    data_instantZones.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(ZonedDateTime.from(actual), expected)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantZones") def test_parse_instantZones_LDT(formatter: DateTimeFormatter, text: String, expected: ZonedDateTime): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(LocalDateTime.from(actual), expected.toLocalDateTime)
+  test("test_parse_instantZones_LDT") {
+    data_instantZones.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(LocalDateTime.from(actual), expected.toLocalDateTime)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantZones") def test_parse_instantZones_Instant(formatter: DateTimeFormatter, text: String, expected: ZonedDateTime): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(Instant.from(actual), expected.toInstant)
+  test("test_parse_instantZones_Instant") {
+    data_instantZones.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(Instant.from(actual), expected.toInstant)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantZones") def test_parse_instantZones_supported(formatter: DateTimeFormatter, text: String, expected: ZonedDateTime): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(actual.isSupported(INSTANT_SECONDS), true)
-    assertEquals(actual.isSupported(EPOCH_DAY), true)
-    assertEquals(actual.isSupported(SECOND_OF_DAY), true)
-    assertEquals(actual.isSupported(NANO_OF_SECOND), true)
-    assertEquals(actual.isSupported(MICRO_OF_SECOND), true)
-    assertEquals(actual.isSupported(MILLI_OF_SECOND), true)
+  test("test_parse_instantZones_supported") {
+    data_instantZones.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(actual.isSupported(INSTANT_SECONDS), true)
+        assertEquals(actual.isSupported(EPOCH_DAY), true)
+        assertEquals(actual.isSupported(SECOND_OF_DAY), true)
+        assertEquals(actual.isSupported(NANO_OF_SECOND), true)
+        assertEquals(actual.isSupported(MICRO_OF_SECOND), true)
+        assertEquals(actual.isSupported(MILLI_OF_SECOND), true)
+      case _ =>
+        fail()
+    }
   }
 
-  @DataProvider(name = "instantNoZone") private[format] def data_instantNoZone: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(TestDateTimeParsing.INSTANT, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).toInstant), Array(TestDateTimeParsing.INSTANTSECONDS, "86402", Instant.ofEpochSecond(86402)), Array(TestDateTimeParsing.INSTANTSECONDS_NOS, "86402.123456789", Instant.ofEpochSecond(86402, 123456789)))
+  val data_instantNoZone: List[(DateTimeFormatter, String, Instant)] = {
+    List(
+      (TestDateTimeParsing.INSTANT, "2014-06-30T01:02:03Z", ZonedDateTime.of(2014, 6, 30, 1, 2, 3, 0, ZoneOffset.UTC).toInstant),
+      (TestDateTimeParsing.INSTANTSECONDS, "86402", Instant.ofEpochSecond(86402)),
+      (TestDateTimeParsing.INSTANTSECONDS_NOS, "86402.123456789", Instant.ofEpochSecond(86402, 123456789)))
   }
 
-  @Test(dataProvider = "instantNoZone", expectedExceptions = Array(classOf[DateTimeException])) def test_parse_instantNoZone_ZDT(formatter: DateTimeFormatter, text: String, expected: Instant): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    ZonedDateTime.from(actual)
+  test("test_parse_instantNoZone_ZDT") {
+    data_instantNoZone.foreach {
+      case (formatter, text, expected) =>
+        assertThrows[DateTimeException] {
+          val actual: TemporalAccessor = formatter.parse(text)
+          ZonedDateTime.from(actual)
+        }
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantNoZone", expectedExceptions = Array(classOf[DateTimeException])) def test_parse_instantNoZone_LDT(formatter: DateTimeFormatter, text: String, expected: Instant): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    LocalDateTime.from(actual)
+  test("test_parse_instantNoZone_LDT") {
+    data_instantNoZone.foreach {
+      case (formatter, text, expected) =>
+        assertThrows[DateTimeException] {
+          val actual: TemporalAccessor = formatter.parse(text)
+          LocalDateTime.from(actual)
+        }
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantNoZone") def test_parse_instantNoZone_Instant(formatter: DateTimeFormatter, text: String, expected: Instant): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(Instant.from(actual), expected)
+  test("test_parse_instantNoZone_Instant") {
+    data_instantNoZone.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(Instant.from(actual), expected)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test(dataProvider = "instantNoZone") def test_parse_instantNoZone_supported(formatter: DateTimeFormatter, text: String, expected: Instant): Unit = {
-    val actual: TemporalAccessor = formatter.parse(text)
-    assertEquals(actual.isSupported(INSTANT_SECONDS), true)
-    assertEquals(actual.isSupported(EPOCH_DAY), false)
-    assertEquals(actual.isSupported(SECOND_OF_DAY), false)
-    assertEquals(actual.isSupported(NANO_OF_SECOND), true)
-    assertEquals(actual.isSupported(MICRO_OF_SECOND), true)
-    assertEquals(actual.isSupported(MILLI_OF_SECOND), true)
+  test("test_parse_instantNoZone_supported") {
+    data_instantNoZone.foreach {
+      case (formatter, text, expected) =>
+        val actual: TemporalAccessor = formatter.parse(text)
+        assertEquals(actual.isSupported(INSTANT_SECONDS), true)
+        assertEquals(actual.isSupported(EPOCH_DAY), false)
+        assertEquals(actual.isSupported(SECOND_OF_DAY), false)
+        assertEquals(actual.isSupported(NANO_OF_SECOND), true)
+        assertEquals(actual.isSupported(MICRO_OF_SECOND), true)
+        assertEquals(actual.isSupported(MILLI_OF_SECOND), true)
+      case _ =>
+        fail()
+    }
   }
 
-  @Test def test_parse_fromField_InstantSeconds(): Unit = {
+  test("test_parse_fromField_InstantSeconds") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(INSTANT_SECONDS).toFormatter
     val acc: TemporalAccessor = fmt.parse("86402")
     val expected: Instant = Instant.ofEpochSecond(86402)
@@ -146,7 +206,7 @@ object TestDateTimeParsing {
     assertEquals(Instant.from(acc), expected)
   }
 
-  @Test def test_parse_fromField_InstantSeconds_NanoOfSecond(): Unit = {
+  test("test_parse_fromField_InstantSeconds_NanoOfSecond") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(INSTANT_SECONDS).appendLiteral('.').appendValue(NANO_OF_SECOND).toFormatter
     val acc: TemporalAccessor = fmt.parse("86402.123456789")
     val expected: Instant = Instant.ofEpochSecond(86402, 123456789)
@@ -161,7 +221,7 @@ object TestDateTimeParsing {
     assertEquals(Instant.from(acc), expected)
   }
 
-  @Test def test_parse_fromField_SecondOfDay(): Unit = {
+  test("test_parse_fromField_SecondOfDay") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(SECOND_OF_DAY).toFormatter
     val acc: TemporalAccessor = fmt.parse("864")
     assertEquals(acc.isSupported(SECOND_OF_DAY), true)
@@ -174,7 +234,7 @@ object TestDateTimeParsing {
     assertEquals(acc.getLong(MILLI_OF_SECOND), 0L)
   }
 
-  @Test def test_parse_fromField_SecondOfDay_NanoOfSecond(): Unit = {
+  test("test_parse_fromField_SecondOfDay_NanoOfSecond") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(SECOND_OF_DAY).appendLiteral('.').appendValue(NANO_OF_SECOND).toFormatter
     val acc: TemporalAccessor = fmt.parse("864.123456789")
     assertEquals(acc.isSupported(SECOND_OF_DAY), true)
@@ -187,7 +247,7 @@ object TestDateTimeParsing {
     assertEquals(acc.getLong(MILLI_OF_SECOND), 123L)
   }
 
-  @Test def test_parse_fromField_SecondOfMinute(): Unit = {
+  test("test_parse_fromField_SecondOfMinute") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(SECOND_OF_MINUTE).toFormatter
     val acc: TemporalAccessor = fmt.parse("32")
     assertEquals(acc.isSupported(SECOND_OF_MINUTE), true)
@@ -200,7 +260,7 @@ object TestDateTimeParsing {
     assertEquals(acc.getLong(MILLI_OF_SECOND), 0L)
   }
 
-  @Test def test_parse_fromField_SecondOfMinute_NanoOfSecond(): Unit = {
+  test("test_parse_fromField_SecondOfMinute_NanoOfSecond") {
     val fmt: DateTimeFormatter = new DateTimeFormatterBuilder().appendValue(SECOND_OF_MINUTE).appendLiteral('.').appendValue(NANO_OF_SECOND).toFormatter
     val acc: TemporalAccessor = fmt.parse("32.123456789")
     assertEquals(acc.isSupported(SECOND_OF_MINUTE), true)
