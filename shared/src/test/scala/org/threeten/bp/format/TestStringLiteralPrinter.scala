@@ -31,43 +31,38 @@
  */
 package org.threeten.bp.format
 
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
 import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
 /** Test StringLiteralPrinterParser. */
-@Test class TestStringLiteralPrinter extends AbstractTestPrinterParser {
-  @throws(classOf[Exception])
-  def test_print_emptyCalendrical(): Unit = {
+class TestStringLiteralPrinter extends FunSuite with GenTestPrinterParser with AssertionsHelper {
+  test("test_print_emptyCalendrical") {
     buf.append("EXISTING")
     val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printEmptyContext, buf)
     assertEquals(buf.toString, "EXISTINGhello")
   }
 
-  @throws(classOf[Exception])
-  def test_print_dateTime(): Unit = {
+  test("test_print_dateTime") {
     buf.append("EXISTING")
     val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "EXISTINGhello")
   }
 
-  @throws(classOf[Exception])
-  def test_print_emptyAppendable(): Unit = {
+  test("test_print_emptyAppendable") {
     val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     pp.print(printContext, buf)
     assertEquals(buf.toString, "hello")
   }
 
-  @throws(classOf[Exception])
-  def test_toString(): Unit = {
+  test("test_toString") {
     val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
     assertEquals(pp.toString, "'hello'")
   }
 
-  @throws(classOf[Exception])
-  def test_toString_apos(): Unit = {
+  test("test_toString_apos") {
     val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("o'clock")
     assertEquals(pp.toString, "'o''clock'")
   }
