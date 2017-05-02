@@ -45,6 +45,7 @@ import java.text.FieldPosition
 import java.text.Format
 import java.text.ParseException
 import java.text.ParsePosition
+import java.lang.StringBuilder
 import java.util.{Arrays, Collections, Locale, Objects}
 
 import org.threeten.bp.DateTimeException
@@ -1126,7 +1127,7 @@ final class DateTimeFormatter private[format](private val printerParser: Composi
     * @throws DateTimeException if an error occurs during formatting
     */
   def format(temporal: TemporalAccessor): String = {
-    val buf: Appendable = new java.lang.StringBuilder(32)
+    val buf: StringBuilder = new StringBuilder(32)
     formatTo(temporal, buf)
     buf.toString
   }
@@ -1150,10 +1151,10 @@ final class DateTimeFormatter private[format](private val printerParser: Composi
     Objects.requireNonNull(appendable, "appendable")
     try {
       val context: TTBPDateTimePrintContext = new TTBPDateTimePrintContext(temporal, this)
-      if (appendable.isInstanceOf[java.lang.StringBuilder])
-        printerParser.print(context, appendable.asInstanceOf[java.lang.StringBuilder])
+      if (appendable.isInstanceOf[StringBuilder])
+        printerParser.print(context, appendable.asInstanceOf[StringBuilder])
         else {
-        val buf = new java.lang.StringBuilder(32)
+        val buf = new StringBuilder(32)
         printerParser.print(context, buf)
         appendable.append(buf)
       }

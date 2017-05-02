@@ -2,6 +2,7 @@ package org.threeten.bp.format.internal
 
 import java.math.{BigDecimal, BigInteger, RoundingMode}
 import java.util._
+import java.lang.StringBuilder
 
 import org.threeten.bp._
 import org.threeten.bp.chrono.{ChronoLocalDate, Chronology}
@@ -56,7 +57,7 @@ object TTBPDateTimeFormatterBuilder {
       * @return false if unable to query the value from the date-time, true otherwise
       * @throws DateTimeException if the date-time cannot be printed successfully
       */
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean
 
     /** Parses text into date-time information.
       *
@@ -93,7 +94,7 @@ object TTBPDateTimeFormatterBuilder {
       else
         new CompositePrinterParser(printerParsers, optional)
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val length: Int = buf.length
       if (optional)
         context.startOptional()
@@ -164,7 +165,7 @@ object TTBPDateTimeFormatterBuilder {
     */
   private[format] final class PadPrinterParserDecorator private[format](private val printerParser: DateTimePrinterParser, private val padWidth: Int, private val padChar: Char) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val preLen: Int = buf.length
       if (!printerParser.print(context, buf))
         return false
@@ -216,7 +217,7 @@ object TTBPDateTimeFormatterBuilder {
   }
 
   private[format] final class SettingsParser private(name: String, ordinal: Int) extends Enum[SettingsParser](name, ordinal) with DateTimePrinterParser {
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = true
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = true
 
     def parse(context: TTBPDateTimeParseContext, text: CharSequence, position: Int): Int = {
       ordinal match {
@@ -241,7 +242,7 @@ object TTBPDateTimeFormatterBuilder {
   /** Used by parseDefaulting(). */
   private[format] class DefaultingParser private[format](private val field: TemporalField, private val value: Long) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = true
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = true
 
     def parse(context: TTBPDateTimeParseContext, text: CharSequence, position: Int): Int = {
       if (context.getParsed(field) == null)
@@ -253,7 +254,7 @@ object TTBPDateTimeFormatterBuilder {
   /** Prints or parses a character literal. */
   final class CharLiteralPrinterParser private[format](private val literal: Char) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       buf.append(literal)
       true
     }
@@ -280,7 +281,7 @@ object TTBPDateTimeFormatterBuilder {
   /** Prints or parses a string literal. */
   private[format] final class StringLiteralPrinterParser private[format](private val literal: String) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       buf.append(literal)
       true
     }
@@ -351,7 +352,7 @@ object TTBPDateTimeFormatterBuilder {
     private[format] def withSubsequentWidth(subsequentWidth: Int): NumberPrinterParser =
       new NumberPrinterParser(field, minWidth, maxWidth, signStyle, this.subsequentWidth + subsequentWidth)
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val valueLong: java.lang.Long = context.getValue(field)
       if (valueLong == null)
         return false
@@ -661,7 +662,7 @@ object TTBPDateTimeFormatterBuilder {
     if (maxWidth < minWidth)
       throw new IllegalArgumentException(s"Maximum width must exceed or equal the minimum width but $maxWidth < $minWidth")
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val value: java.lang.Long = context.getValue(field)
       if (value == null) {
         return false
@@ -804,7 +805,7 @@ object TTBPDateTimeFormatterBuilder {
 
 
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val value: java.lang.Long = context.getValue(field)
       if (value == null) {
         return false
@@ -863,7 +864,7 @@ object TTBPDateTimeFormatterBuilder {
 
   private[format] final class InstantPrinterParser private[format](private val fractionalDigits: Int) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val inSecs: java.lang.Long = context.getValue(ChronoField.INSTANT_SECONDS)
       var inNanos: Long = 0L
       if (context.getTemporal.isSupported(ChronoField.NANO_OF_SECOND))
@@ -1003,7 +1004,7 @@ object TTBPDateTimeFormatterBuilder {
       throw new IllegalArgumentException(s"Invalid zone offset pattern: $pattern")
     }
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val offsetSecs: java.lang.Long = context.getValue(ChronoField.OFFSET_SECONDS)
       if (offsetSecs == null) {
         return false
@@ -1114,7 +1115,7 @@ object TTBPDateTimeFormatterBuilder {
   /** Prints or parses a localized offset. */
   private[format] final class LocalizedOffsetPrinterParser(private val style: TextStyle) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val offsetSecs: java.lang.Long = context.getValue(ChronoField.OFFSET_SECONDS)
       if (offsetSecs == null) {
         return false
@@ -1231,7 +1232,7 @@ object TTBPDateTimeFormatterBuilder {
   private[format] final class ZoneTextPrinterParser private[format](private val textStyle: TextStyle) extends DateTimePrinterParser {
     Objects.requireNonNull(textStyle, "textStyle")
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val zone: ZoneId = context.getValue(TemporalQueries.zoneId)
       if (zone == null)
         return false
@@ -1369,7 +1370,7 @@ object TTBPDateTimeFormatterBuilder {
 
   private[format] final class ZoneIdPrinterParser private[format](private val query: TemporalQuery[ZoneId], private val description: String) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val zone: ZoneId = context.getValue(query)
       if (zone == null)
         false
@@ -1500,7 +1501,7 @@ object TTBPDateTimeFormatterBuilder {
     */
   private[format] final class ChronoPrinterParser private[format](private val textStyle: TextStyle) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val chrono: Chronology = context.getValue(TemporalQueries.chronology)
       if (chrono == null)
         return false
@@ -1552,7 +1553,7 @@ object TTBPDateTimeFormatterBuilder {
     */
   private[format] final class LocalizedPrinterParser private[format](private val dateStyle: FormatStyle, private val timeStyle: FormatStyle) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val chrono = Chronology.from(context.getTemporal)
       formatter(context.getLocale, chrono).toPrinterParser(false).print(context, buf)
     }
@@ -1578,7 +1579,7 @@ object TTBPDateTimeFormatterBuilder {
   /** Prints or parses a localized pattern. */
   private[format] final class WeekFieldsPrinterParser(private val letter: Char, private val count: Int) extends DateTimePrinterParser {
 
-    def print(context: TTBPDateTimePrintContext, buf: java.lang.StringBuilder): Boolean = {
+    def print(context: TTBPDateTimePrintContext, buf: StringBuilder): Boolean = {
       val weekFields: WeekFields = WeekFields.of(context.getLocale)
       val pp: DateTimePrinterParser = evaluate(weekFields)
       pp.print(context, buf)
@@ -1611,7 +1612,7 @@ object TTBPDateTimeFormatterBuilder {
     }
 
     override def toString: String = {
-      val sb: java.lang.StringBuilder = new java.lang.StringBuilder(30)
+      val sb: StringBuilder = new StringBuilder(30)
       sb.append("Localized(")
       if (letter == 'Y') {
         if (count == 1)

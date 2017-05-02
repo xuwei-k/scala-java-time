@@ -115,12 +115,6 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
       .replaceAll("package object bp", "package object time")
       .replaceAll("package org.threeten.bp", "package java.time")
       .replaceAll("""import org.threeten.bp(\..*)?(\.[A-Z_{][^\.]*)""", "import java.time$1$2")
-      /*.replaceAll("""import org.threeten.bp(\.[A-Z].*)""", "import java.time$1")
-      .replaceAll("import org.threeten.bp.chrono", "import java.time.chrono")
-      .replaceAll("""import org.threeten.bp.format(\.[A-Z].*)""", "import java.time.format$1")
-      .replaceAll("""import org.threeten.bp.temporal(\.[A-Z]  .*)""", "import java.time.temporal$1")
-      .replaceAll("import org.threeten.bp.zone", "import java.time.zone")
-      .replaceAll("import org.threeten.bp", "import java.time")*/
       .replaceAll("import zonedb.threeten", "import zonedb.java")
       .replaceAll("private\\s*\\[bp\\]", "private[time]")
   }

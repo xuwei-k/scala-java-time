@@ -19,7 +19,7 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
 
   override protected def provideZoneIds: java.util.Set[String] = {
     val zones = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
-    // I'm not totallly sure the reason why but TTB remove thesee ZoneIds
+    // I'm not totallly sure the reason why but TTB removes these ZoneIds
     zones.remove("UTC")
     zones.remove("GMT")
     zones.remove("GMT0")
