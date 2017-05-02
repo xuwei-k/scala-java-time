@@ -64,7 +64,7 @@ object TimeZone {
 
   def getAvailableIDs: Array[String] = ZoneRulesProvider.getAvailableZoneIds.asScala.toArray
   def getAvailableIDs(offsetMillis: Int): Array[String] =
-    getAvailableIDs.view.map(getTimeZone).filter(_.getRawOffset == offsetMillis).map(_.getID).toArray
+    getAvailableIDs.filter(getTimeZone(_).getRawOffset == offsetMillis)
 
 }
 
@@ -93,13 +93,23 @@ abstract class TimeZone extends Serializable with Cloneable {
     if (style != TimeZone.SHORT || style != TimeZone.LONG)
       throw new IllegalArgumentException(s"Illegal timezone style: $style")
 
+    // Safely looks up given index in the array
+    def atIndex(strs: Array[String], idx: Int): Option[String] = {
+      if (idx >= 0 && idx < strs.length) Option(strs(idx))
+      else None
+    }
+
     val id = getID
-    val zoneName = DateFormatSymbols.getInstance(locale).getZoneStrings.find(_(0) == id).flatMap { strs =>
+    def currentIdStrings(strs: Array[String]): Boolean =
+      atIndex(strs, 0).contains(id)
+
+    val zoneStrings = DateFormatSymbols.getInstance(locale).getZoneStrings
+    val zoneName = zoneStrings.find(currentIdStrings).flatMap { strs =>
       (daylight, style) match {
-        case (false, TimeZone.LONG)  => Option(strs(1))
-        case (false, TimeZone.SHORT) => Option(strs(2))
-        case (true,  TimeZone.LONG)  => Option(strs(3))
-        case (true,  TimeZone.SHORT) => Option(strs(4))
+        case (false, TimeZone.LONG)  => atIndex(strs, 1)
+        case (false, TimeZone.SHORT) => atIndex(strs, 2)
+        case (true,  TimeZone.LONG)  => atIndex(strs, 3)
+        case (true,  TimeZone.SHORT) => atIndex(strs, 4)
         case _                       => None
       }
     }
