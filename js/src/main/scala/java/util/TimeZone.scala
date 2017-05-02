@@ -57,8 +57,8 @@ object TimeZone {
 
   def getTimeZone(timeZone: String): TimeZone = getTimeZone(ZoneId.of(timeZone))
   def getTimeZone(zoneId: ZoneId): TimeZone   = {
-    val rules = ZoneRulesProvider.getRules(zoneId.getId, forCaching = true)
-    val offsetInMillis = rules.getOffset(Instant.now).getTotalSeconds * 1000
+    val rules = zoneId.getRules
+    val offsetInMillis = rules.getStandardOffset(Instant.now).getTotalSeconds * 1000
     new SimpleTimeZone(offsetInMillis, zoneId.getId)
   }
 
@@ -90,7 +90,7 @@ abstract class TimeZone extends Serializable with Cloneable {
   }
 
   def getDisplayName(daylight: Boolean, style: Int, locale: Locale): String = {
-    if (style != TimeZone.SHORT || style != TimeZone.LONG)
+    if (style != TimeZone.SHORT && style != TimeZone.LONG)
       throw new IllegalArgumentException(s"Illegal timezone style: $style")
 
     // Safely looks up given index in the array
