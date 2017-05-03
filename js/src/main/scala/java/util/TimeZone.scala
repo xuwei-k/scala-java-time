@@ -101,7 +101,7 @@ abstract class TimeZone extends Serializable with Cloneable {
 
     val id = getID
     def currentIdStrings(strs: Array[String]): Boolean =
-      atIndex(strs, 0).contains(id)
+      atIndex(strs, 0).exists(_ == id)
 
     val zoneStrings = DateFormatSymbols.getInstance(locale).getZoneStrings
     val zoneName = zoneStrings.find(currentIdStrings).flatMap { strs =>
