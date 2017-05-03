@@ -338,7 +338,7 @@ trait ChronoLocalDate extends Temporal with TemporalAdjuster with Ordered[Chrono
 
   override def minus(amountToSubtract: Long, unit: TemporalUnit): ChronoLocalDate = getChronology.ensureChronoLocalDate(super.minus(amountToSubtract, unit))
 
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     query match {
       case TemporalQueries.chronology => getChronology.asInstanceOf[R]
       case TemporalQueries.precision  => ChronoUnit.DAYS.asInstanceOf[R]
@@ -346,7 +346,7 @@ trait ChronoLocalDate extends Temporal with TemporalAdjuster with Ordered[Chrono
       case TemporalQueries.localTime
          | TemporalQueries.zone
          | TemporalQueries.zoneId
-         | TemporalQueries.offset     => null
+         | TemporalQueries.offset     => null.asInstanceOf[R]
       case _                          => super.query (query)
     }
 

@@ -29,27 +29,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.temporal
+package org.threeten.bp.format
 
-import org.threeten.bp.DateTimeException
+import java.io.IOException
 
-/** Mock simple date-time with one field-value. */
-final class MockFieldValue(private val field: TemporalField, private val value: Long) extends TemporalAccessor {
+/** Mock Appendable that throws IOException. */
+class MockIOExceptionAppendable extends Appendable {
+  def append(csq: CharSequence): Appendable = {
+    throw new IOException
+  }
 
-  def isSupported(field: TemporalField): Boolean = field != null && (field == this.field)
+  def append(c: Char): Appendable = {
+    throw new IOException
+  }
 
-  override def range(field: TemporalField): ValueRange =
-    if (field.isInstanceOf[ChronoField])
-      if (isSupported(field))
-        field.range
-      else
-        throw new DateTimeException("Unsupported field: " + field)
-    else
-      field.rangeRefinedBy(this)
-
-  def getLong(field: TemporalField): Long =
-    if (this.field == field)
-      value
-    else
-      throw new DateTimeException("Unsupported field: " + field)
+  def append(csq: CharSequence, start: Int, end: Int): Appendable = {
+    throw new IOException
+  }
 }

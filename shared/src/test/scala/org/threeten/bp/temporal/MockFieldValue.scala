@@ -29,45 +29,32 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.format
+package org.threeten.bp.temporal
 
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import org.threeten.bp.DateTimeException
 
-/** Test CharLiteralPrinterParser. */
-@Test class TestCharLiteralPrinter extends AbstractTestPrinterParser {
-  @throws(classOf[Exception])
-  def test_print_emptyCalendrical(): Unit = {
-    buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
-    pp.print(printEmptyContext, buf)
-    assertEquals(buf.toString, "EXISTINGa")
-  }
+/** Mock simple date-time with one field-value. */
+final class MockFieldValue(private val field: TemporalField, private val value: Long) extends TemporalAccessor {
 
-  @throws(classOf[Exception])
-  def test_print_dateTime(): Unit = {
-    buf.append("EXISTING")
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
-    pp.print(printContext, buf)
-    assertEquals(buf.toString, "EXISTINGa")
-  }
+  def isSupported(field: TemporalField): Boolean = field != null && (field == this.field)
 
-  @throws(classOf[Exception])
-  def test_print_emptyAppendable(): Unit = {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
-    pp.print(printContext, buf)
-    assertEquals(buf.toString, "a")
-  }
+  override def range(field: TemporalField): ValueRange =
+    if (field.isInstanceOf[ChronoField])
+      if (isSupported(field))
+        field.range
+      else
+        throw new DateTimeException("Unsupported field: " + field)
+    else
+      field.rangeRefinedBy(this)
 
-  @throws(classOf[Exception])
-  def test_toString(): Unit = {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('a')
-    assertEquals(pp.toString, "'a'")
-  }
+  def getLong(field: TemporalField): Long =
+    if (this.field == field)
+      value
+    else
+      throw new DateTimeException("Unsupported field: " + field)
 
-  @throws(classOf[Exception])
-  def test_toString_apos(): Unit = {
-    val pp: DateTimeFormatterBuilder.CharLiteralPrinterParser = new DateTimeFormatterBuilder.CharLiteralPrinterParser('\'')
-    assertEquals(pp.toString, "''")
-  }
+  override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
+
+  override def query[R](query: TemporalQuery[R]) =
+    query.queryFrom(this)
 }

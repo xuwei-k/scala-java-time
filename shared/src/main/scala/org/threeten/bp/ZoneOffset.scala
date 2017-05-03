@@ -514,11 +514,11 @@ final class ZoneOffset private(private val totalSeconds: Int) extends ZoneId wit
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     if ((query eq TemporalQueries.offset) || (query eq TemporalQueries.zone))
       this.asInstanceOf[R]
     else if ((query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime) || (query eq TemporalQueries.precision) || (query eq TemporalQueries.chronology) || (query eq TemporalQueries.zoneId))
-      null
+      null.asInstanceOf[R]
     else
       query.queryFrom(this)
 

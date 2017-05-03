@@ -1035,7 +1035,7 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     * @throws DateTimeException if unable to query (defined by the query)
     * @throws ArithmeticException if numeric overflow occurs (defined by the query)
     */
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     query match {
       case TemporalQueries.precision  => ChronoUnit.NANOS.asInstanceOf[R]
       case TemporalQueries.localTime  => this.asInstanceOf[R]
@@ -1043,7 +1043,7 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
          | TemporalQueries.zoneId
          | TemporalQueries.zone
          | TemporalQueries.offset
-         | TemporalQueries.localDate  => null
+         | TemporalQueries.localDate  => null.asInstanceOf[R]
       case _                          => query.queryFrom(this)
     }
 

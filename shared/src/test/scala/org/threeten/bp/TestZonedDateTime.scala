@@ -574,7 +574,7 @@ class TestZonedDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
         TEST_DATE_TIME_PARIS.toLocalDateTime.getLong(field)
       }
 
-      @SuppressWarnings(Array("unchecked")) override def query[R >: Null](query: TemporalQuery[R]): R = {
+      @SuppressWarnings(Array("unchecked")) override def query[R](query: TemporalQuery[R]): R = {
         if (query eq TemporalQueries.zoneId) {
           return TEST_DATE_TIME_PARIS.getZone.asInstanceOf[R]
         }
@@ -593,7 +593,7 @@ class TestZonedDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
         TEST_DATE_TIME_PARIS.toInstant.getLong(field)
       }
 
-      @SuppressWarnings(Array("unchecked")) override def query[R >: Null](query: TemporalQuery[R]): R = {
+      @SuppressWarnings(Array("unchecked")) override def query[R](query: TemporalQuery[R]): R = {
         if (query eq TemporalQueries.zoneId) {
           return TEST_DATE_TIME_PARIS.getZone.asInstanceOf[R]
         }

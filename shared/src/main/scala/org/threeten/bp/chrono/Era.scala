@@ -32,9 +32,18 @@
 package org.threeten.bp.chrono
 
 import java.util.Locale
-import org.threeten.bp.format.{DateTimeFormatterBuilder, TextStyle}
-import org.threeten.bp.temporal.ChronoField._
-import org.threeten.bp.temporal._
+import org.threeten.bp.format.DateTimeFormatterBuilder
+import org.threeten.bp.format.TextStyle
+import org.threeten.bp.temporal.Temporal
+import org.threeten.bp.temporal.TemporalQueries
+import org.threeten.bp.temporal.TemporalQuery
+import org.threeten.bp.temporal.TemporalAccessor
+import org.threeten.bp.temporal.TemporalAdjuster
+import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.temporal.ChronoField
+import org.threeten.bp.temporal.ChronoField.ERA
+import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
 /** An era of the time-line.
   *
@@ -103,7 +112,7 @@ trait Era extends TemporalAccessor with TemporalAdjuster {
 
   def adjustInto(temporal: Temporal): Temporal = temporal.`with`(ERA, getValue)
 
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     query match {
       case TemporalQueries.precision  => ChronoUnit.ERAS.asInstanceOf[R]
       case TemporalQueries.chronology
@@ -111,7 +120,7 @@ trait Era extends TemporalAccessor with TemporalAdjuster {
          | TemporalQueries.zoneId
          | TemporalQueries.offset
          | TemporalQueries.localDate
-         | TemporalQueries.localTime  => null
+         | TemporalQueries.localTime  => null.asInstanceOf[R]
       case _                          => query.queryFrom(this)
     }
 }

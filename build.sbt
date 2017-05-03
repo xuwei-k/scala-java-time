@@ -114,7 +114,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
       .replaceAll("package org.threeten$", "package java")
       .replaceAll("package object bp", "package object time")
       .replaceAll("package org.threeten.bp", "package java.time")
-      .replaceAll("import org.threeten.bp", "import java.time")
+      .replaceAll("""import org.threeten.bp(\..*)?(\.[A-Z_{][^\.]*)""", "import java.time$1$2")
       .replaceAll("import zonedb.threeten", "import zonedb.java")
       .replaceAll("private\\s*\\[bp\\]", "private[time]")
   }

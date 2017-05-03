@@ -1,6 +1,13 @@
 package org.threeten.bp.zone
 
-import org.threeten.bp._
+import org.threeten.bp.LocalTime
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Month
+import org.threeten.bp.DateTimeException
+
 import scala.scalajs.js
 
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
@@ -10,7 +17,16 @@ final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   private val stdZonesMap = stdZones.asInstanceOf[js.Dictionary[js.Dynamic]].toMap
   private val fixedZonesMap = fixedZones.asInstanceOf[js.Dictionary[Int]].toMap
 
-  override protected def provideZoneIds: java.util.Set[String] = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
+  override protected def provideZoneIds: java.util.Set[String] = {
+    val zones = new java.util.HashSet((stdZonesMap.keySet ++ fixedZonesMap.keySet ++ zoneLinks.keySet).asJava)
+    // I'm not totallly sure the reason why but TTB removes these ZoneIds
+    zones.remove("UTC")
+    zones.remove("GMT")
+    zones.remove("GMT0")
+    zones.remove("GMT+0")
+    zones.remove("GMT-0")
+    zones
+  }
 
   private def toLocalTime(lt: Int): LocalTime =
     LocalTime.ofSecondOfDay(lt)

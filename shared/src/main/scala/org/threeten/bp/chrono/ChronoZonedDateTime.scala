@@ -306,7 +306,7 @@ trait ChronoZonedDateTime[D <: ChronoLocalDate] extends Temporal with Ordered[Ch
   override def minus(amountToSubtract: Long, unit: TemporalUnit): ChronoZonedDateTime[D] =
     toLocalDate.getChronology.ensureChronoZonedDateTime(super.minus(amountToSubtract, unit))
 
-  override def query[R >: Null](query: TemporalQuery[R]): R =
+  override def query[R](query: TemporalQuery[R]): R =
     query match {
       case TemporalQueries.zoneId
          | TemporalQueries.zone       => getZone.asInstanceOf[R]

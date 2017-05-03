@@ -31,7 +31,6 @@
  */
 package org.threeten.bp.chrono
 
-
 import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH
 import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR
 import org.threeten.bp.temporal.ChronoField.ALIGNED_WEEK_OF_MONTH

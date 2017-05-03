@@ -208,10 +208,10 @@ trait TemporalAccessor {
     * @throws DateTimeException if unable to query
     * @throws ArithmeticException if numeric overflow occurs
     */
-  def query[R >: Null](query: TemporalQuery[R]): R = query match {
+  def query[R](query: TemporalQuery[R]): R = query match {
     case TemporalQueries.zoneId
        | TemporalQueries.chronology
-       | TemporalQueries.precision  => null
+       | TemporalQueries.precision  => null.asInstanceOf[R]
     case _                          => query.queryFrom(this)
   }
 }

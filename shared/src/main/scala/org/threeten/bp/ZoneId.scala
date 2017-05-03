@@ -419,7 +419,7 @@ abstract class ZoneId private[bp]() extends Serializable {
     new DateTimeFormatterBuilder().appendZoneText(style).toFormatter(locale).format(new TemporalAccessor() {
       def isSupported(field: TemporalField): Boolean = false
       def getLong(field: TemporalField): Long = throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-      override def query[R >: Null](query: TemporalQuery[R]): R =
+      override def query[R](query: TemporalQuery[R]): R =
         if (query eq TemporalQueries.zoneId)
           ZoneId.this.asInstanceOf[R]
         else

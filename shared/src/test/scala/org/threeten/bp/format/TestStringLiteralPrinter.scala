@@ -31,22 +31,39 @@
  */
 package org.threeten.bp.format
 
-import java.io.IOException
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
-/** Mock Appendable that throws IOException. */
-class MockIOExceptionAppendable extends Appendable {
-  @throws(classOf[IOException])
-  def append(csq: CharSequence): Appendable = {
-    throw new IOException
+/** Test StringLiteralPrinterParser. */
+class TestStringLiteralPrinter extends FunSuite with GenTestPrinterParser with AssertionsHelper {
+  test("test_print_emptyCalendrical") {
+    buf.append("EXISTING")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    pp.print(printEmptyContext, buf)
+    assertEquals(buf.toString, "EXISTINGhello")
   }
 
-  @throws(classOf[IOException])
-  def append(c: Char): Appendable = {
-    throw new IOException
+  test("test_print_dateTime") {
+    buf.append("EXISTING")
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    pp.print(printContext, buf)
+    assertEquals(buf.toString, "EXISTINGhello")
   }
 
-  @throws(classOf[IOException])
-  def append(csq: CharSequence, start: Int, end: Int): Appendable = {
-    throw new IOException
+  test("test_print_emptyAppendable") {
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    pp.print(printContext, buf)
+    assertEquals(buf.toString, "hello")
+  }
+
+  test("test_toString") {
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("hello")
+    assertEquals(pp.toString, "'hello'")
+  }
+
+  test("test_toString_apos") {
+    val pp: TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser = new TTBPDateTimeFormatterBuilder.StringLiteralPrinterParser("o'clock")
+    assertEquals(pp.toString, "'o''clock'")
   }
 }

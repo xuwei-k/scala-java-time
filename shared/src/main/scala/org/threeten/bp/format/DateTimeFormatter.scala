@@ -45,17 +45,21 @@ import java.text.FieldPosition
 import java.text.Format
 import java.text.ParseException
 import java.text.ParsePosition
-import java.util.{Objects, Arrays, Collections, Locale}
 import java.lang.StringBuilder
+import java.util.{Arrays, Collections, Locale, Objects}
+
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.Period
 import org.threeten.bp.ZoneId
 import org.threeten.bp.chrono.Chronology
 import org.threeten.bp.chrono.IsoChronology
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder.CompositePrinterParser
 import org.threeten.bp.temporal.IsoFields
 import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQuery
+import org.threeten.bp.format.internal.TTBPDateTimeParseContext
+import org.threeten.bp.format.internal.TTBPDateTimePrintContext
 
 object DateTimeFormatter {
   /** Returns the ISO date formatter that prints/parses a date without an offset,
@@ -765,7 +769,7 @@ object DateTimeFormatter {
 
     def parseObject(text: String, pos: ParsePosition): AnyRef = {
       Objects.requireNonNull(text, "text")
-      var unresolved: DateTimeParseContext#Parsed = null
+      var unresolved: TTBPDateTimeParseContext#Parsed = null
       try unresolved = formatter.parseUnresolved0(text, pos)
       catch {
         case ex: IndexOutOfBoundsException =>
@@ -833,7 +837,7 @@ object DateTimeFormatter {
   * @param chrono  the chronology to use, null for no override
   * @param zone  the zone to use, null for no override
   */
-final class DateTimeFormatter private[format](private val printerParser: DateTimeFormatterBuilder.CompositePrinterParser,
+final class DateTimeFormatter private[format](private val printerParser: CompositePrinterParser,
                                               private val locale: Locale,
                                               private val decimalStyle: DecimalStyle,
                                               private val resolverStyle: ResolverStyle,
@@ -1146,11 +1150,11 @@ final class DateTimeFormatter private[format](private val printerParser: DateTim
     Objects.requireNonNull(temporal, "temporal")
     Objects.requireNonNull(appendable, "appendable")
     try {
-      val context: DateTimePrintContext = new DateTimePrintContext(temporal, this)
+      val context: TTBPDateTimePrintContext = new TTBPDateTimePrintContext(temporal, this)
       if (appendable.isInstanceOf[StringBuilder])
         printerParser.print(context, appendable.asInstanceOf[StringBuilder])
         else {
-        val buf: StringBuilder = new StringBuilder(32)
+        val buf = new StringBuilder(32)
         printerParser.print(context, buf)
         appendable.append(buf)
       }
@@ -1281,7 +1285,7 @@ final class DateTimeFormatter private[format](private val printerParser: DateTim
     * @throws IllegalArgumentException if less than 2 types are specified
     * @throws DateTimeParseException if unable to parse the requested result
     */
-  def parseBest(text: CharSequence, types: TemporalQuery[_]*): TemporalAccessor = {
+  @scala.annotation.varargs def parseBest(text: CharSequence, types: TemporalQuery[_]*): TemporalAccessor = {
     Objects.requireNonNull(text, "text")
     Objects.requireNonNull(types, "types")
     if (types.length < 2) {
@@ -1326,7 +1330,7 @@ final class DateTimeFormatter private[format](private val printerParser: DateTim
     */
   private def parseToBuilder(text: CharSequence, position: ParsePosition): DateTimeBuilder = {
     val pos: ParsePosition = if (position != null) position else new ParsePosition(0)
-    val result: DateTimeParseContext#Parsed = parseUnresolved0(text, pos)
+    val result: TTBPDateTimeParseContext#Parsed = parseUnresolved0(text, pos)
     if (result == null || pos.getErrorIndex >= 0 || (position == null && pos.getIndex < text.length)) {
       var abbr: String = ""
       if (text.length > 64)
@@ -1382,10 +1386,10 @@ final class DateTimeFormatter private[format](private val printerParser: DateTim
   def parseUnresolved(text: CharSequence, position: ParsePosition): TemporalAccessor =
     parseUnresolved0(text, position)
 
-  private def parseUnresolved0(text: CharSequence, position: ParsePosition): DateTimeParseContext#Parsed = {
+  private def parseUnresolved0(text: CharSequence, position: ParsePosition): TTBPDateTimeParseContext#Parsed = {
     Objects.requireNonNull(text, "text")
     Objects.requireNonNull(position, "position")
-    val context: DateTimeParseContext = new DateTimeParseContext(this)
+    val context: TTBPDateTimeParseContext = new TTBPDateTimeParseContext(this)
     var pos: Int = position.getIndex
     pos = printerParser.parse(context, text, pos)
     if (pos < 0) {
@@ -1401,7 +1405,7 @@ final class DateTimeFormatter private[format](private val printerParser: DateTim
     * @param optional  whether the printer/parser should be optional
     * @return the printer/parser, not null
     */
-  private[format] def toPrinterParser(optional: Boolean): DateTimeFormatterBuilder.CompositePrinterParser =
+  private[format] def toPrinterParser(optional: Boolean): CompositePrinterParser =
     printerParser.withOptional(optional)
 
   /** Returns this formatter as a {@code java.text.Format} instance.
