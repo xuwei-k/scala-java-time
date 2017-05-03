@@ -60,6 +60,7 @@ import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
 import org.threeten.bp.temporal.ChronoField.OFFSET_SECONDS
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
 import org.threeten.bp.temporal.ChronoField.YEAR
+import org.threeten.bp.temporal.ValueRange
 
 /** Test DateTimeFormatters. */
 object TestDateTimeFormatters {
@@ -120,9 +121,9 @@ object TestDateTimeFormatters {
       else
         null.asInstanceOf[R]
 
-    override def get(field: TemporalField): scala.Int = ???
+    override def get(field: TemporalField): scala.Int = range(field).checkValidIntValue(getLong(field), field)
 
-    override def range(field: TemporalField) = ???
+    override def range(field: TemporalField): ValueRange = field.range
 
     override def toString: String = fields + (if (zoneId != null) " " + zoneId else "")
   }
@@ -881,9 +882,9 @@ class TestDateTimeFormatters extends FunSuite with GenTestPrinterParser with Ass
 
       override def query[R](query: TemporalQuery[R]): R = null.asInstanceOf[R]
 
-      override def get(field: TemporalField): scala.Int = ???
+      override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
 
-      override def range(field: TemporalField) = ???
+      override def range(field: TemporalField): ValueRange = field.range
     }
     assertEquals(DateTimeFormatter.ISO_ORDINAL_DATE.format(test), "2008-231")
   }
