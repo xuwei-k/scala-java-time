@@ -744,6 +744,8 @@ final class ZonedDateTime(private val dateTime: LocalDateTime, private val offse
     this
   }
 
+  override def compareTo(other: ChronoZonedDateTime[_]): Int = super.compare(other)
+
   /** Gets the time-zone, such as 'Europe/Paris'.
     *
     * This returns the zone ID. This identifies the time-zone {@link ZoneRules rules}

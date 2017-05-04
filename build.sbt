@@ -161,10 +161,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     sourceGenerators in Test += Def.task {
         val srcDirs = (sourceDirectories in Test).value
         val destinationDir = (sourceManaged in Test).value
-        copyAndReplace(srcDirs, destinationDir).filterNot { f =>
-          // I can't get this test to compile on both JVM and JS
-          f.name.contains("TestDateTimeTextPrinting.scala") || f.name.contains("TestZonedDateTime")
-        }
+        copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
     parallelExecution in Test := false,
     libraryDependencies ++= Seq(

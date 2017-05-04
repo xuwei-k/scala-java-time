@@ -29,17 +29,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.format
+package org.threeten.bp.format.internal
 
 import java.util.Locale
+import java.lang.Long
 import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.format.TextStyle
 
-private[format] object DateTimeTextProvider {
+private[format] object TTBPDateTimeTextProvider {
   /** Gets the provider.
     *
     * @return the provider, not null
     */
-  private[format] def getInstance: DateTimeTextProvider = new SimpleDateTimeTextProvider
+  private[format] def getInstance: TTBPDateTimeTextProvider = new TTBPSimpleDateTimeTextProvider
 }
 
 /** The Service Provider Interface (SPI) to be implemented by classes providing
@@ -50,8 +52,8 @@ private[format] object DateTimeTextProvider {
   * Implementations must be thread-safe.
   * Implementations should cache the textual information.
   */
-abstract class DateTimeTextProvider {
-  /** Gets the available locales.
+abstract class TTBPDateTimeTextProvider {
+  /** Gets the availabte locales.
     *
     * @return the locales
     */

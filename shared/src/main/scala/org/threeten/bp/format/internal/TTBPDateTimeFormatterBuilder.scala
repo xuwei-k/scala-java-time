@@ -3,6 +3,7 @@ package org.threeten.bp.format.internal
 import java.math.{BigDecimal, BigInteger, RoundingMode}
 import java.util._
 import java.lang.StringBuilder
+import java.lang.Long
 
 import org.threeten.bp._
 import org.threeten.bp.chrono.{ChronoLocalDate, Chronology}
@@ -358,7 +359,7 @@ object TTBPDateTimeFormatterBuilder {
         return false
       val value: Long = getValue(context, valueLong)
       val symbols: DecimalStyle = context.getSymbols
-      var str: String = if (value == Long.MinValue) "9223372036854775808" else Math.abs(value).toString
+      var str: String = if (value == scala.Long.MinValue) "9223372036854775808" else Math.abs(value).toString
       if (str.length > maxWidth)
         throw new DateTimeException(s"Field $field cannot be printed as the value $value exceeds the maximum print width of $maxWidth")
       str = symbols.convertNumberToI18N(str)
@@ -796,7 +797,7 @@ object TTBPDateTimeFormatterBuilder {
     * @param textStyle  the text style, not null
     * @param provider  the text provider, not null
     */
-  private[format] final class TextPrinterParser private[format](private val field: TemporalField, private val textStyle: TextStyle, private val provider: DateTimeTextProvider) extends DateTimePrinterParser {
+  private[format] final class TextPrinterParser private[format](private val field: TemporalField, private val textStyle: TextStyle, private val provider: TTBPDateTimeTextProvider) extends DateTimePrinterParser {
     /** The cached number printer parser.
       * Immutable and volatile, so no synchronization needed.
       */

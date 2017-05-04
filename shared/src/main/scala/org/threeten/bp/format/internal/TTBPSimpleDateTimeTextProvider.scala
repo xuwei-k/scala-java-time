@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.format
+package org.threeten.bp.format.internal
 
 import org.threeten.bp.temporal.ChronoField.AMPM_OF_DAY
 import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
@@ -42,11 +42,13 @@ import java.util.GregorianCalendar
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import java.lang.Long
 
 import org.threeten.bp.temporal.IsoFields
 import org.threeten.bp.temporal.TemporalField
+import org.threeten.bp.format.TextStyle
 
-private object SimpleDateTimeTextProvider {
+object TTBPSimpleDateTimeTextProvider {
   /** Cache. */
   private val CACHE: ConcurrentMap[java.util.Map.Entry[TemporalField, Locale], AnyRef] =
     new ConcurrentHashMap[java.util.Map.Entry[TemporalField, Locale], AnyRef](16, 0.75f, 2)
@@ -66,12 +68,12 @@ private object SimpleDateTimeTextProvider {
   private def createEntry[A, B](text: A, field: B): java.util.Map.Entry[A, B] =
     new java.util.AbstractMap.SimpleImmutableEntry[A, B](text, field)
 
-  private def createLocaleStore(valueTextMap: java.util.Map[TextStyle, java.util.Map[Long, String]]): SimpleDateTimeTextProvider.LocaleStore = {
+  private def createLocaleStore(valueTextMap: java.util.Map[TextStyle, java.util.Map[Long, String]]): TTBPSimpleDateTimeTextProvider.LocaleStore = {
     valueTextMap.put(TextStyle.FULL_STANDALONE, valueTextMap.get(TextStyle.FULL))
     valueTextMap.put(TextStyle.SHORT_STANDALONE, valueTextMap.get(TextStyle.SHORT))
     if (valueTextMap.containsKey(TextStyle.NARROW) && !valueTextMap.containsKey(TextStyle.NARROW_STANDALONE))
       valueTextMap.put(TextStyle.NARROW_STANDALONE, valueTextMap.get(TextStyle.NARROW))
-    new SimpleDateTimeTextProvider.LocaleStore(valueTextMap)
+    new TTBPSimpleDateTimeTextProvider.LocaleStore(valueTextMap)
   }
 
   /** Stores the text for a single locale.
@@ -147,33 +149,33 @@ private object SimpleDateTimeTextProvider {
   * <h3>Specification for implementors</h3>
   * This class is immutable and thread-safe.
   */
-final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
+final class TTBPSimpleDateTimeTextProvider extends TTBPDateTimeTextProvider {
   /** {@inheritDoc} */
   override def getAvailableLocales: Array[Locale] = DateFormatSymbols.getAvailableLocales
 
-  def getText(field: TemporalField, value: Long, style: TextStyle, locale: Locale): String = {
+  override def getText(field: TemporalField, value: Long, style: TextStyle, locale: Locale): String = {
     val store: AnyRef = findStore(field, locale)
-    if (store.isInstanceOf[SimpleDateTimeTextProvider.LocaleStore])
-      store.asInstanceOf[SimpleDateTimeTextProvider.LocaleStore].getText(value, style)
+    if (store.isInstanceOf[TTBPSimpleDateTimeTextProvider.LocaleStore])
+      store.asInstanceOf[TTBPSimpleDateTimeTextProvider.LocaleStore].getText(value, style)
     else
       null
   }
 
-  def getTextIterator(field: TemporalField, style: TextStyle, locale: Locale): java.util.Iterator[java.util.Map.Entry[String, Long]] = {
+  override def getTextIterator(field: TemporalField, style: TextStyle, locale: Locale): java.util.Iterator[java.util.Map.Entry[String, Long]] = {
     val store: AnyRef = findStore(field, locale)
-    if (store.isInstanceOf[SimpleDateTimeTextProvider.LocaleStore])
-      store.asInstanceOf[SimpleDateTimeTextProvider.LocaleStore].getTextIterator(style)
+    if (store.isInstanceOf[TTBPSimpleDateTimeTextProvider.LocaleStore])
+      store.asInstanceOf[TTBPSimpleDateTimeTextProvider.LocaleStore].getTextIterator(style)
     else
       null
   }
 
   private def findStore(field: TemporalField, locale: Locale): AnyRef = {
-    val key: java.util.Map.Entry[TemporalField, Locale] = SimpleDateTimeTextProvider.createEntry(field, locale)
-    var store: AnyRef = SimpleDateTimeTextProvider.CACHE.get(key)
+    val key: java.util.Map.Entry[TemporalField, Locale] = TTBPSimpleDateTimeTextProvider.createEntry(field, locale)
+    var store: AnyRef = TTBPSimpleDateTimeTextProvider.CACHE.get(key)
     if (store == null) {
       store = createStore(field, locale)
-      SimpleDateTimeTextProvider.CACHE.putIfAbsent(key, store)
-      store = SimpleDateTimeTextProvider.CACHE.get(key)
+      TTBPSimpleDateTimeTextProvider.CACHE.putIfAbsent(key, store)
+      store = TTBPSimpleDateTimeTextProvider.CACHE.get(key)
     }
     store
   }
@@ -238,7 +240,7 @@ final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
       map.put(f11, array(Calendar.NOVEMBER))
       map.put(f12, array(Calendar.DECEMBER))
       styleMap.put(TextStyle.SHORT, map)
-      return SimpleDateTimeTextProvider.createLocaleStore(styleMap)
+      return TTBPSimpleDateTimeTextProvider.createLocaleStore(styleMap)
     }
     if (field eq DAY_OF_WEEK) {
       val oldSymbols: DateFormatSymbols = DateFormatSymbols.getInstance(locale)
@@ -279,7 +281,7 @@ final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
       map.put(f6, array(Calendar.SATURDAY))
       map.put(f7, array(Calendar.SUNDAY))
       styleMap.put(TextStyle.SHORT, map)
-      return SimpleDateTimeTextProvider.createLocaleStore(styleMap)
+      return TTBPSimpleDateTimeTextProvider.createLocaleStore(styleMap)
     }
     if (field eq AMPM_OF_DAY) {
       val oldSymbols: DateFormatSymbols = DateFormatSymbols.getInstance(locale)
@@ -290,7 +292,7 @@ final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
       map.put(1L, array(Calendar.PM))
       styleMap.put(TextStyle.FULL, map)
       styleMap.put(TextStyle.SHORT, map)
-      return SimpleDateTimeTextProvider.createLocaleStore(styleMap)
+      return TTBPSimpleDateTimeTextProvider.createLocaleStore(styleMap)
     }
     if (field eq ERA) {
       val oldSymbols: DateFormatSymbols = DateFormatSymbols.getInstance(locale)
@@ -313,7 +315,7 @@ final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
       map.put(0L, array(GregorianCalendar.BC).substring(0, 1))
       map.put(1L, array(GregorianCalendar.AD).substring(0, 1))
       styleMap.put(TextStyle.NARROW, map)
-      return SimpleDateTimeTextProvider.createLocaleStore(styleMap)
+      return TTBPSimpleDateTimeTextProvider.createLocaleStore(styleMap)
     }
     if (field eq IsoFields.QUARTER_OF_YEAR) {
       val styleMap: java.util.Map[TextStyle, java.util.Map[Long, String]] = new java.util.HashMap[TextStyle, java.util.Map[Long, String]]
@@ -329,7 +331,7 @@ final class SimpleDateTimeTextProvider extends DateTimeTextProvider {
       map.put(3L, "3rd quarter")
       map.put(4L, "4th quarter")
       styleMap.put(TextStyle.FULL, map)
-      return SimpleDateTimeTextProvider.createLocaleStore(styleMap)
+      return TTBPSimpleDateTimeTextProvider.createLocaleStore(styleMap)
     }
     ""
   }

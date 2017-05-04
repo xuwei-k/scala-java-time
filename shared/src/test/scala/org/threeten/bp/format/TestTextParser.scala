@@ -41,10 +41,11 @@ import java.util.Locale
 import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.format.internal.{TTBPDateTimeFormatterBuilder, TTBPDateTimeParseContext}
+import org.threeten.bp.format.internal.TTBPDateTimeTextProvider
 
 /** Test TextPrinterParser. */
 object TestTextParser {
-  private val PROVIDER: DateTimeTextProvider = DateTimeTextProvider.getInstance
+  private val PROVIDER: TTBPDateTimeTextProvider = TTBPDateTimeTextProvider.getInstance
 }
 
 class TestTextParser extends FunSuite with GenTestPrinterParser with AssertionsHelper {
