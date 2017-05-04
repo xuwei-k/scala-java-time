@@ -105,7 +105,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   // Copy the source files from the base project, exclude classes on java.util and dirs
   val generatedFiles: List[java.io.File] = onlyScalaDirs.foldLeft(Set.empty[File]) { (files, sourceDir) =>
     files ++ copyDirectory(sourceDir, destinationDir, overwrite = true)
-  }.filterNot(_.isDirectory).filterNot(_.getParentFile.getName == "util").toList
+  }.filterNot(_.isDirectory).filter(_.getName.endsWith(".scala")).filterNot(_.getParentFile.getName == "util").toList
 
   // These replacements will in practice rename all the classes from
   // org.threeten to java.time
