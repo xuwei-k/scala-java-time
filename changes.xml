@@ -3,10 +3,17 @@
 <document>
   <properties>
     <title>Changes</title>
+    <author>Carlos Quiroz (Scala port and maintainer)</author>
     <author>Simon Ochsenreither (Scala port)</author>
     <author>Stephen Colebourne (Java version)</author>
   </properties>
   <body>
+    <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M11" date="2017-04-16" description="v2.0.0-M11">
+      <action dev="alonsodomin" type="update" >
+        Support localized timezone names
+      </action>
+    </release>
     <!-- types are add, fix, remove, update -->
     <release version="2.0.0-M10" date="2017-04-16" description="v2.0.0-M10">
       <action dev="cquiroz" type="update" >
