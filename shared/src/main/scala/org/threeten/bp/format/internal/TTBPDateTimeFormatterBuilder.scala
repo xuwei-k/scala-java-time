@@ -15,9 +15,6 @@ import org.threeten.bp.zone.ZoneRulesProvider
 
 import scala.annotation.tailrec
 
-/**
-  * Created by cquiroz on 4/25/17.
-  */
 object TTBPDateTimeFormatterBuilder {
   /** Strategy for printing/parsing date-time information.
     *

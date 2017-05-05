@@ -111,3 +111,9 @@ Thus, this project is a fork of the original code before entry to OpenJDK.
 ##### What is the relation to [this](https://github.com/soc/scala-java-time/) project
 
 This is a fork from the original [project](https://github.com/soc/scala-java-time/) aim to complete the API to work on Scala.js
+
+##### Are there are differences with the Java Time API?
+
+The project aims to be an exact port of the java time API to scala.
+The only differences are classes not on the official java API but still present as private, e.g. `DateTimeTextProvider`
+in the format package that have been moved to the `internal` package to ease compatibility across versions
