@@ -47,7 +47,6 @@ import org.threeten.bp.Month.SEPTEMBER
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition.STANDARD
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition.UTC
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition.WALL
-import org.testng.annotations.Test
 import org.threeten.bp._
 
 /** Test ZoneRulesBuilder. */
@@ -717,34 +716,44 @@ class TestZoneRulesBuilder extends FunSuite with AssertionsHelper {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_addRuleToWindow_illegalYear1(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(Year.MIN_VALUE - 1, 2008, MARCH, -1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalYear1") {
+    assertThrows[DateTimeException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(Year.MIN_VALUE - 1, 2008, MARCH, -1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_addRuleToWindow_illegalYear2(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, Year.MIN_VALUE - 1, MARCH, -1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalYear2") {
+    assertThrows[DateTimeException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, Year.MIN_VALUE - 1, MARCH, -1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_illegalDayOfMonth_tooSmall(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, 2008, MARCH, -29, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalDayOfMonth_tooSmall") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, 2008, MARCH, -29, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_illegalDayOfMonth_zero(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, 2008, MARCH, 0, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalDayOfMonth_zero") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, 2008, MARCH, 0, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_illegalDayOfMonth_tooLarge(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, 2008, MARCH, 32, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalDayOfMonth_tooLarge") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, 2008, MARCH, 32, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
   test("addRuleToWindow_nullMonth") {
@@ -763,10 +772,12 @@ class TestZoneRulesBuilder extends FunSuite with AssertionsHelper {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_illegalEndOfDayTime(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, 2008, MARCH, 1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = true, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_illegalEndOfDayTime") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, 2008, MARCH, 1, SUNDAY, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = true, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
   test("addRuleToWindow_nullTimeDefinition") {
@@ -837,28 +848,36 @@ class TestZoneRulesBuilder extends FunSuite with AssertionsHelper {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_addRuleToWindow_singleYear_illegalYear(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(Year.MIN_VALUE - 1, MARCH, 31, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_singleYear_illegalYear") {
+    assertThrows[DateTimeException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(Year.MIN_VALUE - 1, MARCH, 31, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_singleYear_illegalDayOfMonth_tooSmall(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, MARCH, -29, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_singleYear_illegalDayOfMonth_tooSmall") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, MARCH, -29, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_singleYear_illegalDayOfMonth_zero(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, MARCH, 0, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_singleYear_illegalDayOfMonth_zero") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, MARCH, 0, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[IllegalArgumentException])) def test_addRuleToWindow_singleYear_illegalDayOfMonth_tooLarge(): Unit = {
-    val b: ZoneRulesBuilder = new ZoneRulesBuilder
-    b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
-    b.addRuleToWindow(2000, MARCH, 32, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+  test("test_addRuleToWindow_singleYear_illegalDayOfMonth_tooLarge") {
+    assertThrows[IllegalArgumentException] {
+      val b: ZoneRulesBuilder = new ZoneRulesBuilder
+      b.addWindowForever(TestZoneRulesBuilder.OFFSET_1)
+      b.addRuleToWindow(2000, MARCH, 32, TestZoneRulesBuilder.time(1, 0), timeEndOfDay = false, WALL, TestZoneRulesBuilder.PERIOD_1HOUR30MIN)
+    }
   }
 
   test("addRuleToWindow_singleYear_nullMonth") {

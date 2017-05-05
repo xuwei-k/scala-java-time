@@ -31,8 +31,6 @@
  */
 package org.threeten.bp
 
-import org.testng.annotations.Test
-
 import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
 import org.threeten.bp.temporal.TemporalAdjusters.previousOrSame
 import org.threeten.bp.format.DateTimeFormatter
