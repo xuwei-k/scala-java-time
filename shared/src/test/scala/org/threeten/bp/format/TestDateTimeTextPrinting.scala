@@ -32,6 +32,7 @@
 package org.threeten.bp.format
 
 import java.util.Locale
+import java.lang.Long
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.threeten.bp.{AssertionsHelper, LocalDateTime, Month}

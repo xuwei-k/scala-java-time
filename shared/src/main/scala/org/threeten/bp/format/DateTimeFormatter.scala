@@ -47,6 +47,7 @@ import java.text.ParseException
 import java.text.ParsePosition
 import java.lang.StringBuilder
 import java.util.{Arrays, Collections, Locale, Objects}
+import java.lang.Long
 
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.Period

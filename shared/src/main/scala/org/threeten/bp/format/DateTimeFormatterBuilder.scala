@@ -31,18 +31,12 @@
  */
 package org.threeten.bp.format
 
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.{Collections, Comparator, Locale, MissingResourceException, Objects, ResourceBundle, TimeZone}
+import java.util.{Collections, Comparator, Locale, Objects}
 import java.lang.StringBuilder
+import java.lang.Long
 
-import org.threeten.bp.DateTimeException
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.chrono.ChronoLocalDate
@@ -53,13 +47,9 @@ import org.threeten.bp.temporal.TemporalAccessor
 import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalQuery
-import org.threeten.bp.temporal.ValueRange
-import org.threeten.bp.temporal.WeekFields
-import org.threeten.bp.zone.ZoneRulesProvider
-import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder.ZoneIdPrinterParser.SubstringTree
-import org.threeten.bp.format.internal.{TTBPDateTimeFormatterBuilder, TTBPDateTimeParseContext, TTBPDateTimePrintContext}
-
-import scala.annotation.tailrec
+import org.threeten.bp.format.internal.TTBPDateTimeTextProvider
+import org.threeten.bp.format.internal.TTBPSimpleDateTimeTextProvider
+import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
 
 object DateTimeFormatterBuilder {
   /** Query for a time-zone that is region-only. */
@@ -619,7 +609,7 @@ final class DateTimeFormatterBuilder private(private val parent: DateTimeFormatt
   def appendText(field: TemporalField, textStyle: TextStyle): DateTimeFormatterBuilder = {
     Objects.requireNonNull(field, "field")
     Objects.requireNonNull(textStyle, "textStyle")
-    appendInternal(new TTBPDateTimeFormatterBuilder.TextPrinterParser(field, textStyle, DateTimeTextProvider.getInstance))
+    appendInternal(new TTBPDateTimeFormatterBuilder.TextPrinterParser(field, textStyle, TTBPDateTimeTextProvider.getInstance))
     this
   }
 
@@ -661,8 +651,8 @@ final class DateTimeFormatterBuilder private(private val parent: DateTimeFormatt
     Objects.requireNonNull(textLookup, "textLookup")
     val copy: java.util.Map[Long, String] = new java.util.LinkedHashMap[Long, String](textLookup)
     val map: java.util.Map[TextStyle, java.util.Map[Long, String]] = Collections.singletonMap(TextStyle.FULL, copy)
-    val store: SimpleDateTimeTextProvider.LocaleStore = new SimpleDateTimeTextProvider.LocaleStore(map)
-    val provider: DateTimeTextProvider = new DateTimeTextProvider() {
+    val store: TTBPSimpleDateTimeTextProvider.LocaleStore = new TTBPSimpleDateTimeTextProvider.LocaleStore(map)
+    val provider: TTBPDateTimeTextProvider = new TTBPDateTimeTextProvider() {
       def getText(field: TemporalField, value: Long, style: TextStyle, locale: Locale): String = {
         store.getText(value, style)
       }

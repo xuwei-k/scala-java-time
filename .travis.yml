@@ -40,6 +40,7 @@ cache:
     - $HOME/.sbt/boot
 
 script:
+  - sudo chmod +x /usr/local/bin/sbt
   - sbt ++$TRAVIS_SCALA_VERSION clean scalajavatimeJVM/test scalajavatimeJS/test scalajavatimeJVM/publishLocal scalajavatimeJS/publishLocal docs/makeMicrosite
   # Tricks to avoid unnecessary cache updates, from
   # http://www.scala-sbt.org/0.13/docs/Travis-CI-with-sbt.html

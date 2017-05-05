@@ -41,12 +41,13 @@ import org.threeten.bp.AssertionsHelper
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.internal.TTBPDateTimeFormatterBuilder
+import org.threeten.bp.format.internal.TTBPDateTimeTextProvider
 import org.threeten.bp.temporal.MockFieldValue
 import org.threeten.bp.temporal.TemporalField
 
 /** Test TextPrinterParser. */
 object TestTextPrinter {
-  private val PROVIDER: DateTimeTextProvider = DateTimeTextProvider.getInstance
+  private val PROVIDER: TTBPDateTimeTextProvider = TTBPDateTimeTextProvider.getInstance
 }
 
 class TestTextPrinter extends FunSuite with GenTestPrinterParser with AssertionsHelper {

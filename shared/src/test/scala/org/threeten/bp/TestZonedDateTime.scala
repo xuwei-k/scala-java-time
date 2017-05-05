@@ -80,6 +80,8 @@ import org.threeten.bp.temporal.TemporalAdjuster
 import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalQueries
 import org.threeten.bp.temporal.TemporalQuery
+import org.threeten.bp.temporal.ValueRange
+import org.threeten.bp.temporal.UnsupportedTemporalTypeException
 
 /** Test ZonedDateTime. */
 object TestZonedDateTime {
@@ -578,8 +580,18 @@ class TestZonedDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
         if (query eq TemporalQueries.zoneId) {
           return TEST_DATE_TIME_PARIS.getZone.asInstanceOf[R]
         }
-        super.query(query)
+        query.queryFrom(this)
       }
+
+      override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
+
+      override def range(field: TemporalField): ValueRange =
+        if (field.isInstanceOf[ChronoField])
+          if (isSupported(field)) field.range
+          else throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+        else
+          field.rangeRefinedBy(this)
+
     }), TEST_DATE_TIME_PARIS)
   }
 
@@ -597,8 +609,17 @@ class TestZonedDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
         if (query eq TemporalQueries.zoneId) {
           return TEST_DATE_TIME_PARIS.getZone.asInstanceOf[R]
         }
-        super.query(query)
+        query.queryFrom(this)
       }
+
+      override def get(field: TemporalField): Int = range(field).checkValidIntValue(getLong(field), field)
+
+      override def range(field: TemporalField): ValueRange =
+        if (field.isInstanceOf[ChronoField])
+          if (isSupported(field)) field.range
+          else throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+        else
+          field.rangeRefinedBy(this)
     }), TEST_DATE_TIME_PARIS)
   }
 
