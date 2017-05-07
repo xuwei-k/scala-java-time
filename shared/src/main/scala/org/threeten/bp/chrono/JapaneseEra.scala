@@ -73,9 +73,9 @@ object JapaneseEra {
   /**
     * The value of the additional era.
     */
-  private val ADDITIONAL_VALUE: Int = 3
+  private[chrono] val ADDITIONAL_VALUE: Int = 3
 
-  private val KNOWN_ERAS: AtomicReference[Array[JapaneseEra]] = new AtomicReference(Array(MEIJI, TAISHO, SHOWA, HEISEI))
+  private[chrono] val KNOWN_ERAS: AtomicReference[Array[JapaneseEra]] = new AtomicReference(Array(MEIJI, TAISHO, SHOWA, HEISEI))
 
   /** Obtains an instance of {@code JapaneseEra} from an {@code int} value.
     *
@@ -151,33 +151,6 @@ object JapaneseEra {
   @throws[IOException]
   private[chrono] def readExternal(in: DataInput): JapaneseEra = JapaneseEra.of(in.readByte)
 
-  /**
-    * Registers an additional instance of {@code JapaneseEra}.
-    * <p>
-    * A new Japanese era can begin at any time.
-    * This method allows one new era to be registered without the need for a new library version.
-    * If needed, callers should assign the result to a static variable accessible
-    * across the application. This must be done once, in early startup code.
-    * <p>
-    * NOTE: This method does not exist in Java SE 8.
-    *
-    * @param since the date representing the first date of the era, validated not null
-    * @param name  the name
-    * @return the { @code JapaneseEra} singleton, not null
-    * @throws DateTimeException if an additional era has already been registered
-    */
-    def registerEra(since: LocalDate, name: String): JapaneseEra = {
-      val known = KNOWN_ERAS.get
-      if (known.length > 4) throw new DateTimeException("Only one additional Japanese era can be added")
-      require(since != null)
-      require(name != null)
-      if (!since.isAfter(HEISEI.since)) throw new DateTimeException("Invalid since date for additional Japanese era, must be after Heisei")
-      val era = new JapaneseEra(ADDITIONAL_VALUE, since, name)
-      val newArray = Arrays.copyOf(known, 5)
-      newArray(4) = era
-      if (!KNOWN_ERAS.compareAndSet(known, newArray)) throw new DateTimeException("Only one additional Japanese era can be added")
-      era
-    }
 }
 
 /** An era in the Japanese Imperial calendar system.
@@ -199,7 +172,7 @@ object JapaneseEra {
   * @param since  the date representing the first date of the era, validated not null
   */
 @SerialVersionUID(1466499369062886794L)
-final class JapaneseEra private(private val eraValue: Int, @(transient @field) private val since: LocalDate, @(transient @field) private val name: String) extends Era with Serializable {
+final class JapaneseEra private[chrono](private val eraValue: Int, @(transient @field) private[chrono] val since: LocalDate, @(transient @field) private val name: String) extends Era with Serializable {
 
   /** Returns the singleton {@code JapaneseEra} corresponding to this object.
     * It's possible that this version of {@code JapaneseEra} doesn't support the latest era value.
