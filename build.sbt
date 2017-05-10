@@ -1,5 +1,4 @@
 import sbt._
-import io.github.soc.testng.{TestNGPlugin, TestNGScalaJSPlugin}
 import TZDBTasks._
 
 enablePlugins(MicrositesPlugin)
@@ -128,8 +127,6 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
 }
 
 lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
-  .jvmConfigure(_.enablePlugins(TestNGPlugin))
-  .jsConfigure(_.enablePlugins(TestNGScalaJSPlugin))
   .settings(commonSettings: _*)
   .jvmSettings(
     resolvers += Resolver.sbtPluginRepo("releases"),
@@ -138,8 +135,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
     baseDirectory in Test := baseDirectory.value.getParentFile,
     // Use CLDR provider for locales
     // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR"),
-    TestNGPlugin.testNGSuites := Seq(((resourceDirectory in Test).value / "testng.xml").absolutePath)
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
   ).jsSettings(
     tzDbSettings: _*
   ).jsSettings(
