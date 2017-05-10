@@ -754,6 +754,8 @@ final class Year private(private val year: Int) extends TemporalAccessor with Te
     */
   def compare(other: Year): Int = year - other.year
 
+  override def compareTo(other: Year): Int = compare(other)
+
   /** Is this year after the specified year.
     *
     * @param other  the other year to compare to, not null

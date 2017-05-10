@@ -31,13 +31,9 @@
  */
 package org.threeten.bp.temporal
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.fail
-import org.testng.SkipException
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
-
+import org.scalatest.FunSuite
+import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.Platform
 import org.threeten.bp.temporal.ChronoField.ERA
 import org.threeten.bp.temporal.ChronoField.YEAR
 import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
@@ -53,55 +49,37 @@ object TestYear {
   private val TEST_2008: Year = Year.of(2008)
 }
 
-@Test class TestYear extends AbstractDateTimeTest {
-  @BeforeMethod def setUp(): Unit = {
+class TestYear extends GenDateTimeTest {
+  protected def samples: List[TemporalAccessor] =
+    List(TestYear.TEST_2008)
+
+  protected def validFields: List[TemporalField] =
+    List(YEAR_OF_ERA, YEAR, ERA)
+
+  protected def invalidFields: List[TemporalField] = {
+    val list: List[TemporalField] = List(ChronoField.values: _*)
+    (list :+ JulianFields.JULIAN_DAY :+ JulianFields.MODIFIED_JULIAN_DAY :+ JulianFields.RATA_DIE).filterNot(validFields.contains)
   }
 
-  protected def samples: java.util.List[TemporalAccessor] = {
-    val array: Array[TemporalAccessor] = Array(TestYear.TEST_2008)
-    Arrays.asList(array: _*)
+  ignore("test_immutable") {
+    //throw new SkipException("private constructor shows up public due to companion object")
+    //AbstractTest.assertImmutable(classOf[Year])
   }
 
-  protected def validFields: java.util.List[TemporalField] = {
-    val array: Array[TemporalField] = Array(YEAR_OF_ERA, YEAR, ERA)
-    Arrays.asList(array: _*)
-  }
-
-  protected def invalidFields: java.util.List[TemporalField] = {
-    val list: java.util.List[TemporalField] = new java.util.ArrayList[TemporalField](Arrays.asList[TemporalField](ChronoField.values: _*))
-    list.removeAll(validFields)
-    list.add(JulianFields.JULIAN_DAY)
-    list.add(JulianFields.MODIFIED_JULIAN_DAY)
-    list.add(JulianFields.RATA_DIE)
-    list
-  }
-
-  @Test def test_immutable(): Unit = {
-    throw new SkipException("private constructor shows up public due to companion object")
-    AbstractTest.assertImmutable(classOf[Year])
-  }
-
-  @Test
-  @throws(classOf[ClassNotFoundException])
-  @throws(classOf[IOException])
-  def test_serialization(): Unit = {
+  /*
+  test("test_serialization") {
     AbstractTest.assertSerializable(Year.of(-1))
   }
 
-  @Test
-  @throws(classOf[ClassNotFoundException])
-  @throws(classOf[IOException])
-  def test_serialization_format(): Unit = {
+  test("test_serialization_format") {
     AbstractTest.assertEqualsSerialisedForm(Year.of(2012))
-  }
+  }*/
 
-  @Test def now(): Unit = {
+  test("now") {
     var expected: Year = Year.now(Clock.systemDefaultZone)
     var test: Year = Year.now
     var i: Int = 0
-    while (i < 100) {
-      if (expected == test)
-        return
+    while (i < 100 && (expected != test)) {
       expected = Year.now(Clock.systemDefaultZone)
       test = Year.now
       i += 1
@@ -109,18 +87,18 @@ object TestYear {
     assertEquals(test, expected)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def now_ZoneId_nullZoneId(): Unit = {
-    Year.now(null.asInstanceOf[ZoneId])
+  test("now_ZoneId_nullZoneId") {
+    assertThrows[NullPointerException] {
+      Year.now(null.asInstanceOf[ZoneId])
+    }
   }
 
-  @Test def now_ZoneId(): Unit = {
+  test("now_ZoneId") {
     val zone: ZoneId = ZoneId.of("UTC+01:02:03")
     var expected: Year = Year.now(Clock.system(zone))
     var test: Year = Year.now(zone)
     var i: Int = 0
-    while (i < 100) {
-      if (expected == test)
-        return
+    while (i < 100 && (expected == test)) {
       expected = Year.now(Clock.system(zone))
       test = Year.now(zone)
       i += 1
@@ -128,18 +106,20 @@ object TestYear {
     assertEquals(test, expected)
   }
 
-  @Test def now_Clock(): Unit = {
+  test("now_Clock") {
     val instant: Instant = LocalDateTime.of(2010, 12, 31, 0, 0).toInstant(ZoneOffset.UTC)
     val clock: Clock = Clock.fixed(instant, ZoneOffset.UTC)
     val test: Year = Year.now(clock)
     assertEquals(test.getValue, 2010)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def now_Clock_nullClock(): Unit = {
-    Year.now(null.asInstanceOf[Clock])
+  test("now_Clock_nullClock") {
+    assertThrows[NullPointerException] {
+      Year.now(null.asInstanceOf[Clock])
+    }
   }
 
-  @Test def test_factory_int_singleton(): Unit = {
+  test("test_factory_int_singleton") {
     var i: Int = -4
     while (i <= 2104) {
       val test: Year = Year.of(i)
@@ -149,90 +129,138 @@ object TestYear {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_int_tooLow(): Unit = {
-    Year.of(Year.MIN_VALUE - 1)
+  test("test_factory_int_tooLow") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MIN_VALUE - 1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_int_tooHigh(): Unit = {
-    Year.of(Year.MAX_VALUE + 1)
+  test("test_factory_int_tooHigh") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MAX_VALUE + 1)
+    }
   }
 
-  @Test def test_factory_CalendricalObject(): Unit = {
+  test("test_factory_CalendricalObject") {
     assertEquals(Year.from(LocalDate.of(2007, 7, 15)), Year.of(2007))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_factory_CalendricalObject_invalid_noDerive(): Unit = {
-    Year.from(LocalTime.of(12, 30))
-  }
-
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_factory_CalendricalObject_null(): Unit = {
-    Year.from(null.asInstanceOf[TemporalAccessor])
-  }
-
-  @DataProvider(name = "goodParseData") private[temporal] def provider_goodParseData: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array("0000", Year.of(0)), Array("9999", Year.of(9999)), Array("2000", Year.of(2000)), Array("+12345678", Year.of(12345678)), Array("+123456", Year.of(123456)), Array("-1234", Year.of(-1234)), Array("-12345678", Year.of(-12345678)), Array("+" + Year.MAX_VALUE, Year.of(Year.MAX_VALUE)), Array("" + Year.MIN_VALUE, Year.of(Year.MIN_VALUE)))
-  }
-
-  @Test(dataProvider = "goodParseData") def factory_parse_success(text: String, expected: Year): Unit = {
-    val year: Year = Year.parse(text)
-    assertEquals(year, expected)
-  }
-
-  @DataProvider(name = "badParseData") private[temporal] def provider_badParseData: Array[Array[Any]] = {
-    Array[Array[Any]](Array("", 0), Array("-00", 1), Array("--01-0", 1), Array("A01", 0), Array("200", 0), Array("2009/12", 4), Array("-0000-10", 0), Array("-12345678901-10", 11), Array("+1-10", 1), Array("+12-10", 1), Array("+123-10", 1), Array("+1234-10", 0), Array("12345-10", 0), Array("+12345678901-10", 11))
-  }
-
-  @Test(dataProvider = "badParseData", expectedExceptions = Array(classOf[DateTimeParseException])) def factory_parse_fail(text: String, pos: Int): Unit = {
-    try {
-      Year.parse(text)
-      fail(f"Parse should have failed for $text%s at position $pos%d")
-    }
-    catch {
-      case ex: DateTimeParseException =>
-        assertEquals(ex.getParsedString, text)
-        assertEquals(ex.getErrorIndex, pos)
-        throw ex
+  test("test_factory_CalendricalObject_invalid_noDerive") {
+    assertThrows[DateTimeException] {
+      Year.from(LocalTime.of(12, 30))
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_nullText(): Unit = {
-    Year.parse(null)
+  test("test_factory_CalendricalObject_null") {
+    assertThrows[NullPointerException] {
+      Year.from(null.asInstanceOf[TemporalAccessor])
+    }
   }
 
-  @Test def factory_parse_formatter(): Unit = {
+  val provider_goodParseData: List[(String, Year)] = {
+    List(
+      ("0000", Year.of(0)),
+      ("9999", Year.of(9999)),
+      ("2000", Year.of(2000)),
+      ("+12345678", Year.of(12345678)),
+      ("+123456", Year.of(123456)),
+      ("-1234", Year.of(-1234)),
+      ("-12345678", Year.of(-12345678)),
+      ("+" + Year.MAX_VALUE, Year.of(Year.MAX_VALUE)),
+      ("" + Year.MIN_VALUE, Year.of(Year.MIN_VALUE)))
+  }
+
+  test("factory_parse_success") {
+    provider_goodParseData.foreach {
+      case (text, expected) =>
+        val year: Year = Year.parse(text)
+        assertEquals(year, expected)
+    }
+  }
+
+  val provider_badParseData: List[(String, Int)] = {
+    List(
+      ("", 0),
+      ("-00", 1),
+      ("--01-0", 1),
+      ("A01", 0),
+      ("200", 0),
+      ("2009/12", 4),
+      ("-0000-10", 0),
+      ("-12345678901-10", 11),
+      ("+1-10", 1),
+      ("+12-10", 1),
+      ("+123-10", 1),
+      ("+1234-10", 0),
+      ("12345-10", 0),
+      ("+12345678901-10", 11))
+  }
+
+  test("factory_parse_fail") {
+    provider_badParseData.foreach {
+      case (text, pos) =>
+        try {
+          Year.parse(text)
+          fail(f"Parse should have failed for $text%s at position $pos%d")
+        }
+        catch {
+          case ex: DateTimeParseException =>
+            assertEquals(ex.getParsedString, text)
+            assertEquals(ex.getErrorIndex, pos)
+        }
+    }
+  }
+
+  test("factory_parse_nullText") {
+    assertThrows[NullPointerException] {
+      Year.parse(null)
+    }
+  }
+
+  test("factory_parse_formatter") {
     val f: DateTimeFormatter = DateTimeFormatter.ofPattern("u")
     val test: Year = Year.parse("2010", f)
     assertEquals(test, Year.of(2010))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_formatter_nullText(): Unit = {
-    val f: DateTimeFormatter = DateTimeFormatter.ofPattern("u")
-    Year.parse(null.asInstanceOf[String], f)
+  test("factory_parse_formatter_nullText") {
+    assertThrows[NullPointerException] {
+      val f: DateTimeFormatter = DateTimeFormatter.ofPattern("u")
+      Year.parse(null.asInstanceOf[String], f)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def factory_parse_formatter_nullFormatter(): Unit = {
-    Year.parse("ANY", null)
+  test("factory_parse_formatter_nullFormatter") {
+    assertThrows[NullPointerException] {
+      Year.parse("ANY", null)
+    }
   }
 
-  @Test def test_get_DateTimeField(): Unit = {
+  test("test_get_DateTimeField") {
     assertEquals(TestYear.TEST_2008.getLong(ChronoField.YEAR), 2008)
     assertEquals(TestYear.TEST_2008.getLong(ChronoField.YEAR_OF_ERA), 2008)
     assertEquals(TestYear.TEST_2008.getLong(ChronoField.ERA), 1)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_get_DateTimeField_null(): Unit = {
-    TestYear.TEST_2008.getLong(null.asInstanceOf[TemporalField])
+  test("test_get_DateTimeField_null") {
+    assertThrows[Platform.NPE] {
+      TestYear.TEST_2008.getLong(null.asInstanceOf[TemporalField])
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_get_DateTimeField_invalidField(): Unit = {
-    TestYear.TEST_2008.getLong(MockFieldNoValue.INSTANCE)
+  test("test_get_DateTimeField_invalidField") {
+    assertThrows[DateTimeException] {
+      TestYear.TEST_2008.getLong(MockFieldNoValue.INSTANCE)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_get_DateTimeField_timeField(): Unit = {
-    TestYear.TEST_2008.getLong(ChronoField.AMPM_OF_DAY)
+  test("test_get_DateTimeField_timeField") {
+    assertThrows[DateTimeException] {
+      TestYear.TEST_2008.getLong(ChronoField.AMPM_OF_DAY)
+    }
   }
 
-  @Test def test_isLeap(): Unit = {
+  test("test_isLeap") {
     assertEquals(Year.of(1999).isLeap, false)
     assertEquals(Year.of(2000).isLeap, true)
     assertEquals(Year.of(2001).isLeap, false)
@@ -266,7 +294,7 @@ object TestYear {
     assertEquals(Year.of(500).isLeap, false)
   }
 
-  @Test def test_plusYears(): Unit = {
+  test("test_plusYears") {
     assertEquals(Year.of(2007).plusYears(-1), Year.of(2006))
     assertEquals(Year.of(2007).plusYears(0), Year.of(2007))
     assertEquals(Year.of(2007).plusYears(1), Year.of(2008))
@@ -277,33 +305,41 @@ object TestYear {
     assertEquals(Year.of(Year.MIN_VALUE).plusYears(0), Year.of(Year.MIN_VALUE))
   }
 
-  @Test def test_plusYear_zero_equals(): Unit = {
+  test("test_plusYear_zero_equals") {
     val base: Year = Year.of(2007)
     assertEquals(base.plusYears(0), base)
   }
 
-  @Test def test_plusYears_big(): Unit = {
+  test("test_plusYears_big") {
     val years: Long = 20L + Year.MAX_VALUE
     assertEquals(Year.of(-40).plusYears(years), Year.of((-40L + years).toInt))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_plusYears_max(): Unit = {
-    Year.of(Year.MAX_VALUE).plusYears(1)
+  test("test_plusYears_max") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MAX_VALUE).plusYears(1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_plusYears_maxLots(): Unit = {
-    Year.of(Year.MAX_VALUE).plusYears(1000)
+  test("test_plusYears_maxLots") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MAX_VALUE).plusYears(1000)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_plusYears_min(): Unit = {
-    Year.of(Year.MIN_VALUE).plusYears(-1)
+  test("test_plusYears_min") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MIN_VALUE).plusYears(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_plusYears_minLots(): Unit = {
-    Year.of(Year.MIN_VALUE).plusYears(-1000)
+  test("test_plusYears_minLots") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MIN_VALUE).plusYears(-1000)
+    }
   }
 
-  @Test def test_minusYears(): Unit = {
+  test("test_minusYears") {
     assertEquals(Year.of(2007).minusYears(-1), Year.of(2008))
     assertEquals(Year.of(2007).minusYears(0), Year.of(2007))
     assertEquals(Year.of(2007).minusYears(1), Year.of(2006))
@@ -314,33 +350,41 @@ object TestYear {
     assertEquals(Year.of(Year.MIN_VALUE).minusYears(0), Year.of(Year.MIN_VALUE))
   }
 
-  @Test def test_minusYear_zero_equals(): Unit = {
+  test("test_minusYear_zero_equals") {
     val base: Year = Year.of(2007)
     assertEquals(base.minusYears(0), base)
   }
 
-  @Test def test_minusYears_big(): Unit = {
+  test("test_minusYears_big") {
     val years: Long = 20L + Year.MAX_VALUE
     assertEquals(Year.of(40).minusYears(years), Year.of((40L - years).toInt))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_minusYears_max(): Unit = {
-    Year.of(Year.MAX_VALUE).minusYears(-1)
+  test("test_minusYears_max") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MAX_VALUE).minusYears(-1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_minusYears_maxLots(): Unit = {
-    Year.of(Year.MAX_VALUE).minusYears(-1000)
+  test("test_minusYears_maxLots") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MAX_VALUE).minusYears(-1000)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_minusYears_min(): Unit = {
-    Year.of(Year.MIN_VALUE).minusYears(1)
+  test("test_minusYears_min") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MIN_VALUE).minusYears(1)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_minusYears_minLots(): Unit = {
-    Year.of(Year.MIN_VALUE).minusYears(1000)
+  test("test_minusYears_minLots") {
+    assertThrows[DateTimeException] {
+      Year.of(Year.MIN_VALUE).minusYears(1000)
+    }
   }
 
-  @Test def test_adjustDate(): Unit = {
+  test("test_adjustDate") {
     val base: LocalDate = LocalDate.of(2007, 2, 12)
     var i: Int = -4
     while (i <= 2104) {
@@ -350,17 +394,19 @@ object TestYear {
     }
   }
 
-  @Test def test_adjustDate_resolve(): Unit = {
+  test("test_adjustDate_resolve") {
     val test: Year = Year.of(2011)
     assertEquals(test.adjustInto(LocalDate.of(2012, 2, 29)), LocalDate.of(2011, 2, 28))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_adjustDate_nullLocalDate(): Unit = {
-    val test: Year = Year.of(1)
-    test.adjustInto(null.asInstanceOf[LocalDate])
+  test("test_adjustDate_nullLocalDate") {
+    assertThrows[NullPointerException] {
+      val test: Year = Year.of(1)
+      test.adjustInto(null.asInstanceOf[LocalDate])
+    }
   }
 
-  @Test def test_length(): Unit = {
+  test("test_length") {
     assertEquals(Year.of(1999).length, 365)
     assertEquals(Year.of(2000).length, 366)
     assertEquals(Year.of(2001).length, 365)
@@ -394,63 +440,75 @@ object TestYear {
     assertEquals(Year.of(500).length, 365)
   }
 
-  @Test def test_isValidMonthDay_june(): Unit = {
+  test("test_isValidMonthDay_june") {
     val test: Year = Year.of(2007)
     val monthDay: MonthDay = MonthDay.of(6, 30)
     assertEquals(test.isValidMonthDay(monthDay), true)
   }
 
-  @Test def test_isValidMonthDay_febNonLeap(): Unit = {
+  test("test_isValidMonthDay_febNonLeap") {
     val test: Year = Year.of(2007)
     val monthDay: MonthDay = MonthDay.of(2, 29)
     assertEquals(test.isValidMonthDay(monthDay), false)
   }
 
-  @Test def test_isValidMonthDay_febLeap(): Unit = {
+  test("test_isValidMonthDay_febLeap") {
     val test: Year = Year.of(2008)
     val monthDay: MonthDay = MonthDay.of(2, 29)
     assertEquals(test.isValidMonthDay(monthDay), true)
   }
 
-  @Test def test_isValidMonthDay_null(): Unit = {
+  test("test_isValidMonthDay_null") {
     val test: Year = Year.of(2008)
     assertEquals(test.isValidMonthDay(null), false)
   }
 
-  @Test def test_atMonth(): Unit = {
+  test("test_atMonth") {
     val test: Year = Year.of(2008)
     assertEquals(test.atMonth(Month.JUNE), YearMonth.of(2008, 6))
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_atMonth_nullMonth(): Unit = {
-    val test: Year = Year.of(2008)
-    test.atMonth(null.asInstanceOf[Month])
+  test("test_atMonth_nullMonth") {
+    assertThrows[NullPointerException] {
+      val test: Year = Year.of(2008)
+      test.atMonth(null.asInstanceOf[Month])
+    }
   }
 
-  @Test def test_atMonth_int(): Unit = {
+  test("test_atMonth_int") {
     val test: Year = Year.of(2008)
     assertEquals(test.atMonth(6), YearMonth.of(2008, 6))
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_atMonth_int_invalidMonth(): Unit = {
-    val test: Year = Year.of(2008)
-    test.atMonth(13)
+  test("test_atMonth_int_invalidMonth") {
+    assertThrows[DateTimeException] {
+      val test: Year = Year.of(2008)
+      test.atMonth(13)
+    }
   }
 
-  @DataProvider(name = "atMonthDay") private[temporal] def data_atMonthDay: Array[Array[AnyRef]] = {
-    Array[Array[AnyRef]](Array(Year.of(2008), MonthDay.of(6, 30), LocalDate.of(2008, 6, 30)), Array(Year.of(2008), MonthDay.of(2, 29), LocalDate.of(2008, 2, 29)), Array(Year.of(2009), MonthDay.of(2, 29), LocalDate.of(2009, 2, 28)))
+  val data_atMonthDay: List[(Year, MonthDay, LocalDate)] =
+    List(
+      (Year.of(2008), MonthDay.of(6, 30), LocalDate.of(2008, 6, 30)),
+      (Year.of(2008), MonthDay.of(2, 29), LocalDate.of(2008, 2, 29)),
+      (Year.of(2009), MonthDay.of(2, 29), LocalDate.of(2009, 2, 28)))
+
+
+  test("test_atMonthDay") {
+    data_atMonthDay.foreach {
+      case (year, monthDay, expected) =>
+        assertEquals(year.atMonthDay(monthDay), expected)
+    }
   }
 
-  @Test(dataProvider = "atMonthDay") def test_atMonthDay(year: Year, monthDay: MonthDay, expected: LocalDate): Unit = {
-    assertEquals(year.atMonthDay(monthDay), expected)
+  test("test_atMonthDay_nullMonthDay") {
+    assertThrows[NullPointerException] {
+      val test: Year = Year.of(2008)
+      test.atMonthDay(null.asInstanceOf[MonthDay])
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_atMonthDay_nullMonthDay(): Unit = {
-    val test: Year = Year.of(2008)
-    test.atMonthDay(null.asInstanceOf[MonthDay])
-  }
-
-  @Test def test_atDay_notLeapYear(): Unit = {
+  test("test_atDay_notLeapYear") {
     val test: Year = Year.of(2007)
     var expected: LocalDate = LocalDate.of(2007, 1, 1)
     var i: Int = 1
@@ -461,12 +519,14 @@ object TestYear {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_atDay_notLeapYear_day366(): Unit = {
-    val test: Year = Year.of(2007)
-    test.atDay(366)
+  test("test_atDay_notLeapYear_day366") {
+    assertThrows[DateTimeException] {
+      val test: Year = Year.of(2007)
+      test.atDay(366)
+    }
   }
 
-  @Test def test_atDay_leapYear(): Unit = {
+  test("test_atDay_leapYear") {
     val test: Year = Year.of(2008)
     var expected: LocalDate = LocalDate.of(2008, 1, 1)
     var i: Int = 1
@@ -477,17 +537,21 @@ object TestYear {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_atDay_day0(): Unit = {
-    val test: Year = Year.of(2007)
-    test.atDay(0)
+  test("test_atDay_day0") {
+    assertThrows[DateTimeException] {
+      val test: Year = Year.of(2007)
+      test.atDay(0)
+    }
   }
 
-  @Test(expectedExceptions = Array(classOf[DateTimeException])) def test_atDay_day367(): Unit = {
-    val test: Year = Year.of(2007)
-    test.atDay(367)
+  test("test_atDay_day367") {
+    assertThrows[DateTimeException] {
+      val test: Year = Year.of(2007)
+      test.atDay(367)
+    }
   }
 
-  @Test def test_query(): Unit = {
+  test("test_query") {
     assertEquals(TestYear.TEST_2008.query(TemporalQueries.chronology), IsoChronology.INSTANCE)
     assertEquals(TestYear.TEST_2008.query(TemporalQueries.localDate), null)
     assertEquals(TestYear.TEST_2008.query(TemporalQueries.localTime), null)
@@ -497,11 +561,13 @@ object TestYear {
     assertEquals(TestYear.TEST_2008.query(TemporalQueries.zoneId), null)
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_query_null(): Unit = {
-    TestYear.TEST_2008.query(null)
+  test("test_query_null") {
+    assertThrows[Platform.NPE] {
+      TestYear.TEST_2008.query(null)
+    }
   }
 
-  @Test def test_compareTo(): Unit = {
+  test("test_compareTo") {
     var i: Int = -4
     while (i <= 2104) {
       val a: Year = Year.of(i)
@@ -538,13 +604,15 @@ object TestYear {
     }
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def test_compareTo_nullYear(): Unit = {
-    val doy: Year = null
-    val test: Year = Year.of(1)
-    test.compareTo(doy)
+  test("test_compareTo_nullYear") {
+    assertThrows[Platform.NPE] {
+      val doy: Year = null
+      val test: Year = Year.of(1)
+      test.compareTo(doy)
+    }
   }
 
-  @Test def test_equals(): Unit = {
+  test("test_equals") {
     var i: Int = -4
     while (i <= 2104) {
       val a: Year = Year.of(i)
@@ -559,23 +627,23 @@ object TestYear {
     }
   }
 
-  @Test def test_equals_same(): Unit = {
+  test("test_equals_same") {
     val test: Year = Year.of(2011)
     assertEquals(test == test, true)
   }
 
-  @Test def test_equals_nullYear(): Unit = {
+  test("test_equals_nullYear") {
     val doy: Year = null
     val test: Year = Year.of(1)
     assertEquals(test == doy, false)
   }
 
-  @Test def test_equals_incorrectType(): Unit = {
+  test("test_equals_incorrectType") {
     val test: Year = Year.of(1)
     assertEquals(test == "Incorrect type", false)
   }
 
-  @Test def test_toString(): Unit = {
+  test("test_toString") {
     var i: Int = -4
     while (i <= 2104) {
       val a: Year = Year.of(i)
@@ -584,13 +652,15 @@ object TestYear {
     }
   }
 
-  @Test def test_format_formatter(): Unit = {
+  test("test_format_formatter") {
     val f: DateTimeFormatter = DateTimeFormatter.ofPattern("y")
     val t: String = Year.of(2010).format(f)
     assertEquals(t, "2010")
   }
 
-  @Test(expectedExceptions = Array(classOf[NullPointerException])) def format_formatter_null(): Unit = {
-    Year.of(2010).format(null)
+  test("format_formatter_null") {
+    assertThrows[NullPointerException] {
+      Year.of(2010).format(null)
+    }
   }
 }
