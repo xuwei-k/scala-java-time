@@ -35,9 +35,6 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 import java.util.Locale
 
 import org.scalatest.FunSuite
-import org.testng.SkipException
-import org.testng.annotations.{DataProvider, Test}
-import org.threeten.bp.format.DateTimeParseException
 import org.threeten.bp.temporal.ChronoUnit._
 import org.threeten.bp.temporal.TemporalUnit
 
@@ -1908,7 +1905,7 @@ class TestDuration extends FunSuite with AssertionsHelper {
     }
   }
 
-  @Test def test_equals(): Unit = {
+  test("test_equals") {
     val test5a: Duration = Duration.ofSeconds(5L, 20)
     val test5b: Duration = Duration.ofSeconds(5L, 20)
     val test5n: Duration = Duration.ofSeconds(5L, 30)

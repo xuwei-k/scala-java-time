@@ -34,8 +34,6 @@ package org.threeten.bp.format
 import org.scalatest.FunSuite
 import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
 import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.testng.annotations.DataProvider
-import org.testng.annotations.Test
 import org.threeten.bp.{AssertionsHelper, DateTimeException, LocalTime}
 import org.threeten.bp.temporal.MockFieldValue
 import org.threeten.bp.temporal.TemporalField

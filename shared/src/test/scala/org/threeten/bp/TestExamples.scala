@@ -1,11 +1,10 @@
 package org.threeten.bp
 
-import org.testng.annotations.Test
-import org.testng.Assert.assertEquals
+import org.scalatest.FunSuite
 
-@Test class TestExamples {
+class TestExamples extends FunSuite with AssertionsHelper {
 
-  @Test def testExamples: Unit = {
+  test("testExamples") {
 
     // always returns 2009-02-13T23:31:30
     val fixedClock = Clock.fixed(Instant.ofEpochSecond(1234567890L), ZoneOffset.ofHours(0))
