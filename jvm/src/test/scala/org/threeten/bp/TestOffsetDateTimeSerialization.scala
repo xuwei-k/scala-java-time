@@ -35,7 +35,7 @@ import java.lang.reflect.{Constructor, InvocationTargetException}
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-class TestOffsetDateTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
+class TestOffsetDateTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter with AbstractTest {
   private var TEST_2008_6_30_11_30_59_000000500: OffsetDateTime = null
 
   before {
@@ -43,16 +43,16 @@ class TestOffsetDateTimeSerialization extends FunSuite with AssertionsHelper wit
   }
 
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_2008_6_30_11_30_59_000000500)
-    AbstractTest.assertSerializable(OffsetDateTime.MIN)
-    AbstractTest.assertSerializable(OffsetDateTime.MAX)
+    assertSerializable(TEST_2008_6_30_11_30_59_000000500)
+    assertSerializable(OffsetDateTime.MIN)
+    assertSerializable(OffsetDateTime.MAX)
   }
 
   test("test_serialization_format") {
     val date: LocalDate = LocalDate.of(2012, 9, 16)
     val time: LocalTime = LocalTime.of(22, 17, 59, 464 * 1000000)
     val offset: ZoneOffset = ZoneOffset.of("+01:00")
-    AbstractTest.assertEqualsSerialisedForm(OffsetDateTime.of(date, time, offset))
+    assertEqualsSerialisedForm(OffsetDateTime.of(date, time, offset))
   }
 
   test("constructor_nullTime") {

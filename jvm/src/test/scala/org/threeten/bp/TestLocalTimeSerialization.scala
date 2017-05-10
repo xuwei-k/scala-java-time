@@ -39,7 +39,7 @@ import org.threeten.bp.temporal._
 
 import scala.collection.JavaConverters._
 
-class TestLocalTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
+class TestLocalTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter with AbstractTest {
   private var TEST_12_30_40_987654321: LocalTime = null
 
   before {
@@ -47,10 +47,10 @@ class TestLocalTimeSerialization extends FunSuite with AssertionsHelper with Bef
   }
 
   test("test_serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(LocalTime.of(22, 17, 59, 460 * 1000000))
+    assertEqualsSerialisedForm(LocalTime.of(22, 17, 59, 460 * 1000000))
   }
 
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_12_30_40_987654321)
+    assertSerializable(TEST_12_30_40_987654321)
   }
 }

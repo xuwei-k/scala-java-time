@@ -37,9 +37,9 @@ import org.scalatest.FunSuite
 import org.threeten.bp.{AbstractTest, AssertionsHelper}
 
 /** Test. */
-class TestValueRangeSerialization extends FunSuite with AssertionsHelper {
+class TestValueRangeSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   ignore("immutable") {
-    AbstractTest.assertImmutable(classOf[ValueRange])
+    assertImmutable(classOf[ValueRange])
   }
 
   test("serialization") {

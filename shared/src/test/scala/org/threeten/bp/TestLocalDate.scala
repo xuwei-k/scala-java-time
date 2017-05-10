@@ -373,7 +373,7 @@ class TestLocalDate extends FunSuite with GenDateTimeTest with AssertionsHelper 
   private def next(date: LocalDate): LocalDate = {
     var _date = date
     val newDayOfMonth: Int = _date.getDayOfMonth + 1
-    if (newDayOfMonth <= _date.getMonth.length(AbstractTest.isIsoLeap(_date.getYear))) {
+    if (newDayOfMonth <= _date.getMonth.length(isIsoLeap(_date.getYear))) {
       return _date.withDayOfMonth(newDayOfMonth)
     }
     _date = _date.withDayOfMonth(1)
@@ -393,7 +393,7 @@ class TestLocalDate extends FunSuite with GenDateTimeTest with AssertionsHelper 
     if (_date.getMonth eq Month.DECEMBER) {
       _date = _date.withYear(_date.getYear - 1)
     }
-    _date.withDayOfMonth(_date.getMonth.length(AbstractTest.isIsoLeap(_date.getYear)))
+    _date.withDayOfMonth(_date.getMonth.length(isIsoLeap(_date.getYear)))
   }
 
   test("factory_ofEpochDay") {
@@ -649,7 +649,7 @@ class TestLocalDate extends FunSuite with GenDateTimeTest with AssertionsHelper 
           var i: Int = 1
           while (i < m) {
             {
-              total += Month.of(i).length(AbstractTest.isIsoLeap(y))
+              total += Month.of(i).length(isIsoLeap(y))
             }
             {
               i += 1

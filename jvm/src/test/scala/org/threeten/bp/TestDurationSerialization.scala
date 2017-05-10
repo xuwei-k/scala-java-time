@@ -35,15 +35,15 @@ import java.io._
 import org.scalatest.FunSuite
 
 /** Test Duration. */
-class TestDurationSerialization extends FunSuite with AssertionsHelper {
+class TestDurationSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("serialization") {
-    AbstractTest.assertSerializable(Duration.ofHours(5))
-    AbstractTest.assertSerializable(Duration.ofHours(-5))
-    AbstractTest.assertSerializableAndSame(Duration.ZERO)
+    assertSerializable(Duration.ofHours(5))
+    assertSerializable(Duration.ofHours(-5))
+    assertSerializableAndSame(Duration.ZERO)
   }
 
   test("serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(Duration.ofSeconds(654321, 123456789))
+    assertEqualsSerialisedForm(Duration.ofSeconds(654321, 123456789))
   }
 
   test("deserialization") {

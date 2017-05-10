@@ -39,6 +39,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.Locale
 import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.AbstractTest
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.ResolverStyle
@@ -51,7 +52,7 @@ import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.TemporalUnit
 import org.threeten.bp.temporal.ValueRange
 
-class TestChronoLocalDateSerialization extends FunSuite with AssertionsHelper {
+class TestChronoLocalDateSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   val data_of_calendars: List[Chronology] = {
     List[Chronology](
       (HijrahChronology.INSTANCE),

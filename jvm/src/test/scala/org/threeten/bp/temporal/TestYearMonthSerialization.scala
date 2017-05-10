@@ -29,59 +29,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp
-
-import java.lang.reflect.{Field, Modifier}
-import java.util.{Locale, SimpleTimeZone, TimeZone}
+package org.threeten.bp.temporal
 
 import org.scalatest.FunSuite
-import org.threeten.bp.format.TextStyle
-import org.threeten.bp.temporal.TemporalAccessor
-import org.threeten.bp.zone.{ZoneOffsetTransition, ZoneRules, ZoneRulesException}
+import org.threeten.bp.temporal.ChronoField.ERA
+import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
+import org.threeten.bp.temporal.ChronoField.PROLEPTIC_MONTH
+import org.threeten.bp.temporal.ChronoField.YEAR
+import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
+import java.io.IOException
+import java.util.Arrays
+import org.threeten.bp._
+import org.threeten.bp.chrono.IsoChronology
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DateTimeParseException
 
-/** Test ZoneId. */
-object TestZoneIdSerialization {
-  private val ZONE_PARIS: ZoneId = ZoneId.of("Europe/Paris")
-  val LATEST_TZDB: String = "2010i"
-  private val OVERLAP: Int = 2
-  private val GAP: Int = 0
-}
+/** Test YearMonth. */
+class TestYearMonthSerialization extends FunSuite with AbstractTest {
+  private var TEST_2008_06: YearMonth = null
 
-class TestZoneIdSerialization extends FunSuite with AssertionsHelper with AbstractTest {
-  test("immutable") {
-    val cls: Class[ZoneId] = classOf[ZoneId]
-    assertTrue(Modifier.isPublic(cls.getModifiers))
-    val fields: Array[Field] = cls.getDeclaredFields
-    for (field <- fields) {
-      if (!Modifier.isStatic(field.getModifiers)) {
-        assertTrue(Modifier.isPrivate(field.getModifiers))
-        assertTrue(Modifier.isFinal(field.getModifiers) || (Modifier.isVolatile(field.getModifiers) && Modifier.isTransient(field.getModifiers)))
-      }
-    }
+  test("test_serialization") {
+    assertSerializable(TEST_2008_06)
   }
 
-  test("serialization_UTC") {
-    val test: ZoneId = ZoneOffset.UTC
-    assertSerializableAndSame(test)
+  test("test_serialization_format") {
+    assertEqualsSerialisedForm(YearMonth.of(2012, 9))
   }
-
-  test("serialization_fixed") {
-    val test: ZoneId = ZoneId.of("UTC+01:30")
-    assertSerializable(test)
-  }
-
-  test("serialization_Europe") {
-    val test: ZoneId = ZoneId.of("Europe/London")
-    assertSerializable(test)
-  }
-
-  test("serialization_America") {
-    val test: ZoneId = ZoneId.of("America/Chicago")
-    assertSerializable(test)
-  }
-
-  test("serialization_format") {
-    assertEqualsSerialisedForm(ZoneId.of("Europe/London"), classOf[ZoneId])
-  }
-
 }

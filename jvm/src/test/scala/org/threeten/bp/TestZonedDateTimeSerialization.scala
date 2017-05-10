@@ -39,7 +39,7 @@ import org.threeten.bp.temporal.ChronoField._
 import org.threeten.bp.temporal.ChronoUnit.{HOURS, MINUTES, NANOS, SECONDS}
 import org.threeten.bp.temporal._
 
-class TestZonedDateTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
+class TestZonedDateTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter with AbstractTest {
   private var TEST_PARIS_GAP_2008_03_30_02_30: LocalDateTime = null
   private var TEST_PARIS_OVERLAP_2008_10_26_02_30: LocalDateTime = null
   private var TEST_LOCAL_2008_06_30_11_30_59_500: LocalDateTime = null
@@ -55,12 +55,12 @@ class TestZonedDateTimeSerialization extends FunSuite with AssertionsHelper with
   }
 
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_DATE_TIME)
+    assertSerializable(TEST_DATE_TIME)
   }
 
   test("test_serialization_format") {
     val zdt: ZonedDateTime = LocalDateTime.of(2012, 9, 16, 22, 17, 59, 470 * 1000000).atZone(ZoneId.of("Europe/London"))
-    AbstractTest.assertEqualsSerialisedForm(zdt)
+    assertEqualsSerialisedForm(zdt)
   }
 
 }

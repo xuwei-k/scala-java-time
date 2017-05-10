@@ -39,7 +39,7 @@ import org.threeten.bp.temporal.ChronoField._
 import org.threeten.bp.temporal.ChronoUnit.{DAYS, NANOS, SECONDS}
 import org.threeten.bp.temporal._
 
-class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
+class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter with AbstractTest {
   private var TEST_11_30_59_500_PONE: OffsetTime = null
 
   before {
@@ -47,13 +47,13 @@ class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with Be
   }
 
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_11_30_59_500_PONE)
-    AbstractTest.assertSerializable(OffsetTime.MIN)
-    AbstractTest.assertSerializable(OffsetTime.MAX)
+    assertSerializable(TEST_11_30_59_500_PONE)
+    assertSerializable(OffsetTime.MIN)
+    assertSerializable(OffsetTime.MAX)
   }
 
   test("test_serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(OffsetTime.of(LocalTime.of(22, 17, 59, 464000000), ZoneOffset.ofHours(1)))
+    assertEqualsSerialisedForm(OffsetTime.of(LocalTime.of(22, 17, 59, 464000000), ZoneOffset.ofHours(1)))
   }
 
   test("constructor_nullTime") {

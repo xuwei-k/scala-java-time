@@ -38,7 +38,7 @@ import org.threeten.bp._
 import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition
 
 /** Test ZoneRules Serialization for fixed offset time-zones. */
-class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper {
+class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   private def make(offset: ZoneOffset): ZoneRules = {
     offset.getRules
   }

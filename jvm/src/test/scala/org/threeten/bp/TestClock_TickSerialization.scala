@@ -33,10 +33,10 @@ package org.threeten.bp
 
 import org.scalatest.FunSuite
 
-class TestClock_TickSerialization extends FunSuite with AssertionsHelper {
+class TestClock_TickSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("isSerializable") {
-    AbstractTest.assertSerializable(Clock.tickSeconds(TestClock_Tick.PARIS))
-    AbstractTest.assertSerializable(Clock.tickMinutes(TestClock_Tick.MOSCOW))
-    AbstractTest.assertSerializable(Clock.tick(Clock.fixed(TestClock_Tick.INSTANT, TestClock_Tick.PARIS), TestClock_Tick.AMOUNT))
+    assertSerializable(Clock.tickSeconds(TestClock_Tick.PARIS))
+    assertSerializable(Clock.tickMinutes(TestClock_Tick.MOSCOW))
+    assertSerializable(Clock.tick(Clock.fixed(TestClock_Tick.INSTANT, TestClock_Tick.PARIS), TestClock_Tick.AMOUNT))
   }
 }
