@@ -52,7 +52,7 @@ class TestChronologySerialization extends FunSuite with BeforeAndAfterEach with 
 
   test("test_chronoSerializationSingleton") {
     data_CalendarType.foreach {
-      case (chrono, calendarType) =>
+      case (chrono, _) =>
         val orginal: Chronology = chrono
         val baos: ByteArrayOutputStream = new ByteArrayOutputStream
         val out: ObjectOutputStream = new ObjectOutputStream(baos)

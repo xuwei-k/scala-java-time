@@ -1,11 +1,10 @@
 package org.threeten.bp
 
-import org.testng.annotations.Test
-import org.testng.Assert.assertEquals
+import org.scalatest.FunSuite
 
-@Test class TestExamples {
+class TestExamples extends FunSuite with AssertionsHelper {
 
-  @Test def testExamples: Unit = {
+  test("testExamples") {
 
     // always returns 2009-02-13T23:31:30
     val fixedClock = Clock.fixed(Instant.ofEpochSecond(1234567890L), ZoneOffset.ofHours(0))
@@ -58,8 +57,8 @@ import org.testng.Assert.assertEquals
     assertEquals(japDate.toString, "Japanese Heisei 21-02-13")
 
     // This tries to read property files from disk
-    // val hijDate = chrono.HijrahDate.now(fixedClock)
-    // assertEquals(hijDate.toString, "")
+    val hijDate = chrono.HijrahDate.now(fixedClock)
+    assertEquals(hijDate.toString, "Hijrah-umalqura AH 1430-02-17")
 
     val thaiDate = chrono.ThaiBuddhistDate.now(fixedClock)
     assertEquals(thaiDate.toString, "ThaiBuddhist BE 2552-02-13")
@@ -71,6 +70,6 @@ import org.testng.Assert.assertEquals
     assertEquals(mingDate.format(format2), "Anno Domini") // WTF?
 
     val zonedDateTime1 = ZonedDateTime.now(fixedClock)
-    // val zonedDateTime2 = ZonedDateTime.now(ZoneRegion.ofId("Europe/Berlin", true))
+    val zonedDateTime2 = ZonedDateTime.now(ZoneRegion.ofId("Europe/Berlin", true))
   }
 }

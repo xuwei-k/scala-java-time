@@ -35,7 +35,7 @@ import org.scalatest.FunSuite
 import org.threeten.bp._
 import org.threeten.bp.temporal.ChronoUnit.HOURS
 
-class TestZoneOffsetTransitionSerialization extends FunSuite with AssertionsHelper {
+class TestZoneOffsetTransitionSerialization extends FunSuite with AssertionsHelper with AbstractTest {
 
   test("getters_gap") {
     val before: LocalDateTime = LocalDateTime.of(2010, 3, 31, 1, 0)
@@ -49,7 +49,7 @@ class TestZoneOffsetTransitionSerialization extends FunSuite with AssertionsHelp
     assertEquals(test.getOffsetBefore, TestZoneOffsetTransition.OFFSET_0200)
     assertEquals(test.getOffsetAfter, TestZoneOffsetTransition.OFFSET_0300)
     assertEquals(test.getDuration, Duration.of(1, HOURS))
-    AbstractTest.assertSerializable(test)
+    assertSerializable(test)
   }
 
   test("getters_overlap") {
@@ -64,24 +64,24 @@ class TestZoneOffsetTransitionSerialization extends FunSuite with AssertionsHelp
     assertEquals(test.getOffsetBefore, TestZoneOffsetTransition.OFFSET_0300)
     assertEquals(test.getOffsetAfter, TestZoneOffsetTransition.OFFSET_0200)
     assertEquals(test.getDuration, Duration.of(-1, HOURS))
-    AbstractTest.assertSerializable(test)
+    assertSerializable(test)
   }
 
   test("serialization_unusual1") {
     val ldt: LocalDateTime = LocalDateTime.of(Year.MAX_VALUE, 12, 31, 1, 31, 53)
     val test: ZoneOffsetTransition = ZoneOffsetTransition.of(ldt, ZoneOffset.of("+02:04:56"), ZoneOffset.of("-10:02:34"))
-    AbstractTest.assertSerializable(test)
+    assertSerializable(test)
   }
 
   test("serialization_unusual2") {
     val ldt: LocalDateTime = LocalDateTime.of(Year.MIN_VALUE, 1, 1, 12, 1, 3)
     val test: ZoneOffsetTransition = ZoneOffsetTransition.of(ldt, ZoneOffset.of("+02:04:56"), ZoneOffset.of("+10:02:34"))
-    AbstractTest.assertSerializable(test)
+    assertSerializable(test)
   }
 
   test("serialization_format") {
     val ldt: LocalDateTime = LocalDateTime.of(Year.MIN_VALUE, 1, 1, 12, 1, 3)
     val test: ZoneOffsetTransition = ZoneOffsetTransition.of(ldt, ZoneOffset.of("+02:04:56"), ZoneOffset.of("+10:02:34"))
-    AbstractTest.assertEqualsSerialisedForm(test)
+    assertEqualsSerialisedForm(test)
   }
 }

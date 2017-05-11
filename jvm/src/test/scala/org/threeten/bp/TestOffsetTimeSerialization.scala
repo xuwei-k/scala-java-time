@@ -33,27 +33,17 @@ package org.threeten.bp
 
 import java.lang.reflect.{Constructor, InvocationTargetException}
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.threeten.bp.format.{DateTimeFormatter, DateTimeParseException}
-import org.threeten.bp.temporal.ChronoField._
-import org.threeten.bp.temporal.ChronoUnit.{DAYS, NANOS, SECONDS}
-import org.threeten.bp.temporal._
+import org.scalatest.FunSuite
 
-class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
-  private var TEST_11_30_59_500_PONE: OffsetTime = null
-
-  before {
-    TEST_11_30_59_500_PONE = OffsetTime.of(LocalTime.of(11, 30, 59, 500), TestOffsetTime.OFFSET_PONE)
-  }
-
+class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_11_30_59_500_PONE)
-    AbstractTest.assertSerializable(OffsetTime.MIN)
-    AbstractTest.assertSerializable(OffsetTime.MAX)
+    assertSerializable(OffsetTime.of(LocalTime.of(11, 30, 59, 500), TestOffsetTime.OFFSET_PONE))
+    assertSerializable(OffsetTime.MIN)
+    assertSerializable(OffsetTime.MAX)
   }
 
   test("test_serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(OffsetTime.of(LocalTime.of(22, 17, 59, 464000000), ZoneOffset.ofHours(1)))
+    assertEqualsSerialisedForm(OffsetTime.of(LocalTime.of(22, 17, 59, 464000000), ZoneOffset.ofHours(1)))
   }
 
   test("constructor_nullTime") {

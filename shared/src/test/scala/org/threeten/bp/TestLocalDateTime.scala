@@ -947,7 +947,7 @@ class TestLocalDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
           var i: Int = 1
           while (i < m) {
             {
-              total += Month.of(i).length(AbstractTest.isIsoLeap(y))
+              total += Month.of(i).length(isIsoLeap(y))
             }
             {
               i += 1

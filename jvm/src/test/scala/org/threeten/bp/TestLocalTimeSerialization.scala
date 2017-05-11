@@ -31,26 +31,14 @@
  */
 package org.threeten.bp
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.threeten.bp.format.{DateTimeFormatter, DateTimeParseException}
-import org.threeten.bp.temporal.ChronoField._
-import org.threeten.bp.temporal.ChronoUnit._
-import org.threeten.bp.temporal._
+import org.scalatest.FunSuite
 
-import scala.collection.JavaConverters._
-
-class TestLocalTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
-  private var TEST_12_30_40_987654321: LocalTime = null
-
-  before {
-    TEST_12_30_40_987654321 = LocalTime.of(12, 30, 40, 987654321)
-  }
-
+class TestLocalTimeSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("test_serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(LocalTime.of(22, 17, 59, 460 * 1000000))
+    assertEqualsSerialisedForm(LocalTime.of(22, 17, 59, 460 * 1000000))
   }
 
   test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_12_30_40_987654321)
+    assertSerializable(LocalTime.of(12, 30, 40, 987654321))
   }
 }

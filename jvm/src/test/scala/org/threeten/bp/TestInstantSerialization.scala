@@ -33,14 +33,14 @@ package org.threeten.bp
 
 import org.scalatest.FunSuite
 
-class TestInstantSerialization extends FunSuite with AssertionsHelper {
+class TestInstantSerialization extends FunSuite with AssertionsHelper with AbstractTest {
 
   test("serialization") {
-    AbstractTest.assertSerializable(Instant.ofEpochMilli(134l))
+    assertSerializable(Instant.ofEpochMilli(134l))
   }
 
   test("serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(Instant.ofEpochMilli(1347830279338l))
+    assertEqualsSerialisedForm(Instant.ofEpochMilli(1347830279338l))
   }
 
 }

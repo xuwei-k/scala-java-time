@@ -8,6 +8,14 @@ import org.scalatest.FunSuite
   * Helper methods to avoid rewriting much of the TestNG tests
   */
 trait AssertionsHelper { this: FunSuite =>
+  def isIsoLeap(year: Long): Boolean =
+    if (year % 4 != 0)
+      false
+    else if (year % 100 == 0 && year % 400 != 0)
+      false
+    else
+      true
+
   def assertEquals[A, B](o1: A, o2: B, msg: String)(implicit prettifier: Prettifier, pos: source.Position): Assertion =
     assertEquals(o1, o2)
 

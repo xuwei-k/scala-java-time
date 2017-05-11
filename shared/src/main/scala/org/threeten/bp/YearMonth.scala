@@ -310,8 +310,11 @@ final class YearMonth private(private val year: Int, private val month: Int) ext
     if (field eq YEAR_OF_ERA)
       if (getYear <= 0) ValueRange.of(1, Year.MAX_VALUE + 1)
       else ValueRange.of(1, Year.MAX_VALUE)
+    else if (field.isInstanceOf[ChronoField])
+      if (isSupported(field)) field.range
+      else throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
     else
-      super.range(field)
+      field.rangeRefinedBy(this)
 
   /** Gets the value of the specified field from this year-month as an {@code int}.
     *
@@ -534,8 +537,9 @@ final class YearMonth private(private val year: Int, private val month: Int) ext
           return withYear(newValue.toInt)
         case ERA =>
           return if (getLong(ERA) == newValue) this else withYear(1 - year)
+        case _ =>
+          throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
       }
-      throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
     }
     field.adjustInto(this, newValue)
   }
@@ -712,7 +716,8 @@ final class YearMonth private(private val year: Int, private val month: Int) ext
     else if ((query eq TemporalQueries.localDate) || (query eq TemporalQueries.localTime) || (query eq TemporalQueries.zone) || (query eq TemporalQueries.zoneId) || (query eq TemporalQueries.offset))
       null.asInstanceOf[R]
     else
-      super.query(query)
+      query.queryFrom(this)
+
 
   /** Adjusts the specified temporal object to have this year-month.
     *
@@ -853,6 +858,8 @@ final class YearMonth private(private val year: Int, private val month: Int) ext
       cmp = month - other.month
     cmp
   }
+
+  override def compareTo(other: YearMonth): Int = compare(other)
 
   /** Is this year-month after the specified year-month.
     *

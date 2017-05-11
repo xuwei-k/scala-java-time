@@ -29,36 +29,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.threeten.bp.zone
-
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
+package org.threeten.bp.chrono
 
 import org.scalatest.FunSuite
-import org.threeten.bp._
 
-/** Test ZoneRules Serialization for fixed offset time-zones. */
-class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper with AbstractTest {
-  private def make(offset: ZoneOffset): ZoneRules = {
-    offset.getRules
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import org.threeten.bp.AssertionsHelper
+import org.threeten.bp.AbstractTest
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+
+class TestChronoZonedDateTimeSerialization extends FunSuite with AssertionsHelper with AbstractTest {
+  val data_of_calendars: List[Chronology] = {
+    List(
+      HijrahChronology.INSTANCE,
+      IsoChronology.INSTANCE,
+      JapaneseChronology.INSTANCE,
+      MinguoChronology.INSTANCE,
+      ThaiBuddhistChronology.INSTANCE)
   }
 
-  private[zone] def data_rules: List[(ZoneRules, ZoneOffset)] = {
-    List((make(TestFixedZoneRules.OFFSET_PONE), TestFixedZoneRules.OFFSET_PONE), (make(TestFixedZoneRules.OFFSET_PTWO), TestFixedZoneRules.OFFSET_PTWO), (make(TestFixedZoneRules.OFFSET_M18), TestFixedZoneRules.OFFSET_M18))
-  }
-
-  test("serialization(test: ZoneRules, expectedOffset: ZoneOffset)") {
-    data_rules.foreach { case (test: ZoneRules, _: ZoneOffset) =>
+  test("test_ChronoZonedDateTimeSerialization") {
+    data_of_calendars.foreach { chrono =>
+      val ref: ZonedDateTime = LocalDate.of(2000, 1, 5).atTime(12, 1, 2, 3).atZone(ZoneId.of("GMT+01:23"))
+      val orginal: ChronoZonedDateTime[_] = chrono.date(ref).atTime(ref.toLocalTime).atZone(ref.getZone)
       val baos: ByteArrayOutputStream = new ByteArrayOutputStream
       val out: ObjectOutputStream = new ObjectOutputStream(baos)
-      out.writeObject(test)
-      baos.close()
-      val bytes: Array[Byte] = baos.toByteArray
-      val bais: ByteArrayInputStream = new ByteArrayInputStream(bytes)
+      out.writeObject(orginal)
+      out.close()
+      val bais: ByteArrayInputStream = new ByteArrayInputStream(baos.toByteArray)
       val in: ObjectInputStream = new ObjectInputStream(bais)
-      val result: ZoneRules = in.readObject.asInstanceOf[ZoneRules]
-      assertEquals(result, test)
-      assertEquals(result.getClass, test.getClass)
+      val ser: ChronoZonedDateTime[_] = in.readObject.asInstanceOf[ChronoZonedDateTime[_]]
+      assertTrue(ser == orginal)
     }
   }
-
 }

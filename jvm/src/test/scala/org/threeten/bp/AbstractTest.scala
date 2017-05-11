@@ -31,9 +31,7 @@
  */
 package org.threeten.bp
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertSame
-import org.testng.Assert.assertTrue
+import org.scalatest.FunSuite
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -47,33 +45,19 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
 /** Base test class. */
-object AbstractTest {
+trait AbstractTest extends FunSuite with AssertionsHelper {
   private val SERIALISATION_DATA_FOLDER: String = "jvm/src/test/resources/"
 
-  def isIsoLeap(year: Long): Boolean =
-    if (year % 4 != 0)
-      false
-    else if (year % 100 == 0 && year % 400 != 0)
-      false
-    else
-      true
-
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
   def assertSerializable(o: AnyRef): Unit = {
     val deserialisedObject: AnyRef = writeThenRead(o)
     assertEquals(deserialisedObject, o)
   }
 
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
   def assertSerializableAndSame(o: AnyRef): Unit = {
     val deserialisedObject: AnyRef = writeThenRead(o)
     assertSame(deserialisedObject, o)
   }
 
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
   def writeThenRead(o: AnyRef): AnyRef = {
     val baos: ByteArrayOutputStream = new ByteArrayOutputStream
     var oos: ObjectOutputStream = null
@@ -96,14 +80,10 @@ object AbstractTest {
     }
   }
 
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
   def assertEqualsSerialisedForm(objectSerialised: AnyRef): Unit = {
     assertEqualsSerialisedForm(objectSerialised, objectSerialised.getClass)
   }
 
-  @throws(classOf[IOException])
-  @throws(classOf[ClassNotFoundException])
   def assertEqualsSerialisedForm(objectSerialised: AnyRef, cls: Class[_]): Unit = {
     val className: String = cls.getSimpleName
     var in: ObjectInputStream = null
@@ -125,11 +105,11 @@ object AbstractTest {
     for (field <- fields) {
       if (!field.getName.contains("$")) {
         if (Modifier.isStatic(field.getModifiers)) {
-          assertTrue(Modifier.isFinal(field.getModifiers), "Field:" + field.getName)
+          assertTrue(Modifier.isFinal(field.getModifiers))
         }
         else {
-          assertTrue(Modifier.isPrivate(field.getModifiers), "Field:" + field.getName)
-          assertTrue(Modifier.isFinal(field.getModifiers), "Field:" + field.getName)
+          assertTrue(Modifier.isPrivate(field.getModifiers))
+          assertTrue(Modifier.isFinal(field.getModifiers))
         }
       }
     }
@@ -139,7 +119,6 @@ object AbstractTest {
     }
   }
 
-  @throws(classOf[Exception])
   def assertSerializedBySer(`object`: AnyRef, expectedBytes: Array[Byte], matches: Array[Byte]*): Unit = {
     val serClass: String = `object`.getClass.getPackage.getName + ".Ser"
     val serCls: Class[_] = Class.forName(serClass)

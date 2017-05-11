@@ -302,8 +302,11 @@ final class MonthDay private (private val month: Int, private val day: Int) exte
       field.range
     else if (field eq DAY_OF_MONTH)
       ValueRange.of(1, getMonth.minLength, getMonth.maxLength)
+    else if (field.isInstanceOf[ChronoField])
+      if (isSupported(field)) field.range
+      else throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
     else
-      super.range(field)
+      field.rangeRefinedBy(this)
 
   /** Gets the value of the specified field from this month-day as an {@code int}.
     *
@@ -473,8 +476,10 @@ final class MonthDay private (private val month: Int, private val day: Int) exte
   override def query[R](query: TemporalQuery[R]): R =
     if (query eq TemporalQueries.chronology)
       IsoChronology.INSTANCE.asInstanceOf[R]
+    else if ((query eq TemporalQueries.zoneId)|| (query eq TemporalQueries.precision))
+      null.asInstanceOf[R]
     else
-      super.query(query)
+      query.queryFrom(this)
 
   /** Adjusts the specified temporal object to have this month-day.
     *
@@ -540,6 +545,8 @@ final class MonthDay private (private val month: Int, private val day: Int) exte
       cmp = day - other.day
     cmp
   }
+
+  override def compareTo(other: MonthDay): Int = compare(other)
 
   /** Is this month-day after the specified month-day.
     *

@@ -31,41 +31,6 @@
  */
 package org.threeten.bp
 
-import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH
-import org.threeten.bp.temporal.ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR
-import org.threeten.bp.temporal.ChronoField.ALIGNED_WEEK_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.ALIGNED_WEEK_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.AMPM_OF_DAY
-import org.threeten.bp.temporal.ChronoField.CLOCK_HOUR_OF_AMPM
-import org.threeten.bp.temporal.ChronoField.CLOCK_HOUR_OF_DAY
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.DAY_OF_WEEK
-import org.threeten.bp.temporal.ChronoField.DAY_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.EPOCH_DAY
-import org.threeten.bp.temporal.ChronoField.ERA
-import org.threeten.bp.temporal.ChronoField.HOUR_OF_AMPM
-import org.threeten.bp.temporal.ChronoField.HOUR_OF_DAY
-import org.threeten.bp.temporal.ChronoField.MICRO_OF_DAY
-import org.threeten.bp.temporal.ChronoField.MICRO_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.MILLI_OF_DAY
-import org.threeten.bp.temporal.ChronoField.MILLI_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.MINUTE_OF_DAY
-import org.threeten.bp.temporal.ChronoField.MINUTE_OF_HOUR
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.NANO_OF_DAY
-import org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND
-import org.threeten.bp.temporal.ChronoField.PROLEPTIC_MONTH
-import org.threeten.bp.temporal.ChronoField.SECOND_OF_DAY
-import org.threeten.bp.temporal.ChronoField.SECOND_OF_MINUTE
-import org.threeten.bp.temporal.ChronoField.YEAR
-import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
-import org.threeten.bp.temporal.ChronoUnit.HALF_DAYS
-import org.threeten.bp.temporal.ChronoUnit.HOURS
-import org.threeten.bp.temporal.ChronoUnit.MICROS
-import org.threeten.bp.temporal.ChronoUnit.MILLIS
-import org.threeten.bp.temporal.ChronoUnit.MINUTES
-import org.threeten.bp.temporal.ChronoUnit.NANOS
-import org.threeten.bp.temporal.ChronoUnit.SECONDS
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -74,19 +39,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.threeten.bp.chrono.IsoChronology
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
-import org.threeten.bp.temporal.ChronoField
-import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.JulianFields
-import org.threeten.bp.temporal.MockFieldNoValue
-import org.threeten.bp.temporal.Temporal
-import org.threeten.bp.temporal.TemporalAccessor
-import org.threeten.bp.temporal.TemporalAdjuster
-import org.threeten.bp.temporal.TemporalField
-import org.threeten.bp.temporal.TemporalQueries
-import org.threeten.bp.temporal.TemporalUnit
 
 class TestLocalDateTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter {
   private val TEST_2007_07_15_12_30_40_987654321: LocalDateTime = LocalDateTime.of(2007, 7, 15, 12, 30, 40, 987654321)
