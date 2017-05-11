@@ -11,6 +11,15 @@
     <!-- types are add, fix, remove, update -->
     <release version="2.0.0-M11" date="2017-04-16" description="v2.0.0-M11">
       <action dev="cquiroz" type="update" >
+        Support Hijrah chronology on scala.js
+      </action>
+      <action dev="cquiroz" type="update" >
+        Update to scala 2.12.2
+      </action>
+      <action dev="cquiroz" type="update" >
+        Update to scala 2.11.8
+      </action>
+      <action dev="cquiroz" type="update" >
         Port all tests to scalatest
       </action>
       <action dev="alonsodomin" type="update" >
