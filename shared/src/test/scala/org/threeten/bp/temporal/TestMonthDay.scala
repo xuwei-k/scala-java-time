@@ -584,11 +584,14 @@ class TestMonthDay extends GenDateTimeTest with BeforeAndAfter {
     assertEquals(TEST_07_15 == null, false)
   }
 
-  /*@Test(dataProvider = "sampleDates") def test_hashCode(m: Int, d: Int): Unit = {
-    val a: MonthDay = MonthDay.of(m, d)
-    assertEquals(a.hashCode, a.hashCode)
-    val b: MonthDay = MonthDay.of(m, d)
-    assertEquals(a.hashCode, b.hashCode)
+  test("test_hashCode") {
+    provider_sampleDates.foreach {
+      case (m, d) =>
+        val a: MonthDay = MonthDay.of(m, d)
+        assertEquals(a.hashCode, a.hashCode)
+        val b: MonthDay = MonthDay.of(m, d)
+        assertEquals(a.hashCode, b.hashCode)
+    }
   }
 
   test("test_hashCode_unique") {
@@ -607,15 +610,21 @@ class TestMonthDay extends GenDateTimeTest with BeforeAndAfter {
     }
   }
 
-  @DataProvider(name = "sampleToString") private[temporal] def provider_sampleToString: Array[Array[Any]] = {
-    Array[Array[Any]](Array(7, 5, "--07-05"), Array(12, 31, "--12-31"), Array(1, 2, "--01-02"))
+  val provider_sampleToString: List[(Int, Int, String)] = {
+    List(
+      (7, 5, "--07-05"),
+      (12, 31, "--12-31"),
+      (1, 2, "--01-02"))
   }
 
-  @Test(dataProvider = "sampleToString") def test_toString(m: Int, d: Int, expected: String): Unit = {
-    val test: MonthDay = MonthDay.of(m, d)
-    val str: String = test.toString
-    assertEquals(str, expected)
-  }*/
+  test("test_toString") {
+    provider_sampleToString.foreach {
+      case (m, d, expected) =>
+        val test: MonthDay = MonthDay.of(m, d)
+        val str: String = test.toString
+        assertEquals(str, expected)
+    }
+  }
 
   test("test_format_formatter") {
     val f: DateTimeFormatter = DateTimeFormatter.ofPattern("M d")

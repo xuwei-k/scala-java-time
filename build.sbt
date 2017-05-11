@@ -3,8 +3,8 @@ import TZDBTasks._
 
 enablePlugins(MicrositesPlugin)
 
-val scalaVer = "2.11.8"
-val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.0")
+val scalaVer = "2.11.11"
+val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.2")
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
