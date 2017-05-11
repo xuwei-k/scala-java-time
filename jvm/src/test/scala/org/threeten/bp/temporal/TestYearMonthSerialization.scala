@@ -32,24 +32,12 @@
 package org.threeten.bp.temporal
 
 import org.scalatest.FunSuite
-import org.threeten.bp.temporal.ChronoField.ERA
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import org.threeten.bp.temporal.ChronoField.PROLEPTIC_MONTH
-import org.threeten.bp.temporal.ChronoField.YEAR
-import org.threeten.bp.temporal.ChronoField.YEAR_OF_ERA
-import java.io.IOException
-import java.util.Arrays
 import org.threeten.bp._
-import org.threeten.bp.chrono.IsoChronology
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
 
 /** Test YearMonth. */
 class TestYearMonthSerialization extends FunSuite with AbstractTest {
-  private var TEST_2008_06: YearMonth = null
-
   test("test_serialization") {
-    assertSerializable(TEST_2008_06)
+    assertSerializable(YearMonth.of(2008, 8))
   }
 
   test("test_serialization_format") {

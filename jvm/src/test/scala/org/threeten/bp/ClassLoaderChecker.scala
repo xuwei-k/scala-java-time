@@ -34,11 +34,8 @@ package org.threeten.bp
 import java.io.DataInputStream
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.util.ArrayList
 import java.util.Collections
 import java.util.GregorianCalendar
-import java.util.HashMap
-import java.util.TreeMap
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import java.util.regex.Pattern

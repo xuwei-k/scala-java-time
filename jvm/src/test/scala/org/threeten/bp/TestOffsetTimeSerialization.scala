@@ -33,21 +33,11 @@ package org.threeten.bp
 
 import java.lang.reflect.{Constructor, InvocationTargetException}
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.threeten.bp.format.{DateTimeFormatter, DateTimeParseException}
-import org.threeten.bp.temporal.ChronoField._
-import org.threeten.bp.temporal.ChronoUnit.{DAYS, NANOS, SECONDS}
-import org.threeten.bp.temporal._
+import org.scalatest.FunSuite
 
-class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with BeforeAndAfter with AbstractTest {
-  private var TEST_11_30_59_500_PONE: OffsetTime = null
-
-  before {
-    TEST_11_30_59_500_PONE = OffsetTime.of(LocalTime.of(11, 30, 59, 500), TestOffsetTime.OFFSET_PONE)
-  }
-
+class TestOffsetTimeSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("test_serialization") {
-    assertSerializable(TEST_11_30_59_500_PONE)
+    assertSerializable(OffsetTime.of(LocalTime.of(11, 30, 59, 500), TestOffsetTime.OFFSET_PONE))
     assertSerializable(OffsetTime.MIN)
     assertSerializable(OffsetTime.MAX)
   }

@@ -35,7 +35,6 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, 
 
 import org.scalatest.FunSuite
 import org.threeten.bp._
-import org.threeten.bp.zone.ZoneOffsetTransitionRule.TimeDefinition
 
 /** Test ZoneRules Serialization for fixed offset time-zones. */
 class TestFixedZoneRulesSerialization extends FunSuite with AssertionsHelper with AbstractTest {

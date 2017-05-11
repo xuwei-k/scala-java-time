@@ -32,21 +32,10 @@
 package org.threeten.bp
 
 import java.lang.reflect.{Field, Modifier}
-import java.util.{Locale, SimpleTimeZone, TimeZone}
 
 import org.scalatest.FunSuite
-import org.threeten.bp.format.TextStyle
-import org.threeten.bp.temporal.TemporalAccessor
-import org.threeten.bp.zone.{ZoneOffsetTransition, ZoneRules, ZoneRulesException}
 
 /** Test ZoneId. */
-object TestZoneIdSerialization {
-  private val ZONE_PARIS: ZoneId = ZoneId.of("Europe/Paris")
-  val LATEST_TZDB: String = "2010i"
-  private val OVERLAP: Int = 2
-  private val GAP: Int = 0
-}
-
 class TestZoneIdSerialization extends FunSuite with AssertionsHelper with AbstractTest {
   test("immutable") {
     val cls: Class[ZoneId] = classOf[ZoneId]

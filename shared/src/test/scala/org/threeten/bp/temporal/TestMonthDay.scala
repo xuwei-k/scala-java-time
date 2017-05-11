@@ -34,8 +34,6 @@ package org.threeten.bp.temporal
 import org.scalatest.BeforeAndAfter
 import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
 import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import java.io.IOException
-import java.util.Arrays
 
 import org.threeten.bp._
 import org.threeten.bp.chrono.IsoChronology
@@ -65,14 +63,6 @@ class TestMonthDay extends GenDateTimeTest with BeforeAndAfter {
     //"private constructor shows up public due to companion object"
     //AbstractTest.assertImmutable(classOf[YearMonth])
   }
-
-  /*test("test_serialization") {
-    AbstractTest.assertSerializable(TEST_07_15)
-  }
-
-  test("test_serialization_format") {
-    AbstractTest.assertEqualsSerialisedForm(MonthDay.of(9, 16))
-  }*/
 
   private[temporal] def check(test: MonthDay, m: Int, d: Int): Unit = {
     assertEquals(test.getMonth.getValue, m)
@@ -583,11 +573,11 @@ class TestMonthDay extends GenDateTimeTest with BeforeAndAfter {
   }
 
   test("test_equals_itself_true") {
-    assertEquals(TEST_07_15 == TEST_07_15, true)
+    assertEquals(TEST_07_15, TEST_07_15)
   }
 
   test("test_equals_string_false") {
-    assertEquals(TEST_07_15 == "2007-07-15", false)
+    assertFalse(TEST_07_15 == "2007-07-15")
   }
 
   test("test_equals_null_false") {

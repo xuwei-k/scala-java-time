@@ -32,27 +32,13 @@
 package org.threeten.bp.temporal
 
 import org.scalatest.FunSuite
-import org.scalatest.BeforeAndAfter
-import org.threeten.bp.temporal.ChronoField.DAY_OF_MONTH
-import org.threeten.bp.temporal.ChronoField.MONTH_OF_YEAR
-import java.io.IOException
-import java.util.Arrays
 
 import org.threeten.bp._
-import org.threeten.bp.chrono.IsoChronology
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
 
 /** Test MonthDay. */
-class TestMonthDaySerialization extends FunSuite with BeforeAndAfter with AbstractTest {
-  private var TEST_07_15: MonthDay = null
-
-  before {
-    TEST_07_15 = MonthDay.of(7, 15)
-  }
-
+class TestMonthDaySerialization extends FunSuite with AbstractTest {
   test("test_serialization") {
-    assertSerializable(TEST_07_15)
+    assertSerializable(MonthDay.of(7, 15))
   }
 
   test("test_serialization_format") {
