@@ -57,8 +57,8 @@ class TestExamples extends FunSuite with AssertionsHelper {
     assertEquals(japDate.toString, "Japanese Heisei 21-02-13")
 
     // This tries to read property files from disk
-    // val hijDate = chrono.HijrahDate.now(fixedClock)
-    // assertEquals(hijDate.toString, "")
+    val hijDate = chrono.HijrahDate.now(fixedClock)
+    assertEquals(hijDate.toString, "Hijrah-umalqura AH 1430-02-17")
 
     val thaiDate = chrono.ThaiBuddhistDate.now(fixedClock)
     assertEquals(thaiDate.toString, "ThaiBuddhist BE 2552-02-13")
@@ -70,6 +70,6 @@ class TestExamples extends FunSuite with AssertionsHelper {
     assertEquals(mingDate.format(format2), "Anno Domini") // WTF?
 
     val zonedDateTime1 = ZonedDateTime.now(fixedClock)
-    // val zonedDateTime2 = ZonedDateTime.now(ZoneRegion.ofId("Europe/Berlin", true))
+    val zonedDateTime2 = ZonedDateTime.now(ZoneRegion.ofId("Europe/Berlin", true))
   }
 }
