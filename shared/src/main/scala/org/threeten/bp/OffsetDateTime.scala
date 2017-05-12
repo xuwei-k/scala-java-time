@@ -232,23 +232,23 @@ object OffsetDateTime {
     * @throws DateTimeException if unable to convert to an { @code OffsetDateTime}
     */
   def from(temporal: TemporalAccessor): OffsetDateTime = {
-    if (temporal.isInstanceOf[OffsetDateTime])
-      return temporal.asInstanceOf[OffsetDateTime]
-    try {
-      val offset: ZoneOffset = ZoneOffset.from(temporal)
-      try {
-        val ldt: LocalDateTime = LocalDateTime.from(temporal)
-        OffsetDateTime.of(ldt, offset)
-      }
-      catch {
-        case ignore: DateTimeException =>
-          val instant: Instant = Instant.from(temporal)
-          OffsetDateTime.ofInstant(instant, offset)
-      }
-    }
-    catch {
-      case ex: DateTimeException =>
-        throw new DateTimeException(s"Unable to obtain OffsetDateTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
+    temporal match {
+      case time: OffsetDateTime => time
+      case _ =>
+        try {
+          val offset: ZoneOffset = ZoneOffset.from(temporal)
+          try {
+            val ldt: LocalDateTime = LocalDateTime.from(temporal)
+            OffsetDateTime.of(ldt, offset)
+          } catch {
+            case ignore: DateTimeException =>
+              val instant: Instant = Instant.from(temporal)
+              OffsetDateTime.ofInstant(instant, offset)
+          }
+        } catch {
+          case ex: DateTimeException =>
+            throw new DateTimeException(s"Unable to obtain OffsetDateTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
+        }
     }
   }
 
@@ -438,14 +438,15 @@ final class OffsetDateTime private(private val dateTime: LocalDateTime, private 
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def get(field: TemporalField): Int = {
-    if (field.isInstanceOf[ChronoField]) {
-      field.asInstanceOf[ChronoField] match {
-        case INSTANT_SECONDS => throw new DateTimeException(s"Field too large for an int: $field")
-        case OFFSET_SECONDS  => getOffset.getTotalSeconds
-        case _               => dateTime.get(field)
-      }
-    } else {
-      super.get(field)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case INSTANT_SECONDS => throw new DateTimeException(s"Field too large for an int: $field")
+          case OFFSET_SECONDS => getOffset.getTotalSeconds
+          case _ => dateTime.get(field)
+        }
+      case _ =>
+        super.get(field)
     }
   }
 
@@ -471,14 +472,15 @@ final class OffsetDateTime private(private val dateTime: LocalDateTime, private 
     * @throws ArithmeticException if numeric overflow occurs
     */
   def getLong(field: TemporalField): Long = {
-    if (field.isInstanceOf[ChronoField]) {
-      field.asInstanceOf[ChronoField] match {
-        case INSTANT_SECONDS => toEpochSecond
-        case OFFSET_SECONDS  => getOffset.getTotalSeconds
-        case _               => dateTime.getLong(field)
-      }
-    } else {
-      field.getFrom(this)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case INSTANT_SECONDS => toEpochSecond
+          case OFFSET_SECONDS => getOffset.getTotalSeconds
+          case _ => dateTime.getLong(field)
+        }
+      case _ =>
+        field.getFrom(this)
     }
   }
 
@@ -665,16 +667,14 @@ final class OffsetDateTime private(private val dateTime: LocalDateTime, private 
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def `with`(adjuster: TemporalAdjuster): OffsetDateTime =
-    if (adjuster.isInstanceOf[LocalDate] || adjuster.isInstanceOf[LocalTime] || adjuster.isInstanceOf[LocalDateTime])
-      `with`(dateTime.`with`(adjuster), offset)
-    else if (adjuster.isInstanceOf[Instant])
-      OffsetDateTime.ofInstant(adjuster.asInstanceOf[Instant], offset)
-    else if (adjuster.isInstanceOf[ZoneOffset])
-      `with`(dateTime, adjuster.asInstanceOf[ZoneOffset])
-    else if (adjuster.isInstanceOf[OffsetDateTime])
-      adjuster.asInstanceOf[OffsetDateTime]
-    else
-      adjuster.adjustInto(this).asInstanceOf[OffsetDateTime]
+    adjuster match {
+      case _: LocalDate | _: LocalTime | _: LocalDateTime => `with`(dateTime.`with`(adjuster), offset)
+      case i: Instant => OffsetDateTime.ofInstant(i, offset)
+      case z: ZoneOffset => `with`(dateTime, z)
+      case o: OffsetDateTime => o
+      case _ =>
+        adjuster.adjustInto(this).asInstanceOf[OffsetDateTime]
+    }
 
   /** Returns a copy of this date-time with the specified field set to a new value.
     *
@@ -719,15 +719,15 @@ final class OffsetDateTime private(private val dateTime: LocalDateTime, private 
     * @throws ArithmeticException if numeric overflow occurs
     */
   def `with`(field: TemporalField, newValue: Long): OffsetDateTime = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      f match {
-        case INSTANT_SECONDS => OffsetDateTime.ofInstant(Instant.ofEpochSecond(newValue, getNano), offset)
-        case OFFSET_SECONDS  => `with`(dateTime, ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue)))
-        case _               => `with`(dateTime.`with`(field, newValue), offset)
-      }
-    } else {
-      field.adjustInto(this, newValue)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case INSTANT_SECONDS => OffsetDateTime.ofInstant(Instant.ofEpochSecond(newValue, getNano), offset)
+          case OFFSET_SECONDS => `with`(dateTime, ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue)))
+          case _ => `with`(dateTime.`with`(field, newValue), offset)
+        }
+      case _ =>
+        field.adjustInto(this, newValue)
     }
   }
 

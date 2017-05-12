@@ -65,27 +65,29 @@ private[chrono] object ChronoZonedDateTimeImpl {
     var _localDateTime = localDateTime
     Objects.requireNonNull(_localDateTime, "localDateTime")
     Objects.requireNonNull(zone, "zone")
-    if (zone.isInstanceOf[ZoneOffset])
-      return new ChronoZonedDateTimeImpl[R](_localDateTime, zone.asInstanceOf[ZoneOffset], zone)
-    val rules: ZoneRules = zone.getRules
-    val isoLDT: LocalDateTime = LocalDateTime.from(_localDateTime)
-    val validOffsets: java.util.List[ZoneOffset] = rules.getValidOffsets(isoLDT)
-    var offset: ZoneOffset = null
-    if (validOffsets.size == 1)
-      offset = validOffsets.get(0)
-    else if (validOffsets.size == 0) {
-      val trans: ZoneOffsetTransition = rules.getTransition(isoLDT)
-      _localDateTime = _localDateTime.plusSeconds(trans.getDuration.getSeconds)
-      offset = trans.getOffsetAfter
+    zone match {
+      case offset: ZoneOffset => new ChronoZonedDateTimeImpl[R](_localDateTime, offset, zone)
+      case _ =>
+        val rules: ZoneRules = zone.getRules
+        val isoLDT: LocalDateTime = LocalDateTime.from(_localDateTime)
+        val validOffsets: java.util.List[ZoneOffset] = rules.getValidOffsets(isoLDT)
+        var offset: ZoneOffset = null
+        if (validOffsets.size == 1)
+          offset = validOffsets.get(0)
+        else if (validOffsets.size == 0) {
+          val trans: ZoneOffsetTransition = rules.getTransition(isoLDT)
+          _localDateTime = _localDateTime.plusSeconds(trans.getDuration.getSeconds)
+          offset = trans.getOffsetAfter
+        }
+        else {
+          if (preferredOffset != null && validOffsets.contains(preferredOffset))
+            offset = preferredOffset
+          else
+            offset = validOffsets.get(0)
+        }
+        Objects.requireNonNull(offset, "offset")
+        new ChronoZonedDateTimeImpl[R](_localDateTime, offset, zone)
     }
-    else {
-      if (preferredOffset != null && validOffsets.contains(preferredOffset))
-        offset = preferredOffset
-      else
-        offset = validOffsets.get(0)
-    }
-    Objects.requireNonNull(offset, "offset")
-    new ChronoZonedDateTimeImpl[R](_localDateTime, offset, zone)
   }
 
   /** Obtains an instance from an instant using the specified time-zone.
@@ -190,17 +192,17 @@ final class ChronoZonedDateTimeImpl[D <: ChronoLocalDate] private(private val da
     field.isInstanceOf[ChronoField] || (field != null && field.isSupportedBy(this))
 
   def `with`(field: TemporalField, newValue: Long): ChronoZonedDateTime[D] = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      import ChronoField._
-      f match {
-        case INSTANT_SECONDS => plus(newValue - toEpochSecond, SECONDS)
-        case OFFSET_SECONDS  => val offset: ZoneOffset = ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue))
-                                create(dateTime.toInstant(offset), zone)
-        case _               => ChronoZonedDateTimeImpl.ofBest(dateTime.`with`(field, newValue), zone, offset)
-      }
-    } else {
-      toLocalDate.getChronology.ensureChronoZonedDateTime(field.adjustInto(this, newValue))
+    field match {
+      case f: ChronoField =>
+        import ChronoField._
+        f match {
+          case INSTANT_SECONDS => plus(newValue - toEpochSecond, SECONDS)
+          case OFFSET_SECONDS => val offset: ZoneOffset = ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue))
+            create(dateTime.toInstant(offset), zone)
+          case _ => ChronoZonedDateTimeImpl.ofBest(dateTime.`with`(field, newValue), zone, offset)
+        }
+      case _ =>
+        toLocalDate.getChronology.ensureChronoZonedDateTime(field.adjustInto(this, newValue))
     }
   }
 

@@ -37,8 +37,6 @@ import java.io.InvalidClassException
 import java.io.ObjectInput
 import java.io.ObjectOutput
 import java.io.StreamCorruptedException
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 @SerialVersionUID(7857518227608961174L)
 private object Ser {

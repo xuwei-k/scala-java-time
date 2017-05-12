@@ -164,15 +164,17 @@ object Month {
     */
   def from(temporal: TemporalAccessor): Month = {
     var _temporal = temporal
-    if (_temporal.isInstanceOf[Month])
-      return _temporal.asInstanceOf[Month]
-    try {
-      if (IsoChronology.INSTANCE != Chronology.from(_temporal))
-        _temporal = LocalDate.from(_temporal)
-      of(_temporal.get(MONTH_OF_YEAR))
-    } catch {
-      case ex: DateTimeException =>
-        throw new DateTimeException(s"Unable to obtain Month from TemporalAccessor: ${_temporal}, type ${_temporal.getClass.getName}", ex)
+    _temporal match {
+      case month: Month => month
+      case _ =>
+        try {
+          if (IsoChronology.INSTANCE != Chronology.from(_temporal))
+            _temporal = LocalDate.from(_temporal)
+          of(_temporal.get(MONTH_OF_YEAR))
+        } catch {
+          case ex: DateTimeException =>
+            throw new DateTimeException(s"Unable to obtain Month from TemporalAccessor: ${_temporal}, type ${_temporal.getClass.getName}", ex)
+        }
     }
   }
 }

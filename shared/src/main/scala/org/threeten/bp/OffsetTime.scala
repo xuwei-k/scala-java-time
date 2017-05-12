@@ -194,15 +194,17 @@ object OffsetTime {
     * @throws DateTimeException if unable to convert to an { @code OffsetTime}
     */
   def from(temporal: TemporalAccessor): OffsetTime = {
-    if (temporal.isInstanceOf[OffsetTime])
-      return temporal.asInstanceOf[OffsetTime]
-    try {
-      val time: LocalTime = LocalTime.from(temporal)
-      val offset: ZoneOffset = ZoneOffset.from(temporal)
-      new OffsetTime(time, offset)
-    } catch {
-      case ex: DateTimeException =>
-        throw new DateTimeException(s"Unable to obtain OffsetTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
+    temporal match {
+      case time: OffsetTime => time
+      case _ =>
+        try {
+          val time: LocalTime = LocalTime.from(temporal)
+          val offset: ZoneOffset = ZoneOffset.from(temporal)
+          new OffsetTime(time, offset)
+        } catch {
+          case ex: DateTimeException =>
+            throw new DateTimeException(s"Unable to obtain OffsetTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
+        }
     }
   }
 
@@ -544,11 +546,12 @@ final class OffsetTime(private val time: LocalTime, private val offset: ZoneOffs
     * @throws ArithmeticException if numeric overflow occurs
     */
   def `with`(field: TemporalField, newValue: Long): OffsetTime =
-    if (field.isInstanceOf[ChronoField])
-      if (field eq OFFSET_SECONDS) `with`(time, ZoneOffset.ofTotalSeconds(field.asInstanceOf[ChronoField].checkValidIntValue(newValue)))
-      else `with`(time.`with`(field, newValue), offset)
-    else
-      field.adjustInto(this, newValue)
+    field match {
+      case f: ChronoField =>
+        if (field eq OFFSET_SECONDS) `with`(time, ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue)))
+        else `with`(time.`with`(field, newValue), offset)
+      case _ => field.adjustInto(this, newValue)
+    }
 
   /** Returns a copy of this {@code OffsetTime} with the hour-of-day value altered.
     *
@@ -894,21 +897,22 @@ final class OffsetTime(private val time: LocalTime, private val offset: ZoneOffs
     */
   def until(endExclusive: Temporal, unit: TemporalUnit): Long = {
     val end: OffsetTime = OffsetTime.from(endExclusive)
-    if (unit.isInstanceOf[ChronoUnit]) {
-      val nanosUntil: Long = end.toEpochNano - toEpochNano
-      import ChronoUnit._
-      unit.asInstanceOf[ChronoUnit] match {
-        case NANOS     => nanosUntil
-        case MICROS    => nanosUntil / 1000
-        case MILLIS    => nanosUntil / 1000000
-        case SECONDS   => nanosUntil / NANOS_PER_SECOND
-        case MINUTES   => nanosUntil / NANOS_PER_MINUTE
-        case HOURS     => nanosUntil / NANOS_PER_HOUR
-        case HALF_DAYS => nanosUntil / (12 * NANOS_PER_HOUR)
-        case _         => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
-      }
-    } else {
-      unit.between(this, end)
+    unit match {
+      case u: ChronoUnit =>
+        val nanosUntil: Long = end.toEpochNano - toEpochNano
+        import ChronoUnit._
+        u match {
+          case NANOS => nanosUntil
+          case MICROS => nanosUntil / 1000
+          case MILLIS => nanosUntil / 1000000
+          case SECONDS => nanosUntil / NANOS_PER_SECOND
+          case MINUTES => nanosUntil / NANOS_PER_MINUTE
+          case HOURS => nanosUntil / NANOS_PER_HOUR
+          case HALF_DAYS => nanosUntil / (12 * NANOS_PER_HOUR)
+          case _ => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+        }
+      case _ =>
+        unit.between(this, end)
     }
   }
 

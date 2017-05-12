@@ -73,11 +73,13 @@ final class SimpleDateTimeFormatStyleProvider extends DateTimeFormatStyleProvide
     else {
       dateFormat = DateFormat.getTimeInstance(convertStyle(timeStyle), locale)
     }
-    if (dateFormat.isInstanceOf[SimpleDateFormat]) {
-      val pattern: String = dateFormat.asInstanceOf[SimpleDateFormat].toPattern
-      val formatter: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern(pattern).toFormatter(locale)
-      SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, formatter)
-      return formatter
+    dateFormat match {
+      case format: SimpleDateFormat =>
+        val pattern: String = format.toPattern
+        val formatter: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern(pattern).toFormatter(locale)
+        SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, formatter)
+        return formatter
+      case _ =>
     }
     SimpleDateTimeFormatStyleProvider.FORMATTER_CACHE.putIfAbsent(key, "")
     throw new IllegalArgumentException("Unable to convert DateFormat to DateTimeFormatter")

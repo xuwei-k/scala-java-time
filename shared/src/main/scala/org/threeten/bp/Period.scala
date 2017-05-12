@@ -125,26 +125,33 @@ object Period {
     * @throws ArithmeticException if the amount of years, months or days exceeds an int
     */
   def from(amount: TemporalAmount): Period = {
-    if (amount.isInstanceOf[Period])
-      return amount.asInstanceOf[Period]
-    if (amount.isInstanceOf[ChronoPeriod]) {
-      if (IsoChronology.INSTANCE != amount.asInstanceOf[ChronoPeriod].getChronology)
-        throw new DateTimeException(s"Period requires ISO chronology: $amount")
+
+    def fromAmount: Period = {
+      Objects.requireNonNull(amount, "amount")
+      var years: Int = 0
+      var months: Int = 0
+      var days: Int = 0
+      val units = amount.getUnits.iterator
+      while (units.hasNext) {
+        val unit = units.next()
+        val unitAmount: Long = amount.get(unit)
+        if (unit eq ChronoUnit.YEARS) years = Math.toIntExact(unitAmount)
+        else if (unit eq ChronoUnit.MONTHS) months = Math.toIntExact(unitAmount)
+        else if (unit eq ChronoUnit.DAYS) days = Math.toIntExact(unitAmount)
+        else throw new DateTimeException(s"Unit must be Years, Months or Days, but was $unit")
+      }
+      create(years, months, days)
     }
-    Objects.requireNonNull(amount, "amount")
-    var years: Int = 0
-    var months: Int = 0
-    var days: Int = 0
-    val units = amount.getUnits.iterator
-    while (units.hasNext) {
-      val unit = units.next()
-      val unitAmount: Long = amount.get(unit)
-      if (unit eq ChronoUnit.YEARS) years = Math.toIntExact(unitAmount)
-      else if (unit eq ChronoUnit.MONTHS) months = Math.toIntExact(unitAmount)
-      else if (unit eq ChronoUnit.DAYS) days = Math.toIntExact(unitAmount)
-      else throw new DateTimeException(s"Unit must be Years, Months or Days, but was $unit")
+
+    amount match {
+      case period: Period => period
+      case chrono: ChronoPeriod =>
+        if (IsoChronology.INSTANCE != chrono.getChronology)
+          throw new DateTimeException(s"Period requires ISO chronology: $amount")
+        fromAmount
+      case _ =>
+        fromAmount
     }
-    create(years, months, days)
   }
 
   /** Obtains a {@code Period} consisting of the number of years, months,

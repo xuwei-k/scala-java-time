@@ -66,11 +66,12 @@ private[zone] object TzdbZoneRulesProvider {
     @throws[Exception]
     private[zone] def createRule(index: Short): ZoneRules = {
       var obj: AnyRef = ruleData.get(index)
-      if (obj.isInstanceOf[Array[Byte]]) {
-        val bytes: Array[Byte] = obj.asInstanceOf[Array[Byte]]
-        val dis: DataInputStream = new DataInputStream(new ByteArrayInputStream(bytes))
-        obj = Ser.read(dis)
-        ruleData.set(index, obj)
+      obj match {
+        case bytes: Array[Byte] =>
+          val dis: DataInputStream = new DataInputStream(new ByteArrayInputStream(bytes))
+          obj = Ser.read(dis)
+          ruleData.set(index, obj)
+        case _ =>
       }
       obj.asInstanceOf[ZoneRules]
     }

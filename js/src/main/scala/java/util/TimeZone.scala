@@ -39,7 +39,7 @@ object TimeZone {
           browserDate.toTimeString().split(' ')(1).takeWhile(e => e != ' ')
         }
       }
-  
+
       Try {
         // First try with the intl API
         new DateTimeFormat().resolvedOptions().timeZone.getOrElse(browserTZ.getOrElse("UTC"))
@@ -124,10 +124,10 @@ abstract class TimeZone extends Serializable with Cloneable {
     getDisplayName(daylight, style, Locale.getDefault(Locale.Category.DISPLAY))
 
   def	getDisplayName(locale: Locale): String =
-    getDisplayName(false, TimeZone.LONG, locale)
+    getDisplayName(daylight = false, TimeZone.LONG, locale)
 
   def getDisplayName: String =
-    getDisplayName(false, TimeZone.LONG, Locale.getDefault(Locale.Category.DISPLAY))
+    getDisplayName(daylight = false, TimeZone.LONG, Locale.getDefault(Locale.Category.DISPLAY))
 
   def getDSTSavings: Int =
     if (useDaylightTime) 3600000
