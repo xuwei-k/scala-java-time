@@ -91,8 +91,8 @@ Both Scala 2.11 and Scala 2.12 (2.12.0-M8 and later) are supported.</p>
 <p>To get started with SBT, add one (or both) of these dependencies:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M10"</code> (for Scala)</li>
-  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M10"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M11"</code> (for Scala)</li>
+  <li><code class="highlighter-rouge">libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M11"</code> (for Scala.js, <a href="http://www.scala-js.org/tutorial/basic/#sbt-setup">Scala.js plugin</a> required)</li>
 </ul>
 
 <h4 id="building">Building</h4>
@@ -102,7 +102,7 @@ Run <code class="highlighter-rouge">sbt scalajavatimeCrossJVM/test</code> to run
 
 <h4 id="status">Status</h4>
 
-<p>Most parts of this library work perfectly fine with Scala.js in the browser.</p>
+<p>All parts of this library work perfectly fine with Scala.js in the browser.</p>
 
 <h4 id="contributing">Contributing</h4>
 
@@ -110,7 +110,6 @@ Run <code class="highlighter-rouge">sbt scalajavatimeCrossJVM/test</code> to run
 We are especially interested in contributions that tackle the following issues:</p>
 
 <ul>
-  <li>Complete the port of tests to scalatest</li>
   <li>Modularize the tzdb database</li>
   <li>Find ways to reduce the size of the library</li>
 </ul>
@@ -120,8 +119,6 @@ We are especially interested in contributions that tackle the following issues:<
 <h4 id="plans">Plans</h4>
 
 <h5 id="20">2.0</h5>
-
-<p>We will keep releasing milestone builds while work on the remaining bits and pieces to support 100% of this library on Scala.js is ongoing (most parts work fine already).</p>
 
 <p>The current version is published containing the code in both packages: <code class="highlighter-rouge">org.threeten.bp</code> and <code class="highlighter-rouge">java.time</code>.</p>
 
