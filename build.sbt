@@ -61,11 +61,12 @@ lazy val root = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
   .settings(commonSettings: _*)
   .settings(
-    name                 := "scalajavatime",
+    name                 := "scala-java-time",
     // No, SBT, we don't want any artifacts for root.
     // No, not even an empty jar.
     publish              := {},
     publishLocal         := {},
+    publishArtifact      := false,
     Keys.`package`       := file(""))
 
 lazy val tzDbSettings = Seq(
