@@ -60,8 +60,8 @@ Both Scala 2.11 and Scala 2.12 (2.12.0-M8 and later) are supported.
 
 To get started with SBT, add one (or both) of these dependencies:
 
-- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M10"` (for Scala)
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M10"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M11"` (for Scala)
+- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M11"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.
@@ -70,14 +70,13 @@ Run `sbt scalajavatimeCrossJVM/test` to run the test suite on the JVM and
 
 #### Status
 
-Most parts of this library work perfectly fine with Scala.js in the browser.
+All parts of this library work perfectly fine with Scala.js in the browser.
 
 #### Contributing
 
 We welcome all contributions, including ideas, suggestions, bug reports, bug fixes and code!
 We are especially interested in contributions that tackle the following issues:
 
-* Complete the port of tests to scalatest
 * Modularize the tzdb database
 * Find ways to reduce the size of the library
 
@@ -86,8 +85,6 @@ Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) o
 #### Plans
 
 ##### 2.0
-
-We will keep releasing milestone builds while work on the remaining bits and pieces to support 100% of this library on Scala.js is ongoing (most parts work fine already).
 
 The current version is published containing the code in both packages: `org.threeten.bp` and `java.time`.
 

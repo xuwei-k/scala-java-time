@@ -10,7 +10,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M10",
+  version      := "2.0.0-M11",
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -61,11 +61,12 @@ lazy val root = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
   .settings(commonSettings: _*)
   .settings(
-    name                 := "scalajavatime",
+    name                 := "scala-java-time",
     // No, SBT, we don't want any artifacts for root.
     // No, not even an empty jar.
     publish              := {},
     publishLocal         := {},
+    publishArtifact      := false,
     Keys.`package`       := file(""))
 
 lazy val tzDbSettings = Seq(
