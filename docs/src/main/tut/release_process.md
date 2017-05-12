@@ -4,4 +4,5 @@ This are the steps to make a release
 sbt
 +publishSigned
 sonatypeRelease
+docs/publishMicrosite
 ```

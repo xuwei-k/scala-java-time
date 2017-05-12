@@ -4,9 +4,9 @@ resolvers += Resolver.sonatypeRepo("public")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.16")
 
-addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M15")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC2")
 
-addSbtPlugin("com.fortysevendeg"  % "sbt-microsites" % "0.3.3")
+addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.5.7")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.1")
 

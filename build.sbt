@@ -1,8 +1,6 @@
 import sbt._
 import TZDBTasks._
 
-enablePlugins(MicrositesPlugin)
-
 val scalaVer = "2.11.11"
 val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.2")
 
