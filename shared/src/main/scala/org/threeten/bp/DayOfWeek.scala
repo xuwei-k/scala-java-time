@@ -143,8 +143,10 @@ object DayOfWeek {
     * @throws DateTimeException if unable to convert to a { @code DayOfWeek}
     */
   def from(temporal: TemporalAccessor): DayOfWeek = {
-    if (temporal.isInstanceOf[DayOfWeek])
-      return temporal.asInstanceOf[DayOfWeek]
+    temporal match {
+      case week: DayOfWeek => return week
+      case _ =>
+    }
     try of(temporal.get(DAY_OF_WEEK))
     catch {
       case ex: DateTimeException =>

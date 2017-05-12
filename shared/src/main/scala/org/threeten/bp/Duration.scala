@@ -558,17 +558,18 @@ final class Duration private(private val seconds: Long, private val nanos: Int) 
       throw new DateTimeException("Unit must not have an estimated duration")
     if (amountToAdd == 0)
       return this
-    if (unit.isInstanceOf[ChronoUnit]) {
-      unit.asInstanceOf[ChronoUnit] match {
-        case NANOS   => plusNanos(amountToAdd)
-        case MICROS  => plusSeconds((amountToAdd / (1000000L * 1000)) * 1000).plusNanos((amountToAdd % (1000000L * 1000)) * 1000)
-        case MILLIS  => plusMillis(amountToAdd)
-        case SECONDS => plusSeconds(amountToAdd)
-        case _       => plusSeconds(Math.multiplyExact(unit.getDuration.seconds, amountToAdd))
-      }
-    } else {
-      val duration: Duration = unit.getDuration.multipliedBy(amountToAdd)
-      plusSeconds(duration.getSeconds).plusNanos(duration.getNano)
+    unit match {
+      case u: ChronoUnit =>
+        u match {
+          case NANOS => plusNanos(amountToAdd)
+          case MICROS => plusSeconds((amountToAdd / (1000000L * 1000)) * 1000).plusNanos((amountToAdd % (1000000L * 1000)) * 1000)
+          case MILLIS => plusMillis(amountToAdd)
+          case SECONDS => plusSeconds(amountToAdd)
+          case _ => plusSeconds(Math.multiplyExact(unit.getDuration.seconds, amountToAdd))
+        }
+      case _ =>
+        val duration: Duration = unit.getDuration.multipliedBy(amountToAdd)
+        plusSeconds(duration.getSeconds).plusNanos(duration.getNano)
     }
   }
 

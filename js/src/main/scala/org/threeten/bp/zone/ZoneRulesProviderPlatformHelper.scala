@@ -1,7 +1,6 @@
 package org.threeten.bp.zone
 
 import java.util.Iterator
-import java.util.Collections
 
 import scala.collection.JavaConverters._
 

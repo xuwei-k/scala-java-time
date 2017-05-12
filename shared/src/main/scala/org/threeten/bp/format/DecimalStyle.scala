@@ -238,11 +238,11 @@ final class DecimalStyle private(val zeroDigit: Char, val positiveSign: Char, va
     * @return true if this is equal to the other date
     */
   override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[DecimalStyle]) {
-      val other: DecimalStyle = obj.asInstanceOf[DecimalStyle]
-      (this eq other) || (zeroDigit == other.zeroDigit && positiveSign == other.positiveSign && negativeSign == other.negativeSign && decimalSeparator == other.decimalSeparator)
-    } else {
-      false
+    obj match {
+      case other: DecimalStyle =>
+        (this eq other) || (zeroDigit == other.zeroDigit && positiveSign == other.positiveSign && negativeSign == other.negativeSign && decimalSeparator == other.decimalSeparator)
+      case _ =>
+        false
     }
 
   /** A hash code for these symbols.

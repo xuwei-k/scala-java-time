@@ -161,25 +161,25 @@ final class ThaiBuddhistDate private[chrono](private val isoDate: LocalDate) ext
   def lengthOfMonth: Int = isoDate.lengthOfMonth
 
   override def range(field: TemporalField): ValueRange = {
-    if (field.isInstanceOf[ChronoField]) {
-      if (isSupported(field)) {
-        val f: ChronoField = field.asInstanceOf[ChronoField]
-        f match {
-          case DAY_OF_MONTH
-             | DAY_OF_YEAR
-             | ALIGNED_WEEK_OF_MONTH => isoDate.range(field)
-          case YEAR_OF_ERA           => val range: ValueRange = YEAR.range
-                                        val max: Long =
-                                          if (getProlepticYear <= 0) -(range.getMinimum + YEARS_DIFFERENCE) + 1
-                                          else range.getMaximum + YEARS_DIFFERENCE
-                                        ValueRange.of(1, max)
-          case _                     => getChronology.range(f)
+    field match {
+      case f: ChronoField =>
+        if (isSupported(field)) {
+          f match {
+            case DAY_OF_MONTH
+                 | DAY_OF_YEAR
+                 | ALIGNED_WEEK_OF_MONTH => isoDate.range(field)
+            case YEAR_OF_ERA => val range: ValueRange = YEAR.range
+              val max: Long =
+                if (getProlepticYear <= 0) -(range.getMinimum + YEARS_DIFFERENCE) + 1
+                else range.getMaximum + YEARS_DIFFERENCE
+              ValueRange.of(1, max)
+            case _ => getChronology.range(f)
+          }
+        } else {
+          throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
         }
-      } else {
-        throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-      }
-    } else {
-      field.rangeRefinedBy(this)
+      case _ =>
+        field.rangeRefinedBy(this)
     }
   }
 
@@ -201,27 +201,28 @@ final class ThaiBuddhistDate private[chrono](private val isoDate: LocalDate) ext
   override def `with`(adjuster: TemporalAdjuster): ThaiBuddhistDate = super.`with`(adjuster).asInstanceOf[ThaiBuddhistDate]
 
   def `with`(field: TemporalField, newValue: Long): ThaiBuddhistDate = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      if (getLong(f) == newValue)
-        return this
-      f match {
-        case PROLEPTIC_MONTH =>
-          getChronology.range(f).checkValidValue(newValue, f)
-          return plusMonths(newValue - getProlepticMonth)
-        case YEAR_OF_ERA | YEAR | ERA =>
-          val nvalue: Int = getChronology.range(f).checkValidIntValue(newValue, f)
-          f match {
-            case YEAR_OF_ERA =>
-              return `with`(isoDate.withYear((if (getProlepticYear >= 1) nvalue else 1 - nvalue) - YEARS_DIFFERENCE))
-            case YEAR =>
-              return `with`(isoDate.withYear(nvalue - YEARS_DIFFERENCE))
-            case ERA =>
-              return `with`(isoDate.withYear((1 - getProlepticYear) - YEARS_DIFFERENCE))
-          }
-        case _ =>
-          return `with`(isoDate.`with`(field, newValue))
-      }
+    field match {
+      case f: ChronoField =>
+        if (getLong(f) == newValue)
+          return this
+        f match {
+          case PROLEPTIC_MONTH =>
+            getChronology.range(f).checkValidValue(newValue, f)
+            return plusMonths(newValue - getProlepticMonth)
+          case YEAR_OF_ERA | YEAR | ERA =>
+            val nvalue: Int = getChronology.range(f).checkValidIntValue(newValue, f)
+            f match {
+              case YEAR_OF_ERA =>
+                return `with`(isoDate.withYear((if (getProlepticYear >= 1) nvalue else 1 - nvalue) - YEARS_DIFFERENCE))
+              case YEAR =>
+                return `with`(isoDate.withYear(nvalue - YEARS_DIFFERENCE))
+              case ERA =>
+                return `with`(isoDate.withYear((1 - getProlepticYear) - YEARS_DIFFERENCE))
+            }
+          case _ =>
+            return `with`(isoDate.`with`(field, newValue))
+        }
+      case _ =>
     }
     field.adjustInto(this, newValue)
   }

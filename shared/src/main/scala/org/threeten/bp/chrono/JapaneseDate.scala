@@ -319,19 +319,19 @@ final class JapaneseDate private[chrono](@transient private var era: JapaneseEra
     }
 
   override def range(field: TemporalField): ValueRange =
-    if (field.isInstanceOf[ChronoField]) {
-      if (isSupported(field)) {
-        val f: ChronoField = field.asInstanceOf[ChronoField]
-        f match {
-          case DAY_OF_YEAR => actualRange(Calendar.DAY_OF_YEAR)
-          case YEAR_OF_ERA => actualRange(Calendar.YEAR)
-          case _           => getChronology.range(f)
+    field match {
+      case f: ChronoField =>
+        if (isSupported(field)) {
+          f match {
+            case DAY_OF_YEAR => actualRange(Calendar.DAY_OF_YEAR)
+            case YEAR_OF_ERA => actualRange(Calendar.YEAR)
+            case _ => getChronology.range(f)
+          }
+        } else {
+          throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
         }
-      } else {
-        throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-      }
-    } else {
-      field.rangeRefinedBy(this)
+      case _ =>
+        field.rangeRefinedBy(this)
     }
 
   private def actualRange(calendarField: Int): ValueRange = {
@@ -342,19 +342,20 @@ final class JapaneseDate private[chrono](@transient private var era: JapaneseEra
   }
 
   def getLong(field: TemporalField): Long = {
-    if (field.isInstanceOf[ChronoField]) {
-      field.asInstanceOf[ChronoField] match {
-        case ALIGNED_DAY_OF_WEEK_IN_MONTH
-           | ALIGNED_DAY_OF_WEEK_IN_YEAR
-           | ALIGNED_WEEK_OF_MONTH
-           | ALIGNED_WEEK_OF_YEAR         => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-        case YEAR_OF_ERA                  => yearOfEra
-        case ERA                          => era.getValue
-        case DAY_OF_YEAR                  => getDayOfYear
-        case _                            => isoDate.getLong(field)
-      }
-    } else {
-      field.getFrom(this)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case ALIGNED_DAY_OF_WEEK_IN_MONTH
+               | ALIGNED_DAY_OF_WEEK_IN_YEAR
+               | ALIGNED_WEEK_OF_MONTH
+               | ALIGNED_WEEK_OF_YEAR => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+          case YEAR_OF_ERA            => yearOfEra
+          case ERA                    => era.getValue
+          case DAY_OF_YEAR            => getDayOfYear
+          case _                      => isoDate.getLong(field)
+        }
+      case _ =>
+        field.getFrom(this)
     }
   }
 
@@ -367,23 +368,24 @@ final class JapaneseDate private[chrono](@transient private var era: JapaneseEra
   override def `with`(adjuster: TemporalAdjuster): JapaneseDate = super.`with`(adjuster).asInstanceOf[JapaneseDate]
 
   def `with`(field: TemporalField, newValue: Long): JapaneseDate = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      if (getLong(f) == newValue)
-        return this
-      f match {
-        case DAY_OF_YEAR
-           | YEAR_OF_ERA
-           | ERA         => val nvalue: Int = getChronology.range(f).checkValidIntValue(newValue, f)
-                            f match {
-                              case DAY_OF_YEAR => `with`(isoDate.plusDays(nvalue - getDayOfYear))
-                              case YEAR_OF_ERA => this.withYear(nvalue)
-                              case ERA         => this.withYear(JapaneseEra.of(nvalue), yearOfEra)
-                            }
-        case _           => `with`(isoDate.`with`(field, newValue))
-      }
-    } else {
-      field.adjustInto(this, newValue)
+    field match {
+      case f: ChronoField =>
+        if (getLong(f) == newValue)
+          return this
+        f match {
+          case DAY_OF_YEAR
+               | YEAR_OF_ERA
+               | ERA =>
+            val nvalue: Int = getChronology.range(f).checkValidIntValue(newValue, f)
+            f match {
+              case DAY_OF_YEAR => `with`(isoDate.plusDays(nvalue - getDayOfYear))
+              case YEAR_OF_ERA => this.withYear(nvalue)
+              case ERA         => this.withYear(JapaneseEra.of(nvalue), yearOfEra)
+            }
+          case _ => `with`(isoDate.`with`(field, newValue))
+        }
+      case _ =>
+        field.adjustInto(this, newValue)
     }
   }
 

@@ -418,15 +418,15 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def get(field: TemporalField): Int =
-    if (field.isInstanceOf[ChronoField])
-      field.asInstanceOf[ChronoField] match {
-        case NANO_OF_SECOND  => nanos
+    field match {
+      case f: ChronoField => f match {
+        case NANO_OF_SECOND => nanos
         case MICRO_OF_SECOND => nanos / 1000
         case MILLI_OF_SECOND => nanos / Instant.NANOS_PER_MILLI
-        case _               => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+        case _ => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
       }
-    else
-      range(field).checkValidIntValue(field.getFrom(this), field)
+      case _ => range(field).checkValidIntValue(field.getFrom(this), field)
+    }
 
   /** Gets the value of the specified field from this instant as a {@code long}.
     *
@@ -450,16 +450,16 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws ArithmeticException if numeric overflow occurs
     */
   def getLong(field: TemporalField): Long =
-    if (field.isInstanceOf[ChronoField])
-      field.asInstanceOf[ChronoField] match {
-        case NANO_OF_SECOND  => nanos
+    field match {
+      case f: ChronoField => f match {
+        case NANO_OF_SECOND => nanos
         case MICRO_OF_SECOND => nanos / 1000
         case MILLI_OF_SECOND => nanos / Instant.NANOS_PER_MILLI
         case INSTANT_SECONDS => seconds
-        case _               => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+        case _ => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
       }
-    else
-      field.getFrom(this)
+      case _ => field.getFrom(this)
+    }
 
   /** Gets the number of seconds from the Java epoch of 1970-01-01T00:00:00Z.
     *
@@ -543,22 +543,23 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws ArithmeticException if numeric overflow occurs
     */
   def `with`(field: TemporalField, newValue: Long): Instant = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      f.checkValidValue(newValue)
-      f match {
-        case MILLI_OF_SECOND =>
-          val nval: Int = newValue.toInt * Instant.NANOS_PER_MILLI
-          return if (nval != nanos) Instant.create(seconds, nval) else this
-        case MICRO_OF_SECOND =>
-          val nval: Int = newValue.toInt * 1000
-          return if (nval != nanos) Instant.create(seconds, nval) else this
-        case NANO_OF_SECOND =>
-          return if (newValue != nanos) Instant.create(seconds, newValue.toInt) else this
-        case INSTANT_SECONDS =>
-          return if (newValue != seconds) Instant.create(newValue, nanos) else this
-      }
-      throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+    field match {
+      case f: ChronoField =>
+        f.checkValidValue(newValue)
+        f match {
+          case MILLI_OF_SECOND =>
+            val nval: Int = newValue.toInt * Instant.NANOS_PER_MILLI
+            return if (nval != nanos) Instant.create(seconds, nval) else this
+          case MICRO_OF_SECOND =>
+            val nval: Int = newValue.toInt * 1000
+            return if (nval != nanos) Instant.create(seconds, nval) else this
+          case NANO_OF_SECOND =>
+            return if (newValue != nanos) Instant.create(seconds, newValue.toInt) else this
+          case INSTANT_SECONDS =>
+            return if (newValue != seconds) Instant.create(newValue, nanos) else this
+        }
+        throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+      case _ =>
     }
     field.adjustInto(this, newValue)
   }
@@ -612,27 +613,29 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     * @throws ArithmeticException { @inheritDoc}
     */
   def plus(amountToAdd: Long, unit: TemporalUnit): Instant = {
-    if (unit.isInstanceOf[ChronoUnit]) {
-      import ChronoUnit._
-      unit.asInstanceOf[ChronoUnit] match {
-        case NANOS =>
-          return plusNanos(amountToAdd)
-        case MICROS =>
-          return plus(amountToAdd / 1000000, (amountToAdd % 1000000) * 1000)
-        case MILLIS =>
-          return plusMillis(amountToAdd)
-        case SECONDS =>
-          return plusSeconds(amountToAdd)
-        case MINUTES =>
-          return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_MINUTE))
-        case HOURS =>
-          return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_HOUR))
-        case HALF_DAYS =>
-          return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_DAY / 2))
-        case DAYS =>
-          return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_DAY))
-      }
-      throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+    unit match {
+      case u: ChronoUnit =>
+        import ChronoUnit._
+        u match {
+          case NANOS =>
+            return plusNanos(amountToAdd)
+          case MICROS =>
+            return plus(amountToAdd / 1000000, (amountToAdd % 1000000) * 1000)
+          case MILLIS =>
+            return plusMillis(amountToAdd)
+          case SECONDS =>
+            return plusSeconds(amountToAdd)
+          case MINUTES =>
+            return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_MINUTE))
+          case HOURS =>
+            return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_HOUR))
+          case HALF_DAYS =>
+            return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_DAY / 2))
+          case DAYS =>
+            return plusSeconds(Math.multiplyExact(amountToAdd, SECONDS_PER_DAY))
+        }
+        throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+      case _ =>
     }
     unit.addTo(this, amountToAdd)
   }
@@ -844,28 +847,29 @@ final class Instant private(private val seconds: Long, private val nanos: Int) e
     */
   def until(endExclusive: Temporal, unit: TemporalUnit): Long = {
     val end: Instant = Instant.from(endExclusive)
-    if (unit.isInstanceOf[ChronoUnit]) {
-      val f: ChronoUnit = unit.asInstanceOf[ChronoUnit]
-      import ChronoUnit._
-      f match {
-        case NANOS =>
-          return nanosUntil(end)
-        case MICROS =>
-          return nanosUntil(end) / 1000
-        case MILLIS =>
-          return Math.subtractExact(end.toEpochMilli, toEpochMilli)
-        case SECONDS =>
-          return secondsUntil(end)
-        case MINUTES =>
-          return secondsUntil(end) / SECONDS_PER_MINUTE
-        case HOURS =>
-          return secondsUntil(end) / SECONDS_PER_HOUR
-        case HALF_DAYS =>
-          return secondsUntil(end) / (12 * SECONDS_PER_HOUR)
-        case DAYS =>
-          return secondsUntil(end) / SECONDS_PER_DAY
-      }
-      throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+    unit match {
+      case f: ChronoUnit =>
+        import ChronoUnit._
+        f match {
+          case NANOS =>
+            return nanosUntil(end)
+          case MICROS =>
+            return nanosUntil(end) / 1000
+          case MILLIS =>
+            return Math.subtractExact(end.toEpochMilli, toEpochMilli)
+          case SECONDS =>
+            return secondsUntil(end)
+          case MINUTES =>
+            return secondsUntil(end) / SECONDS_PER_MINUTE
+          case HOURS =>
+            return secondsUntil(end) / SECONDS_PER_HOUR
+          case HALF_DAYS =>
+            return secondsUntil(end) / (12 * SECONDS_PER_HOUR)
+          case DAYS =>
+            return secondsUntil(end) / SECONDS_PER_DAY
+        }
+        throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+      case _ =>
     }
     unit.between(this, end)
   }

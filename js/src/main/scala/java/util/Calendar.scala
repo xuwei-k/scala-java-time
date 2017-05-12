@@ -61,7 +61,7 @@ abstract class Calendar private[util](timezone: TimeZone = null, locale: Locale 
 
   final def set(year: Int, month: Int, day: Int, hourOfDay: Int, minute: Int, second: Int): Unit = ???
 
-  def setLenient(value: Boolean): Unit = lenient = value;
+  def setLenient(value: Boolean): Unit = lenient = value
 
   def setTimeZone(timezone: TimeZone): Unit = ???
 
@@ -75,58 +75,59 @@ abstract class Calendar private[util](timezone: TimeZone = null, locale: Locale 
     *
     * @return the instant, not null
     */
+  //noinspection ScalaDocInlinedTag,ScalaDocInlinedTag
   def toInstant: Instant = Instant.ofEpochMilli(getTimeInMillis)
 }
 
 object Calendar {
-  val JANUARY = 0;
-  val FEBRUARY = 1;
-  val MARCH = 2;
-  val APRIL = 3;
-  val MAY = 4;
-  val JUNE = 5;
-  val JULY = 6;
-  val AUGUST = 7;
-  val SEPTEMBER = 8;
-  val OCTOBER = 9;
-  val NOVEMBER = 10;
-  val DECEMBER = 11;
-  val UNDECIMBER = 12;
+  val JANUARY = 0
+  val FEBRUARY = 1
+  val MARCH = 2
+  val APRIL = 3
+  val MAY = 4
+  val JUNE = 5
+  val JULY = 6
+  val AUGUST = 7
+  val SEPTEMBER = 8
+  val OCTOBER = 9
+  val NOVEMBER = 10
+  val DECEMBER = 11
+  val UNDECIMBER = 12
 
-  val SUNDAY = 1;
-  val MONDAY = 2;
-  val TUESDAY = 3;
-  val WEDNESDAY = 4;
-  val THURSDAY = 5;
-  val FRIDAY = 6;
-  val SATURDAY = 7;
+  val SUNDAY = 1
+  val MONDAY = 2
+  val TUESDAY = 3
+  val WEDNESDAY = 4
+  val THURSDAY = 5
+  val FRIDAY = 6
+  val SATURDAY = 7
 
-  val ERA = 0;
-  val YEAR = 1;
-  val MONTH = 2;
-  val WEEK_OF_YEAR = 3;
-  val WEEK_OF_MONTH = 4;
-  val DATE = 5;
-  val DAY_OF_MONTH = 5;
-  val DAY_OF_YEAR = 6;
-  val DAY_OF_WEEK = 7;
-  val DAY_OF_WEEK_IN_MONTH = 8;
-  val AM_PM = 9;
-  val HOUR = 10;
-  val HOUR_OF_DAY = 11;
-  val MINUTE = 12;
-  val SECOND = 13;
-  val MILLISECOND = 14;
-  val ZONE_OFFSET = 15;
-  val DST_OFFSET = 16;
-  val FIELD_COUNT = 17;
+  val ERA = 0
+  val YEAR = 1
+  val MONTH = 2
+  val WEEK_OF_YEAR = 3
+  val WEEK_OF_MONTH = 4
+  val DATE = 5
+  val DAY_OF_MONTH = 5
+  val DAY_OF_YEAR = 6
+  val DAY_OF_WEEK = 7
+  val DAY_OF_WEEK_IN_MONTH = 8
+  val AM_PM = 9
+  val HOUR = 10
+  val HOUR_OF_DAY = 11
+  val MINUTE = 12
+  val SECOND = 13
+  val MILLISECOND = 14
+  val ZONE_OFFSET = 15
+  val DST_OFFSET = 16
+  val FIELD_COUNT = 17
 
-  val AM = 0;
-  val PM = 1;
+  val AM = 0
+  val PM = 1
 
-  val ALL_STYLES = 0;
-  val SHORT = 1;
-  val LONG = 2;
+  val ALL_STYLES = 0
+  val SHORT = 1
+  val LONG = 2
 
   def getInstance(): Calendar = synchronized { new GregorianCalendar() }
 

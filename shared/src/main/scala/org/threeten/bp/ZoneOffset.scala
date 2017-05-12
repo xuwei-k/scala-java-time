@@ -122,25 +122,25 @@ object ZoneOffset {
 
     _offsetId.length match {
       case 3 =>
-        hours = parseNumber(_offsetId, 1, false)
+        hours = parseNumber(_offsetId, 1, precededByColon = false)
         minutes = 0
         seconds = 0
       case 5 =>
-        hours = parseNumber(_offsetId, 1, false)
-        minutes = parseNumber(_offsetId, 3, false)
+        hours = parseNumber(_offsetId, 1, precededByColon = false)
+        minutes = parseNumber(_offsetId, 3, precededByColon = false)
         seconds = 0
       case 6 =>
-        hours = parseNumber(_offsetId, 1, false)
-        minutes = parseNumber(_offsetId, 4, true)
+        hours = parseNumber(_offsetId, 1, precededByColon = false)
+        minutes = parseNumber(_offsetId, 4, precededByColon = true)
         seconds = 0
       case 7 =>
-        hours = parseNumber(_offsetId, 1, false)
-        minutes = parseNumber(_offsetId, 3, false)
-        seconds = parseNumber(_offsetId, 5, false)
+        hours = parseNumber(_offsetId, 1, precededByColon = false)
+        minutes = parseNumber(_offsetId, 3, precededByColon = false)
+        seconds = parseNumber(_offsetId, 5, precededByColon = false)
       case 9 =>
-        hours = parseNumber(_offsetId, 1, false)
-        minutes = parseNumber(_offsetId, 4, true)
-        seconds = parseNumber(_offsetId, 7, true)
+        hours = parseNumber(_offsetId, 1, precededByColon = false)
+        minutes = parseNumber(_offsetId, 4, precededByColon = true)
+        seconds = parseNumber(_offsetId, 7, precededByColon = true)
       case _ =>
         throw new DateTimeException(s"Invalid ID for ZoneOffset, invalid format: ${_offsetId}")
     }

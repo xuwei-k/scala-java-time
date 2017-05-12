@@ -593,8 +593,10 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def `with`(adjuster: TemporalAdjuster): LocalTime =
-    if (adjuster.isInstanceOf[LocalTime]) adjuster.asInstanceOf[LocalTime]
-    else adjuster.adjustInto(this).asInstanceOf[LocalTime]
+    adjuster match {
+      case time: LocalTime => time
+      case _               => adjuster.adjustInto(this).asInstanceOf[LocalTime]
+    }
 
   /** Returns a copy of this time with the specified field set to a new value.
     *
@@ -677,30 +679,30 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     * @throws ArithmeticException if numeric overflow occurs
     */
   def `with`(field: TemporalField, newValue: Long): LocalTime = {
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      f.checkValidValue(newValue)
-      import ChronoField._
-      f match {
-        case NANO_OF_SECOND     => withNano(newValue.toInt)
-        case NANO_OF_DAY        => LocalTime.ofNanoOfDay(newValue)
-        case MICRO_OF_SECOND    => withNano(newValue.toInt * 1000)
-        case MICRO_OF_DAY       => LocalTime.ofNanoOfDay(newValue * 1000)
-        case MILLI_OF_SECOND    => withNano(newValue.toInt * 1000000)
-        case MILLI_OF_DAY       => LocalTime.ofNanoOfDay(newValue * 1000000)
-        case SECOND_OF_MINUTE   => withSecond(newValue.toInt)
-        case SECOND_OF_DAY      => plusSeconds(newValue - toSecondOfDay)
-        case MINUTE_OF_HOUR     => withMinute(newValue.toInt)
-        case MINUTE_OF_DAY      => plusMinutes(newValue - (hour * 60 + minute))
-        case HOUR_OF_AMPM       => plusHours(newValue - (hour % 12))
-        case CLOCK_HOUR_OF_AMPM => plusHours((if (newValue == 12) 0 else newValue) - (hour % 12))
-        case HOUR_OF_DAY        => withHour(newValue.toInt)
-        case CLOCK_HOUR_OF_DAY  => withHour((if (newValue == 24) 0 else newValue).toInt)
-        case AMPM_OF_DAY        => plusHours((newValue - (hour / 12)) * 12)
-        case _                  => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
-      }
-    } else {
-      field.adjustInto(this, newValue)
+    field match {
+      case f: ChronoField =>
+        f.checkValidValue(newValue)
+        import ChronoField._
+        f match {
+          case NANO_OF_SECOND => withNano(newValue.toInt)
+          case NANO_OF_DAY => LocalTime.ofNanoOfDay(newValue)
+          case MICRO_OF_SECOND => withNano(newValue.toInt * 1000)
+          case MICRO_OF_DAY => LocalTime.ofNanoOfDay(newValue * 1000)
+          case MILLI_OF_SECOND => withNano(newValue.toInt * 1000000)
+          case MILLI_OF_DAY => LocalTime.ofNanoOfDay(newValue * 1000000)
+          case SECOND_OF_MINUTE => withSecond(newValue.toInt)
+          case SECOND_OF_DAY => plusSeconds(newValue - toSecondOfDay)
+          case MINUTE_OF_HOUR => withMinute(newValue.toInt)
+          case MINUTE_OF_DAY => plusMinutes(newValue - (hour * 60 + minute))
+          case HOUR_OF_AMPM => plusHours(newValue - (hour % 12))
+          case CLOCK_HOUR_OF_AMPM => plusHours((if (newValue == 12) 0 else newValue) - (hour % 12))
+          case HOUR_OF_DAY => withHour(newValue.toInt)
+          case CLOCK_HOUR_OF_DAY => withHour((if (newValue == 24) 0 else newValue).toInt)
+          case AMPM_OF_DAY => plusHours((newValue - (hour / 12)) * 12)
+          case _ => throw new UnsupportedTemporalTypeException(s"Unsupported field: $field")
+        }
+      case _ =>
+        field.adjustInto(this, newValue)
     }
   }
 
@@ -831,21 +833,21 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     * @throws DateTimeException if the unit cannot be added to this type
     */
   def plus(amountToAdd: Long, unit: TemporalUnit): LocalTime = {
-    if (unit.isInstanceOf[ChronoUnit]) {
-      val f: ChronoUnit = unit.asInstanceOf[ChronoUnit]
-      import ChronoUnit._
-      f match {
-        case NANOS     => plusNanos(amountToAdd)
-        case MICROS    => plusNanos((amountToAdd % LocalTime.MICROS_PER_DAY) * 1000)
-        case MILLIS    => plusNanos((amountToAdd % LocalTime.MILLIS_PER_DAY) * 1000000)
-        case SECONDS   => plusSeconds(amountToAdd)
-        case MINUTES   => plusMinutes(amountToAdd)
-        case HOURS     => plusHours(amountToAdd)
-        case HALF_DAYS => plusHours((amountToAdd % 2) * 12)
-        case _         => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
-      }
-    } else {
-      unit.addTo(this, amountToAdd)
+    unit match {
+      case f: ChronoUnit =>
+        import ChronoUnit._
+        f match {
+          case NANOS => plusNanos(amountToAdd)
+          case MICROS => plusNanos((amountToAdd % LocalTime.MICROS_PER_DAY) * 1000)
+          case MILLIS => plusNanos((amountToAdd % LocalTime.MILLIS_PER_DAY) * 1000000)
+          case SECONDS => plusSeconds(amountToAdd)
+          case MINUTES => plusMinutes(amountToAdd)
+          case HOURS => plusHours(amountToAdd)
+          case HALF_DAYS => plusHours((amountToAdd % 2) * 12)
+          case _ => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+        }
+      case _ =>
+        unit.addTo(this, amountToAdd)
     }
   }
 
@@ -1116,21 +1118,22 @@ final class LocalTime(_hour: Int, _minute: Int, _second: Int, private val nano: 
     */
   def until(endExclusive: Temporal, unit: TemporalUnit): Long = {
     val end: LocalTime = LocalTime.from(endExclusive)
-    if (unit.isInstanceOf[ChronoUnit]) {
-      val nanosUntil: Long = end.toNanoOfDay - toNanoOfDay
-      import ChronoUnit._
-      unit.asInstanceOf[ChronoUnit] match {
-        case NANOS     => nanosUntil
-        case MICROS    => nanosUntil / 1000
-        case MILLIS    => nanosUntil / 1000000
-        case SECONDS   => nanosUntil / LocalTime.NANOS_PER_SECOND
-        case MINUTES   => nanosUntil / LocalTime.NANOS_PER_MINUTE
-        case HOURS     => nanosUntil / LocalTime.NANOS_PER_HOUR
-        case HALF_DAYS => nanosUntil / (12 * LocalTime.NANOS_PER_HOUR)
-        case _         => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
-      }
-    } else {
-      unit.between(this, end)
+    unit match {
+      case u: ChronoUnit =>
+        val nanosUntil: Long = end.toNanoOfDay - toNanoOfDay
+        import ChronoUnit._
+        u match {
+          case NANOS => nanosUntil
+          case MICROS => nanosUntil / 1000
+          case MILLIS => nanosUntil / 1000000
+          case SECONDS => nanosUntil / LocalTime.NANOS_PER_SECOND
+          case MINUTES => nanosUntil / LocalTime.NANOS_PER_MINUTE
+          case HOURS => nanosUntil / LocalTime.NANOS_PER_HOUR
+          case HALF_DAYS => nanosUntil / (12 * LocalTime.NANOS_PER_HOUR)
+          case _ => throw new UnsupportedTemporalTypeException(s"Unsupported unit: $unit")
+        }
+      case _ =>
+        unit.between(this, end)
     }
   }
 

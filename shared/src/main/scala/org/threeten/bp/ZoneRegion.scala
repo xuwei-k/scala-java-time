@@ -81,7 +81,7 @@ private object ZoneRegion {
         return new ZoneRegion("UT", offset.getRules)
       return new ZoneRegion(s"UT${offset.getId}", offset.getRules)
     }
-    ofId(zoneId, false)
+    ofId(zoneId, checkAvailable = false)
   }
 
   /** Obtains an instance of {@code ZoneId} from an identifier.
@@ -97,7 +97,7 @@ private object ZoneRegion {
     if (zoneId.length < 2 || !PATTERN.matcher(zoneId).matches)
       throw new DateTimeException(s"Invalid ID for region-based ZoneId, invalid format: $zoneId")
     var rules: ZoneRules = null
-    try rules = ZoneRulesProvider.getRules(zoneId, true)
+    try rules = ZoneRulesProvider.getRules(zoneId, forCaching = true)
     catch {
       case ex: ZoneRulesException =>
         if (zoneId == "GMT0")
@@ -141,7 +141,7 @@ final class ZoneRegion private[bp](private val id: String, @(transient @field) p
 
   def getId: String = id
 
-  def getRules: ZoneRules = if (rules != null) rules else ZoneRulesProvider.getRules(id, false)
+  def getRules: ZoneRules = if (rules != null) rules else ZoneRulesProvider.getRules(id, forCaching = false)
 
   private def writeReplace: AnyRef = new Ser(Ser.ZONE_REGION_TYPE, this)
 

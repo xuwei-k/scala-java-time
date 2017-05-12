@@ -1,18 +1,14 @@
 package org.threeten.bp.chrono
 
-import java.io.IOException
 import java.io.File
 import java.io.FileInputStream
 import java.io.BufferedReader
-import java.io.DataInput
-import java.io.DataOutput
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.io.Serializable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
-import java.util.{Objects, StringTokenizer}
+import java.util.StringTokenizer
 import java.text.ParseException
 
 object HijrahDateConfigurator {

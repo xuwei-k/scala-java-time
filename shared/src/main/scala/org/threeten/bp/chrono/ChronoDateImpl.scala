@@ -109,21 +109,21 @@ import org.threeten.bp.temporal.TemporalUnit
 abstract class ChronoDateImpl[D <: ChronoLocalDate] private[chrono]() extends ChronoLocalDate with Temporal with TemporalAdjuster with Serializable {
 
   def plus(amountToAdd: Long, unit: TemporalUnit): ChronoDateImpl[D] = {
-    if (unit.isInstanceOf[ChronoUnit]) {
-      val f: ChronoUnit = unit.asInstanceOf[ChronoUnit]
-      import ChronoUnit._
-      f match {
-        case DAYS      => plusDays(amountToAdd)
-        case WEEKS     => plusDays(Math.multiplyExact(amountToAdd, 7))
-        case MONTHS    => plusMonths(amountToAdd)
-        case YEARS     => plusYears(amountToAdd)
-        case DECADES   => plusYears(Math.multiplyExact(amountToAdd, 10))
-        case CENTURIES => plusYears(Math.multiplyExact(amountToAdd, 100))
-        case MILLENNIA => plusYears(Math.multiplyExact(amountToAdd, 1000))
-        case _         => throw new DateTimeException(s"$unit not valid for chronology ${getChronology.getId}")
-      }
-    } else {
-      getChronology.ensureChronoLocalDate(unit.addTo(this, amountToAdd)).asInstanceOf[ChronoDateImpl[D]]
+    import ChronoUnit._
+    unit match {
+      case f: ChronoUnit =>
+        f match {
+          case DAYS => plusDays(amountToAdd)
+          case WEEKS => plusDays(Math.multiplyExact(amountToAdd, 7))
+          case MONTHS => plusMonths(amountToAdd)
+          case YEARS => plusYears(amountToAdd)
+          case DECADES => plusYears(Math.multiplyExact(amountToAdd, 10))
+          case CENTURIES => plusYears(Math.multiplyExact(amountToAdd, 100))
+          case MILLENNIA => plusYears(Math.multiplyExact(amountToAdd, 1000))
+          case _ => throw new DateTimeException(s"$unit not valid for chronology ${getChronology.getId}")
+        }
+      case _ =>
+        getChronology.ensureChronoLocalDate(unit.addTo(this, amountToAdd)).asInstanceOf[ChronoDateImpl[D]]
     }
   }
 

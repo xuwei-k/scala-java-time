@@ -38,7 +38,7 @@ import java.io.InvalidObjectException
 import java.io.ObjectStreamException
 import java.io.Serializable
 import java.util.{Objects, Arrays}
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReference
 
 import org.threeten.bp.DateTimeException
 import org.threeten.bp.LocalDate

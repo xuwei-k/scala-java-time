@@ -61,21 +61,21 @@ final class ChronoPeriodImpl(private val chronology: Chronology, private val yea
   def getChronology: Chronology = chronology
 
   def plus(amountToAdd: TemporalAmount): ChronoPeriod = {
-    if (amountToAdd.isInstanceOf[ChronoPeriodImpl]) {
-      val amount: ChronoPeriodImpl = amountToAdd.asInstanceOf[ChronoPeriodImpl]
-      if (amount.getChronology == getChronology)
-        return new ChronoPeriodImpl(chronology, Math.addExact(years, amount.years), Math.addExact(months, amount.months), Math.addExact(days, amount.days))
+    amountToAdd match {
+      case amount: ChronoPeriodImpl if amount.getChronology == getChronology =>
+          new ChronoPeriodImpl(chronology, Math.addExact(years, amount.years), Math.addExact(months, amount.months), Math.addExact(days, amount.days))
+      case _ =>
+        throw new DateTimeException(s"Unable to add amount: $amountToAdd")
     }
-    throw new DateTimeException(s"Unable to add amount: $amountToAdd")
   }
 
   def minus(amountToSubtract: TemporalAmount): ChronoPeriod = {
-    if (amountToSubtract.isInstanceOf[ChronoPeriodImpl]) {
-      val amount: ChronoPeriodImpl = amountToSubtract.asInstanceOf[ChronoPeriodImpl]
-      if (amount.getChronology == getChronology)
-        return new ChronoPeriodImpl(chronology, Math.subtractExact(years, amount.years), Math.subtractExact(months, amount.months), Math.subtractExact(days, amount.days))
+    amountToSubtract match {
+      case amount: ChronoPeriodImpl if amount.getChronology == getChronology =>
+          new ChronoPeriodImpl(chronology, Math.subtractExact(years, amount.years), Math.subtractExact(months, amount.months), Math.subtractExact(days, amount.days))
+      case _ =>
+        throw new DateTimeException(s"Unable to subtract amount: $amountToSubtract")
     }
-    throw new DateTimeException(s"Unable to subtract amount: $amountToSubtract")
   }
 
   def multipliedBy(scalar: Int): ChronoPeriod =

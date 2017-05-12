@@ -237,11 +237,11 @@ final class ValueRange private(private val minSmallest: Long, private val minLar
     * @return true if this is equal to the other range
     */
   override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[ValueRange]) {
-      val other: ValueRange = obj.asInstanceOf[ValueRange]
-      (this eq other) || (minSmallest == other.minSmallest && minLargest == other.minLargest && maxSmallest == other.maxSmallest && maxLargest == other.maxLargest)
-    } else {
-      false
+    obj match {
+      case other: ValueRange =>
+        (this eq other) || (minSmallest == other.minSmallest && minLargest == other.minLargest && maxSmallest == other.maxSmallest && maxLargest == other.maxLargest)
+      case _ =>
+        false
     }
 
   /** A hash code for this range.

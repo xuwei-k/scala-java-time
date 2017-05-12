@@ -228,25 +228,27 @@ object ZonedDateTime {
     Objects.requireNonNull(localDateTime, "localDateTime")
     Objects.requireNonNull(zone, "zone")
     var _localDateTime = localDateTime
-    if (zone.isInstanceOf[ZoneOffset])
-      return new ZonedDateTime(_localDateTime, zone.asInstanceOf[ZoneOffset], zone)
-    val rules: ZoneRules = zone.getRules
-    val validOffsets: java.util.List[ZoneOffset] = rules.getValidOffsets(_localDateTime)
-    var offset: ZoneOffset = null
-    if (validOffsets.size == 1)
-      offset = validOffsets.get(0)
-    else if (validOffsets.size == 0) {
-      val trans: ZoneOffsetTransition = rules.getTransition(_localDateTime)
-      _localDateTime = _localDateTime.plusSeconds(trans.getDuration.getSeconds)
-      offset = trans.getOffsetAfter
+    zone match {
+      case offset: ZoneOffset => new ZonedDateTime(_localDateTime, offset, zone)
+      case _ =>
+        val rules: ZoneRules = zone.getRules
+        val validOffsets: java.util.List[ZoneOffset] = rules.getValidOffsets(_localDateTime)
+        var offset: ZoneOffset = null
+        if (validOffsets.size == 1)
+          offset = validOffsets.get(0)
+        else if (validOffsets.size == 0) {
+          val trans: ZoneOffsetTransition = rules.getTransition(_localDateTime)
+          _localDateTime = _localDateTime.plusSeconds(trans.getDuration.getSeconds)
+          offset = trans.getOffsetAfter
+        }
+        else {
+          if (preferredOffset != null && validOffsets.contains(preferredOffset))
+            offset = preferredOffset
+          else
+            offset = Objects.requireNonNull(validOffsets.get(0), "offset")
+        }
+        new ZonedDateTime(_localDateTime, offset, zone)
     }
-    else {
-      if (preferredOffset != null && validOffsets.contains(preferredOffset))
-        offset = preferredOffset
-      else
-        offset = Objects.requireNonNull(validOffsets.get(0), "offset")
-    }
-    new ZonedDateTime(_localDateTime, offset, zone)
   }
 
   /** Obtains an instance of {@code ZonedDateTime} from an {@code Instant}.
@@ -384,26 +386,28 @@ object ZonedDateTime {
     * @throws DateTimeException if unable to convert to an { @code ZonedDateTime}
     */
   def from(temporal: TemporalAccessor): ZonedDateTime = {
-    if (temporal.isInstanceOf[ZonedDateTime])
-      return temporal.asInstanceOf[ZonedDateTime]
-    try {
-      val zone: ZoneId = ZoneId.from(temporal)
-      if (temporal.isSupported(INSTANT_SECONDS)) {
+    temporal match {
+      case time: ZonedDateTime => time
+      case _ =>
         try {
-          val epochSecond: Long = temporal.getLong(INSTANT_SECONDS)
-          val nanoOfSecond: Int = temporal.get(NANO_OF_SECOND)
-          return create(epochSecond, nanoOfSecond, zone)
+          val zone: ZoneId = ZoneId.from(temporal)
+          if (temporal.isSupported(INSTANT_SECONDS)) {
+            try {
+              val epochSecond: Long = temporal.getLong(INSTANT_SECONDS)
+              val nanoOfSecond: Int = temporal.get(NANO_OF_SECOND)
+              return create(epochSecond, nanoOfSecond, zone)
+            }
+            catch {
+              case ex: DateTimeException =>
+            }
+          }
+          val ldt: LocalDateTime = LocalDateTime.from(temporal)
+          of(ldt, zone)
         }
         catch {
           case ex: DateTimeException =>
+            throw new DateTimeException(s"Unable to obtain ZonedDateTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
         }
-      }
-      val ldt: LocalDateTime = LocalDateTime.from(temporal)
-      of(ldt, zone)
-    }
-    catch {
-      case ex: DateTimeException =>
-        throw new DateTimeException(s"Unable to obtain ZonedDateTime from TemporalAccessor: $temporal, type ${temporal.getClass.getName}")
     }
   }
 
@@ -644,14 +648,15 @@ final class ZonedDateTime(private val dateTime: LocalDateTime, private val offse
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def get(field: TemporalField): Int =
-    if (field.isInstanceOf[ChronoField]) {
-      field.asInstanceOf[ChronoField] match {
-        case INSTANT_SECONDS => throw new DateTimeException(s"Field too large for an int: $field")
-        case OFFSET_SECONDS  => getOffset.getTotalSeconds
-        case _               => dateTime.get(field)
-      }
-    } else {
-      super.get(field)
+    field match {
+      case f: ChronoField =>
+         f match {
+          case INSTANT_SECONDS => throw new DateTimeException(s"Field too large for an int: $field")
+          case OFFSET_SECONDS => getOffset.getTotalSeconds
+          case _ => dateTime.get(field)
+        }
+      case _ =>
+        super.get(field)
     }
 
   /** Gets the value of the specified field from this date-time as a {@code long}.
@@ -676,14 +681,15 @@ final class ZonedDateTime(private val dateTime: LocalDateTime, private val offse
     * @throws ArithmeticException if numeric overflow occurs
     */
   override def getLong(field: TemporalField): Long =
-    if (field.isInstanceOf[ChronoField]) {
-      field.asInstanceOf[ChronoField] match {
-        case INSTANT_SECONDS => toEpochSecond
-        case OFFSET_SECONDS  => getOffset.getTotalSeconds
-        case _               => dateTime.getLong(field)
-      }
-    } else {
-      field.getFrom(this)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case INSTANT_SECONDS => toEpochSecond
+          case OFFSET_SECONDS => getOffset.getTotalSeconds
+          case _ => dateTime.getLong(field)
+        }
+      case _ =>
+        field.getFrom(this)
     }
 
   /** Gets the zone offset, such as '+01:00'.
@@ -1023,16 +1029,16 @@ final class ZonedDateTime(private val dateTime: LocalDateTime, private val offse
     * @throws ArithmeticException if numeric overflow occurs
     */
   def `with`(field: TemporalField, newValue: Long): ZonedDateTime =
-    if (field.isInstanceOf[ChronoField]) {
-      val f: ChronoField = field.asInstanceOf[ChronoField]
-      f match {
-        case INSTANT_SECONDS => ZonedDateTime.create(newValue, getNano, zone)
-        case OFFSET_SECONDS  => val offset: ZoneOffset = ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue))
-                                resolveOffset(offset)
-        case _               => resolveLocal(dateTime.`with`(field, newValue))
-      }
-    } else {
-      field.adjustInto(this, newValue)
+    field match {
+      case f: ChronoField =>
+        f match {
+          case INSTANT_SECONDS => ZonedDateTime.create(newValue, getNano, zone)
+          case OFFSET_SECONDS => val offset: ZoneOffset = ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue))
+            resolveOffset(offset)
+          case _ => resolveLocal(dateTime.`with`(field, newValue))
+        }
+      case _ =>
+        field.adjustInto(this, newValue)
     }
 
   /** Returns a copy of this {@code ZonedDateTime} with the year value altered.
