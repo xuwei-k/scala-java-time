@@ -9,6 +9,11 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
+    <release version="2.0.0-M12" date="2017-06-06" description="v2.0.0-M11">
+      <action dev="cquiroz" type="update" >
+        Update to scala.js 0.6.17
+      </action>
+    </release>
     <release version="2.0.0-M11" date="2017-04-16" description="v2.0.0-M11">
       <action dev="cquiroz" type="update" >
         Support Hijrah chronology on scala.js
