@@ -2,6 +2,7 @@ import sbtcrossproject.{crossProject, CrossType}
 import sbt._
 import sbt.io.Using
 import TZDBTasks._
+import sbtcrossproject.{crossProject, CrossType}
 
 val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
@@ -163,11 +164,21 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   generatedFiles
 }
 
-lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
+lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .in(file("core"))
   .settings(commonSettings: _*)
-  .jsSettings(
+  .jvmSettings(
+    resolvers += Resolver.sbtPluginRepo("releases"),
+    // Fork the JVM test to ensure that the custom flags are set
+    fork in Test := true,
+    baseDirectory in Test := baseDirectory.value.getParentFile,
+    // Use CLDR provider for locales
+    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
+  ).jsSettings(
+    tzDbSettings: _*
+  ).jsSettings(
     scalacOptions ++= {
       val tagOrHash =
         if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
@@ -184,12 +195,13 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
+      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.8-cldr31"
     )
   )
 
-lazy val scalajavatimeJVM = scalajavatime.jvm
-lazy val scalajavatimeJS  = scalajavatime.js
+lazy val scalajavatimeJVM     = scalajavatime.jvm
+lazy val scalajavatimeJS      = scalajavatime.js
+lazy val scalajavatimeNative  = scalajavatime.native
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
