@@ -18,5 +18,6 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.0")
 
 libraryDependencies ++= Seq(
   "io.github.cquiroz" %% "kuyfi" % "0.6.1",
-  "org.apache.commons" % "commons-compress" % "1.12"
+  "org.apache.commons" % "commons-compress" % "1.12",
+  "com.eed3si9n" %% "gigahorse-okhttp" % "0.3.0"
 )

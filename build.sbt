@@ -11,7 +11,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M12",
+  version      := "2.0.0-M13-SNAPSHOT",
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -23,8 +23,7 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
-    "-encoding", "UTF-8",
-    "-target:jvm-1.8"
+    "-encoding", "UTF-8"
   ),
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -74,11 +73,15 @@ lazy val root = project.in(file("."))
     publishArtifact      := false,
     Keys.`package`       := file(""))
 
-  // Resucitated from sbt-io
-  def download(url: URL, to: File) =
-    Using.urlInputStream(url) { inputStream =>
-      IO.transfer(inputStream, to)
-    }
+  def download(url: String, to: File) = {
+    import gigahorse._, support.okhttp.Gigahorse
+    import scala.concurrent._, duration._
+    Gigahorse.withHttp(Gigahorse.config) { http =>
+         val r = Gigahorse.url(url)
+         val f = http.download(r, to)
+         Await.result(f, 120.seconds)
+       }
+  }
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
@@ -87,9 +90,11 @@ lazy val tzDbSettings = Seq(
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
       println(s"tzdb data missing. downloading $version version to $tzdbDir...")
-      println(download(
-        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"),
-        tzdbDir))
+      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"
+      println(s"downloading from $url")
+      println(s"to file $tzdbTarball")
+      println(s"mkdir ${IO.createDirectory(tzdbDir)}")
+      download(url, tzdbTarball)
       Unpack.gunzipTar(tzdbTarball, tzdbDir)
       tzdbTarball.delete()
     } else {
@@ -159,6 +164,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
         s"-P:scalajs:mapSourceURI:$a->$g/"
       }
     },
+    scalacOptions += "-target:jvm-1.8",
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value
         val destinationDir = (sourceManaged in Compile).value
