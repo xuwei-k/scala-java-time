@@ -28,7 +28,7 @@ lazy val commonSettings = Seq(
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings")
+        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings", "-target:jvm-1.8")
       case Some((2, 10)) =>
         scalacOptions.value
     }
@@ -164,7 +164,6 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
         s"-P:scalajs:mapSourceURI:$a->$g/"
       }
     },
-    scalacOptions += "-target:jvm-1.8",
     sourceGenerators in Compile += Def.task {
         val srcDirs = (sourceDirectories in Compile).value
         val destinationDir = (sourceManaged in Compile).value
