@@ -30,7 +30,7 @@ lazy val commonSettings = Seq(
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>
         scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings", "-target:jvm-1.8")
       case Some((2, 10)) =>
-        scalacOptions.value
+        scalacOptions.value ++ Seq("-target:jvm-1.8")
     }
   },
   scalacOptions in (Compile, doc) := {
@@ -93,7 +93,7 @@ lazy val tzDbSettings = Seq(
       var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"
       println(s"downloading from $url")
       println(s"to file $tzdbTarball")
-      println(s"mkdir ${IO.createDirectory(tzdbDir)}")
+      IO.createDirectory(tzdbDir)
       download(url, tzdbTarball)
       Unpack.gunzipTar(tzdbTarball, tzdbDir)
       tzdbTarball.delete()
