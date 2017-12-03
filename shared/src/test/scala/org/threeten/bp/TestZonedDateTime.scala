@@ -173,7 +173,13 @@ class TestZonedDateTime extends FunSuite with GenDateTimeTest with AssertionsHel
         }
       }
     }
-    assertEquals(test, expected)
+    var diff: Long = Math.abs(test.toLocalTime.toNanoOfDay - expected.toLocalTime.toNanoOfDay)
+    if (diff >= 100000000) {
+      expected = ZonedDateTime.now(Clock.systemDefaultZone)
+      test = ZonedDateTime.now
+      diff = Math.abs(test.toLocalTime.toNanoOfDay - expected.toLocalTime.toNanoOfDay)
+    }
+    assertTrue(diff < 100000000)
   }
 
   test("now_Clock_nullClock") {

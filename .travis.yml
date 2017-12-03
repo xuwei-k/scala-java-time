@@ -10,27 +10,28 @@ language: scala
 
 jdk:
   - oraclejdk8
+  - oraclejdk9
 
 scala:
-  - 2.10.6
-  - 2.11.8
-  - 2.12.0
+  - 2.10.7
+  - 2.11.12
+  - 2.12.4
 
 before_install:
   - export PATH=${PATH}:./vendor/bundle
 
 env:
-  - TRAVIS_NODE_VERSION="5.12.0"
-  - TRAVIS_NODE_VERSION="6.10.0"
-  - TRAVIS_NODE_VERSION="7.6.0"
+  - TRAVIS_NODE_VERSION="7.10.1"
+  - TRAVIS_NODE_VERSION="8.9.1"
+  - TRAVIS_NODE_VERSION="9.2.0"
 
 install:
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
   - npm install
-  - rvm use 2.2.3 --install --fuzzy
+  - rvm use 2.3.3 --install --fuzzy
   - gem update --system
   - gem install sass
-  - gem install jekyll -v 3.2.1
+  - gem install jekyll -v 3.6.2
 
 cache:
   directories:

@@ -1,8 +1,9 @@
 import sbt._
+import sbt.io.Using
 import TZDBTasks._
 
-val scalaVer = "2.11.11"
-val crossScalaVer = Seq(scalaVer, "2.10.6", "2.12.2")
+val scalaVer = "2.11.12"
+val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
@@ -10,7 +11,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M12",
+  version      := "2.0.0-M13-SNAPSHOT",
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -19,15 +20,17 @@ lazy val commonSettings = Seq(
   crossScalaVersions := crossScalaVer,
   autoAPIMappings    := true,
 
-  scalacOptions ++= Seq("-deprecation", "-feature",
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-feature",
     "-encoding", "UTF-8"
   ),
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings")
+        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings", "-target:jvm-1.8")
       case Some((2, 10)) =>
-        scalacOptions.value
+        scalacOptions.value ++ Seq("-target:jvm-1.8")
     }
   },
   scalacOptions in (Compile, doc) := {
@@ -54,7 +57,7 @@ lazy val commonSettings = Seq(
   pomExtra := pomData,
   pomIncludeRepository := { _ => false },
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
   )
 )
 
@@ -70,16 +73,28 @@ lazy val root = project.in(file("."))
     publishArtifact      := false,
     Keys.`package`       := file(""))
 
+  def download(url: String, to: File) = {
+    import gigahorse._, support.okhttp.Gigahorse
+    import scala.concurrent._, duration._
+    Gigahorse.withHttp(Gigahorse.config) { http =>
+         val r = Gigahorse.url(url)
+         val f = http.download(r, to)
+         Await.result(f, 120.seconds)
+       }
+  }
+
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
-    val version = "2017b"
+    val version = "2017c"
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading $version version...")
-      IO.download(
-        new URL(s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"),
-        tzdbTarball)
+      println(s"tzdb data missing. downloading $version version to $tzdbDir...")
+      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"
+      println(s"downloading from $url")
+      println(s"to file $tzdbTarball")
+      IO.createDirectory(tzdbDir)
+      download(url, tzdbTarball)
       Unpack.gunzipTar(tzdbTarball, tzdbDir)
       tzdbTarball.delete()
     } else {
@@ -98,7 +113,7 @@ lazy val tzDbSettings = Seq(
 def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   // Copy a directory and return the list of files
   def copyDirectory(source: File, target: File, overwrite: Boolean = false, preserveLastModified: Boolean = false): Set[File] =
-    IO.copy(PathFinder(source).***.pair(Path.rebase(source, target)), overwrite, preserveLastModified)
+    IO.copy(PathFinder(source).allPaths.pair(Path.rebase(source, target)).toTraversable, overwrite, preserveLastModified, false)
 
   val onlyScalaDirs = srcDirs.filter(_.getName.endsWith("scala"))
   // Copy the source files from the base project, exclude classes on java.util and dirs
@@ -141,7 +156,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
   ).jsSettings(
     scalacOptions ++= {
       val tagOrHash =
-        if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lines_!.head
+        if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
         else s"v${version.value}"
       (sourceDirectories in Compile).value.map { f =>
         val a = f.toURI.toString
