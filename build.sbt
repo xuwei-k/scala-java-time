@@ -1,3 +1,4 @@
+import sbtcrossproject.{crossProject, CrossType}
 import sbt._
 import sbt.io.Using
 import TZDBTasks._
@@ -56,9 +57,15 @@ lazy val commonSettings = Seq(
     },
   pomExtra := pomData,
   pomIncludeRepository := { _ => false },
-  libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
-  )
+  libraryDependencies ++= {
+    if (scalaJSVersion.startsWith("0.6.")) {
+      Seq(
+        "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
+      )
+    } else {
+      Nil
+    }
+  }
 )
 
 lazy val root = project.in(file("."))
@@ -141,7 +148,7 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   generatedFiles
 }
 
-lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
+lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full).in(file("."))
   .settings(commonSettings: _*)
   .jvmSettings(
     resolvers += Resolver.sbtPluginRepo("releases"),
@@ -176,7 +183,7 @@ lazy val scalajavatime = crossProject.crossType(CrossType.Full).in(file("."))
       }.taskValue,
     parallelExecution in Test := false,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.5-cldr31"
+      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
     )
   )
 
