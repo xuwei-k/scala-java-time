@@ -21,15 +21,28 @@ lazy val commonSettings = Seq(
   crossScalaVersions := crossScalaVer,
   autoAPIMappings    := true,
 
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+        compilerPlugin("org.scalameta" % "semanticdb-scalac" % "2.1.2" cross CrossVersion.full) :: Nil
+      case _ =>
+        Nil
+    }
+  },
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
-    "-encoding", "UTF-8"
+    "-encoding", "UTF-8",
   ),
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings", "-target:jvm-1.8")
+        scalacOptions.value ++ Seq(
+          "-deprecation:false",
+          "-Xfatal-warnings",
+          "-Xplugin-require:semanticdb",
+          "-Yrangepos",
+          "-target:jvm-1.8")
       case Some((2, 10)) =>
         scalacOptions.value ++ Seq("-target:jvm-1.8")
     }
@@ -66,7 +79,7 @@ lazy val commonSettings = Seq(
       Nil
     }
   }
-)
+) ++ scalafixSettings
 
 lazy val root = project.in(file("."))
   .aggregate(scalajavatimeJVM, scalajavatimeJS)
