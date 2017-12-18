@@ -24,6 +24,7 @@
 /project/project/
 /project/target/
 js/src/main/resources/
+tzdb/src/main/resources/
 
 /src/*/
 !/src/changes/
