@@ -166,8 +166,6 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
   .in(file("core"))
   .settings(commonSettings: _*)
   .jsSettings(
-    tzDbSettings: _*)
-  .jsSettings(
     scalacOptions ++= {
       val tagOrHash =
         if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
@@ -183,12 +181,6 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
-    sourceGenerators in Test += Def.task {
-        val srcDirs = (sourceDirectories in Test).value
-        val destinationDir = (sourceManaged in Test).value
-        copyAndReplace(srcDirs, destinationDir)
-      }.taskValue,
-    parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
     )
@@ -196,24 +188,6 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
 
 lazy val scalajavatimeJVM = scalajavatime.jvm
 lazy val scalajavatimeJS  = scalajavatime.js
-
-lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
-  .crossType(CrossType.Full)
-  .in(file("tests"))
-  .settings(commonSettings: _*)
-  .jvmSettings(
-    // Fork the JVM test to ensure that the custom flags are set
-    fork in Test := true,
-    baseDirectory in Test := baseDirectory.value.getParentFile,
-    // Use CLDR provider for locales
-    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
-  ).jsSettings(
-    parallelExecution in Test := false
-  ).dependsOn(scalajavatime)
-
-lazy val scalajavatimeTestsJVM = scalajavatimeTests.jvm
-lazy val scalajavatimeTestsJS  = scalajavatimeTests.js
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
@@ -227,6 +201,29 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
 
 lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
 lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js
+
+lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
+  .in(file("tests"))
+  .settings(commonSettings: _*)
+  .jvmSettings(
+    // Fork the JVM test to ensure that the custom flags are set
+    fork in Test := true,
+    baseDirectory in Test := baseDirectory.value.getParentFile,
+    // Use CLDR provider for locales
+    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
+  ).jsSettings(
+    parallelExecution in Test := false,
+    // sourceGenerators in Test += Def.task {
+    //   val srcDirs = (sourceDirectories in Test).value
+    //   val destinationDir = (sourceManaged in Test).value
+    //   copyAndReplace(srcDirs, destinationDir)
+    // }.taskValue
+  ).dependsOn(scalajavatime, scalajavatimeTZDB)
+
+lazy val scalajavatimeTestsJVM = scalajavatimeTests.jvm
+lazy val scalajavatimeTestsJS  = scalajavatimeTests.js
 
 lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavatimeJS)
   .settings(commonSettings)
