@@ -197,6 +197,13 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .settings(
     tzDbSettings
   )
+  .jsSettings(
+    sourceGenerators in Compile += Def.task {
+      val srcDirs = (sourceDirectories in Compile).value
+      val destinationDir = (sourceManaged in Compile).value
+      copyAndReplace(srcDirs, destinationDir)
+    }.taskValue,
+  )
   .dependsOn(scalajavatime)
 
 lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
@@ -215,11 +222,11 @@ lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
     javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
   ).jsSettings(
     parallelExecution in Test := false,
-    // sourceGenerators in Test += Def.task {
-    //   val srcDirs = (sourceDirectories in Test).value
-    //   val destinationDir = (sourceManaged in Test).value
-    //   copyAndReplace(srcDirs, destinationDir)
-    // }.taskValue
+    sourceGenerators in Test += Def.task {
+      val srcDirs = (sourceDirectories in Test).value
+      val destinationDir = (sourceManaged in Test).value
+      copyAndReplace(srcDirs, destinationDir)
+    }.taskValue
   ).dependsOn(scalajavatime, scalajavatimeTZDB)
 
 lazy val scalajavatimeTestsJVM = scalajavatimeTests.jvm
