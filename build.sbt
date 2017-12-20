@@ -3,7 +3,7 @@ import sbt._
 import sbt.io.Using
 import TZDBTasks._
 
-val scalaVer = "2.11.12"
+val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
 
 lazy val downloadFromZip: TaskKey[Unit] =
@@ -195,6 +195,9 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .in(file("tzdb"))
   .settings(commonSettings)
   .settings(
+    name                 := "scala-java-time-tzdb"
+  )
+  .settings(
     tzDbSettings
   )
   .jsSettings(
@@ -213,6 +216,14 @@ lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .in(file("tests"))
   .settings(commonSettings: _*)
+  .settings(
+    name                 := "scala-java-time-tests",
+    // No, SBT, we don't want any artifacts for root.
+    // No, not even an empty jar.
+    publish              := {},
+    publishLocal         := {},
+    publishArtifact      := false,
+    Keys.`package`       := file(""))
   .jvmSettings(
     // Fork the JVM test to ensure that the custom flags are set
     fork in Test := true,
