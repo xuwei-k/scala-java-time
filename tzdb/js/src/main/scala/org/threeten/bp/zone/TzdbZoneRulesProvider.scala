@@ -9,7 +9,9 @@ import org.threeten.bp.Month
 import org.threeten.bp.DateTimeException
 
 import scala.scalajs.js
+import scala.scalajs.reflect.annotation.EnableReflectiveInstantiation
 
+@EnableReflectiveInstantiation
 final class TzdbZoneRulesProvider extends ZoneRulesProvider {
   import zonedb.threeten.tzdb._
   import scala.collection.JavaConverters._

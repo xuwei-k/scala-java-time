@@ -9,7 +9,27 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
-    <release version="2.0.0-M12" date="2017-06-06" description="v2.0.0-M11">
+    <release version="2.0.0-M13" date="2017-12-23" description="v2.0.0-13">
+      <action dev="cquiroz" type="update" >
+        Update to scala.js 0.6.21
+      </action>
+      <action dev="cquiroz" type="update" >
+        Updated tzdb to 2017c
+      </action>
+      <action dev="cquiroz" type="update" >
+        Split packages for test and tzdb
+      </action>
+      <action dev="cquiroz" type="update" >
+        Updated to scala 2.12.4
+      </action>
+      <action dev="cquiroz" type="update" >
+        Updated to scala 2.11.12
+      <action dev="cquiroz" type="update" >
+        Support scala.js 1.0.0-M2
+      </action>
+      </action>
+    </release>
+    <release version="2.0.0-M12" date="2017-06-06" description="v2.0.0-M12">
       <action dev="cquiroz" type="update" >
         Update to scala.js 0.6.17
       </action>

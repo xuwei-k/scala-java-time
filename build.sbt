@@ -3,8 +3,11 @@ import sbt._
 import sbt.io.Using
 import TZDBTasks._
 
-val scalaVer = "2.11.12"
+val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
+val tzdbVersion = "2017c"
+val scalaJavaTimeVersion = "2.0.0-M13-SNAPSHOT"
+val scalaTZDBVersion = s"${scalaJavaTimeVersion}_$tzdbVersion"
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
@@ -12,7 +15,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M13-SNAPSHOT",
+  version      := scalaJavaTimeVersion,
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -21,15 +24,28 @@ lazy val commonSettings = Seq(
   crossScalaVersions := crossScalaVer,
   autoAPIMappings    := true,
 
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+        compilerPlugin("org.scalameta" % "semanticdb-scalac" % "2.1.2" cross CrossVersion.full) :: Nil
+      case _ =>
+        Nil
+    }
+  },
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
-    "-encoding", "UTF-8"
+    "-encoding", "UTF-8",
   ),
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-        scalacOptions.value ++ Seq("-deprecation:false", "-Xfatal-warnings", "-target:jvm-1.8")
+        scalacOptions.value ++ Seq(
+          "-deprecation:false",
+          "-Xfatal-warnings",
+          "-Xplugin-require:semanticdb",
+          "-Yrangepos",
+          "-target:jvm-1.8")
       case Some((2, 10)) =>
         scalacOptions.value ++ Seq("-target:jvm-1.8")
     }
@@ -66,10 +82,10 @@ lazy val commonSettings = Seq(
       Nil
     }
   }
-)
+) ++ scalafixSettings
 
 lazy val root = project.in(file("."))
-  .aggregate(scalajavatimeJVM, scalajavatimeJS)
+  .aggregate(scalajavatimeJVM, scalajavatimeJS, scalajavatimeTZDBJVM, scalajavatimeTZDBJS, scalajavatimeTestsJVM, scalajavatimeTestsJVM)
   .settings(commonSettings: _*)
   .settings(
     name                 := "scala-java-time",
@@ -92,12 +108,11 @@ lazy val root = project.in(file("."))
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
-    val version = "2017c"
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading $version version to $tzdbDir...")
-      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"
+      println(s"tzdb data missing. downloading $tzdbVersion version to $tzdbDir...")
+      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$tzdbVersion.tar.gz"
       println(s"downloading from $url")
       println(s"to file $tzdbTarball")
       IO.createDirectory(tzdbDir)
@@ -148,19 +163,11 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   generatedFiles
 }
 
-lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full).in(file("."))
+lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
+  .in(file("core"))
   .settings(commonSettings: _*)
-  .jvmSettings(
-    resolvers += Resolver.sbtPluginRepo("releases"),
-    // Fork the JVM test to ensure that the custom flags are set
-    fork in Test := true,
-    baseDirectory in Test := baseDirectory.value.getParentFile,
-    // Use CLDR provider for locales
-    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
-    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
-  ).jsSettings(
-    tzDbSettings: _*
-  ).jsSettings(
+  .jsSettings(
     scalacOptions ++= {
       val tagOrHash =
         if(isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
@@ -176,12 +183,6 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform).crossType(CrossTy
         val destinationDir = (sourceManaged in Compile).value
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
-    sourceGenerators in Test += Def.task {
-        val srcDirs = (sourceDirectories in Test).value
-        val destinationDir = (sourceManaged in Test).value
-        copyAndReplace(srcDirs, destinationDir)
-      }.taskValue,
-    parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
     )
@@ -189,6 +190,61 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform).crossType(CrossTy
 
 lazy val scalajavatimeJVM = scalajavatime.jvm
 lazy val scalajavatimeJS  = scalajavatime.js
+
+lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
+  .enablePlugins(ScalaJSPlugin)
+  .in(file("tzdb"))
+  .settings(commonSettings)
+  .settings(
+    name    := "scala-java-time-tzdb",
+    version := scalaTZDBVersion
+  )
+  .settings(
+    tzDbSettings
+  )
+  .jsSettings(
+    sourceGenerators in Compile += Def.task {
+      val srcDirs = (sourceDirectories in Compile).value
+      val destinationDir = (sourceManaged in Compile).value
+      copyAndReplace(srcDirs, destinationDir)
+    }.taskValue,
+  )
+  .dependsOn(scalajavatime)
+
+lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
+lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js
+
+lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
+  .in(file("tests"))
+  .settings(commonSettings: _*)
+  .settings(
+    name                 := "scala-java-time-tests",
+    // No, SBT, we don't want any artifacts for root.
+    // No, not even an empty jar.
+    publish              := {},
+    publishLocal         := {},
+    publishArtifact      := false,
+    Keys.`package`       := file(""))
+  .jvmSettings(
+    // Fork the JVM test to ensure that the custom flags are set
+    fork in Test := true,
+    baseDirectory in Test := baseDirectory.value.getParentFile,
+    // Use CLDR provider for locales
+    // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/enhancements.8.html#cldr
+    javaOptions in Test ++= Seq("-Duser.language=en", "-Duser.country=US", "-Djava.locale.providers=CLDR")
+  ).jsSettings(
+    parallelExecution in Test := false,
+    sourceGenerators in Test += Def.task {
+      val srcDirs = (sourceDirectories in Test).value
+      val destinationDir = (sourceManaged in Test).value
+      copyAndReplace(srcDirs, destinationDir)
+    }.taskValue
+  ).dependsOn(scalajavatime, scalajavatimeTZDB)
+
+lazy val scalajavatimeTestsJVM = scalajavatimeTests.jvm
+lazy val scalajavatimeTestsJS  = scalajavatimeTests.js
 
 lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavatimeJS)
   .settings(commonSettings)

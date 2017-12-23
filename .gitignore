@@ -23,7 +23,8 @@
 .ensime_cache/
 /project/project/
 /project/target/
-js/src/main/resources/
+shared/js/src/main/resources/
+tzdb/js/src/main/resources/
 
 /src/*/
 !/src/changes/
@@ -34,3 +35,4 @@ js/src/main/resources/
 **/TempTest.java
 /.idea/
 /threetenbp.iml
+.metaserver/
