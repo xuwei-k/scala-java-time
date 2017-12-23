@@ -5,6 +5,9 @@ import TZDBTasks._
 
 val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
+val tzdbVersion = "2017c"
+val scalaJavaTimeVersion = "2.0.0-M13-SNAPSHOT"
+val scalaTZDBVersion = s"${scalaJavaTimeVersion}_$tzdbVersion"
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
@@ -12,7 +15,7 @@ lazy val downloadFromZip: TaskKey[Unit] =
 lazy val commonSettings = Seq(
   name         := "scala-java-time",
   description  := "java.time API implementation in Scala and Scala.js",
-  version      := "2.0.0-M13-SNAPSHOT",
+  version      := scalaJavaTimeVersion,
   organization := "io.github.cquiroz",
   homepage     := Some(url("https://github.com/cquiroz/scala-java-time")),
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
@@ -105,12 +108,11 @@ lazy val root = project.in(file("."))
 
 lazy val tzDbSettings = Seq(
   downloadFromZip := {
-    val version = "2017c"
     val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
     val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
     if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading $version version to $tzdbDir...")
-      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$version.tar.gz"
+      println(s"tzdb data missing. downloading $tzdbVersion version to $tzdbDir...")
+      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$tzdbVersion.tar.gz"
       println(s"downloading from $url")
       println(s"to file $tzdbTarball")
       IO.createDirectory(tzdbDir)
@@ -195,7 +197,8 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .in(file("tzdb"))
   .settings(commonSettings)
   .settings(
-    name                 := "scala-java-time-tzdb"
+    name    := "scala-java-time-tzdb",
+    version := scalaTZDBVersion
   )
   .settings(
     tzDbSettings

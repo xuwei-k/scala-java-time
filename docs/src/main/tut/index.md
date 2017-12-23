@@ -56,12 +56,12 @@ chrono.MinguoDate.now(fixedClock).toString       == "Minguo ROC 98-02-13"
 #### Usage
 
 The *scala-java-time* library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
-Both Scala 2.11 and Scala 2.12 (2.12.0-M8 and later) are supported.
+Both Scala 2.11 and Scala 2.12 (2.0.0-M8 and later) are supported.
 
-To get started with SBT, add one (or both) of these dependencies:
+To get started with SBT, add one of these dependencies:
 
-- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M12"` (for Scala)
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M12"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M13"` (for Scala)
+- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M13"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 #### Building
 This project builds using sbt.
@@ -96,6 +96,14 @@ The version of the time-zone data used is stored within the dat file (near the s
 Updating the time-zone database involves using the `TzdbZoneRulesCompiler` class
 and re-compiling the jar file.
 Pull requests with later versions of the dat file will be accepted.
+
+#### Time-zone data (JS)
+The timezone for js is provided in a separate bundle which contains all time zones available from
+[IANA Time Zone Database](https://www.iana.org/time-zones). To use them you need to add the following dependency
+
+- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.0.0-M13"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+
+Note that the db is fairly large and due to the characteristics of the API it's not very ammenable to optimization
 
 #### FAQs
 
