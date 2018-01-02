@@ -159,8 +159,6 @@ lazy val scalajavatimeJS  = scalajavatime.js
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
-  .enablePlugins(ScalaJSPlugin)
-  .enablePlugins(TzdbPlugin)
   .in(file("tzdb"))
   .settings(commonSettings)
   .settings(
@@ -169,14 +167,14 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   )
   .jsSettings(
     sourceGenerators in Compile += Def.task {
-      val srcDirs = (sourceDirectories in Compile).value
+      val srcDirs = (sourceManaged in Compile).value
       val destinationDir = (sourceManaged in Compile).value
-      copyAndReplace(srcDirs, destinationDir)
+      copyAndReplace(Seq(srcDirs), destinationDir)
     }.taskValue
   ).dependsOn(scalajavatime)
 
 lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
-lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js
+lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js.enablePlugins(TzdbPlugin)
 
 lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
