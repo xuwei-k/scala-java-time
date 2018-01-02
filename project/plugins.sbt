@@ -21,6 +21,8 @@ addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.3.0")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.5.7")
 
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.0-SNAPSHOT")
 
 // Incompatible with 2.12.0-M5
