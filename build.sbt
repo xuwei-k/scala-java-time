@@ -2,6 +2,7 @@ import sbtcrossproject.{crossProject, CrossType}
 import sbt._
 import sbt.io.Using
 import TZDBTasks._
+import sbtcrossproject.{crossProject, CrossType}
 
 val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
@@ -73,19 +74,10 @@ lazy val commonSettings = Seq(
     },
   pomExtra := pomData,
   pomIncludeRepository := { _ => false },
-  libraryDependencies ++= {
-    if (scalaJSVersion.startsWith("0.6.")) {
-      Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
-      )
-    } else {
-      Nil
-    }
-  }
 ) ++ scalafixSettings
 
 lazy val root = project.in(file("."))
-  .aggregate(scalajavatimeJVM, scalajavatimeJS, scalajavatimeTZDBJVM, scalajavatimeTZDBJS, scalajavatimeTestsJVM, scalajavatimeTestsJVM)
+  .aggregate(scalajavatimeJVM, scalajavatimeJS, scalajavatimeNative, scalajavatimeTZDBJVM, scalajavatimeTZDBJS, scalajavatimeTestsJVM, scalajavatimeTestsJVM)
   .settings(commonSettings: _*)
   .settings(
     name                 := "scala-java-time",
@@ -163,10 +155,23 @@ def copyAndReplace(srcDirs: Seq[File], destinationDir: File): Seq[File] = {
   generatedFiles
 }
 
-lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
+val scalatest = Def.setting {
+  if (scalaJSVersion.startsWith("0.6.")) {
+    Seq(
+      "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
+    )
+  } else {
+    Nil
+  }
+}
+
+lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .in(file("core"))
   .settings(commonSettings: _*)
+  .platformsSettings(JVMPlatform, JSPlatform)(
+    libraryDependencies ++= scalatest.value
+  )
   .jsSettings(
     scalacOptions ++= {
       val tagOrHash =
@@ -184,18 +189,22 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
+      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.8-cldr31"
     )
   )
 
-lazy val scalajavatimeJVM = scalajavatime.jvm
-lazy val scalajavatimeJS  = scalajavatime.js
+lazy val scalajavatimeJVM     = scalajavatime.jvm
+lazy val scalajavatimeJS      = scalajavatime.js
+lazy val scalajavatimeNative  = scalajavatime.native
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .enablePlugins(ScalaJSPlugin)
   .in(file("tzdb"))
   .settings(commonSettings)
+  .platformsSettings(JVMPlatform, JSPlatform)(
+    libraryDependencies ++= scalatest.value
+  )
   .settings(
     name    := "scala-java-time-tzdb",
     version := scalaTZDBVersion
@@ -219,6 +228,9 @@ lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .in(file("tests"))
   .settings(commonSettings: _*)
+  .platformsSettings(JVMPlatform, JSPlatform)(
+    libraryDependencies ++= scalatest.value
+  )
   .settings(
     name                 := "scala-java-time-tests",
     // No, SBT, we don't want any artifacts for root.

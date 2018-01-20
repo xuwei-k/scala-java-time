@@ -10,19 +10,14 @@ language: scala
 
 jdk:
   - oraclejdk8
-  - oraclejdk9
 
 scala:
-  - 2.10.7
   - 2.11.12
-  - 2.12.4
 
 before_install:
   - export PATH=${PATH}:./vendor/bundle
 
 env:
-  - TRAVIS_NODE_VERSION="7.10.1"
-  - TRAVIS_NODE_VERSION="8.9.1"
   - TRAVIS_NODE_VERSION="9.2.0"
 
 install:
@@ -41,8 +36,7 @@ cache:
     - $HOME/.sbt/boot
 
 script:
-  - sudo chmod +x /usr/local/bin/sbt
-  - sbt ++$TRAVIS_SCALA_VERSION -J-Xmx4G clean scalajavatimeTestsJVM/test scalajavatimeTestsJS/test scalajavatimeJVM/publishLocal scalajavatimeJS/publishLocal scalajavatimeTZDBJVM/publishLocal scalajavatimeTZDBJS/publishLocal docs/makeMicrosite
+  - sbt "++${TRAVIS_SCALA_VERSION}! -v" -J-Xmx4G clean scalajavatimeTestsJVM/test "show scalajavatimeTestsNative/nativeMissingDependencies" scalajavatimeTestsJS/test
   # Tricks to avoid unnecessary cache updates, from
   # http://www.scala-sbt.org/0.13/docs/Travis-CI-with-sbt.html
   - find $HOME/.sbt -name "*.lock" | xargs rm
