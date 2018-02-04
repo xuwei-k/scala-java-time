@@ -159,7 +159,6 @@ lazy val scalajavatimeJS  = scalajavatime.js
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
-  .enablePlugins(TzdbPlugin)
   .in(file("tzdb"))
   .settings(commonSettings)
   .settings(
@@ -176,7 +175,7 @@ lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   ).dependsOn(scalajavatime)
 
 lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
-lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js
+lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js.enablePlugins(TzdbPlugin)
 
 lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
