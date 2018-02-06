@@ -7,7 +7,7 @@ section: "home"
 ## Scala Java-Time
 
 [![Build Status](https://travis-ci.org/cquiroz/scala-java-time.svg?branch=master)](https://travis-ci.org/cquiroz/scala-java-time)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.cquiroz/scala-java-time_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.cquiroz/scala-java-time_2.11)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.cquiroz/scala-java-time_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.cquiroz/scala-java-time_2.12)
 [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
 
 This project provides an implementation of the `java.time` package, a date and time library that was added in Java 8.
@@ -53,32 +53,91 @@ chrono.ThaiBuddhistDate.now(fixedClock).toString == "ThaiBuddhist BE 2552-02-13"
 chrono.MinguoDate.now(fixedClock).toString       == "Minguo ROC 98-02-13"
 ```
 
-#### Usage
+### Usage
 
-The *scala-java-time* library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
+The _scala-java-time_ library is currently available for Scala (JVM, version 8 and later) and Scala.js (JavaScript).
 Both Scala 2.11 and Scala 2.12 (2.0.0-M8 and later) are supported.
 
 To get started with SBT, add one of these dependencies:
 
-- `libraryDependencies += "io.github.cquiroz" %%  "scala-java-time" % "2.0.0-M13"` (for Scala)
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M13"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M12"` (for Scala)
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M12"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+
+To get the latest snapshots add either:
+
+* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M13-SNAPSHOT"` (for Scala)
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M13-SNAPSHOT"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+
+### Time zones
+
+#### Time-zone data (JS) alternative I (All timezones)
+
+The timezone for js is provided in a separate bundle which contains all time zones available from
+[IANA Time Zone Database](https://www.iana.org/time-zones). To use them you need to add the following dependency
+
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.0.0-M13-SNAPSHOT"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+
+Note that the db is fairly large and due to the characteristics of the API it's not very ammenable to optimization
+This database is published every now and then so it maybe old. For current version see the following section.
+
+#### Time-zone data (JS) alternative II (Selective timezones)
+
+It is possible to build a custom tz db for your application using [sbt-tzdb](https://github.com/cquiroz/sbt-tzdb). This has two big benefits:
+
+* You can select exactly what version of tzdb to use. Eventually you can you use the latest always.
+* You can filter the time zones relevant to your application. This can dramatically reduce your js size
+
+To do that you need to:
+
+* Add `sbt-tzdb` to your list of plugins
+
+```scala
+addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.0")
+```
+
+* Enable the plugin for your `Scala.js` project:
+
+```scala
+  .enablePlugins(TzdbPlugin)
+```
+
+or for cross projects
+
+```scala
+lazy val lib = crossProject(JVMPlatform, JSPlatform)
+  ...
+
+lazy val libJVM = lib.jvm
+lazy val libJS  = lib.js.enablePlugins(TzdbPlugin)
+```
+
+This will build a tzdb exactly as on step 1 with all timezones. However you can filter the zones you want, e.g. add to your build:
+
+```scala
+zonesFilter := {(z: String) => z == "America/Santiago" || z == "Pacific/Honolulu"},
+```
+
+#### Time-zone data (JVM)
+
+The time-zone database is stored as a pre-compiled dat file that is included in the built jar.
+The version of the time-zone data used is stored within the dat file (near the start).
+Updating the time-zone database involves using the `TzdbZoneRulesCompiler` class
+and re-compiling the jar file.
+Pull requests with later versions of the dat file will be accepted.
 
 #### Building
+
 This project builds using sbt.
-Run `sbt scalajavatimeCrossJVM/test` to run the test suite on the JVM and
-`sbt scalajavatimeCrossJS/test` to run the test suite in JavaScript.
-
-#### Status
-
-All parts of this library work perfectly fine with Scala.js in the browser.
+Run `sbt scalajavatimeTestsJVM/test` to run the test suite on the JVM and
+`sbt scalajavatimeTestsJS/test` to run the test suite in JavaScript.
 
 #### Contributing
 
 We welcome all contributions, including ideas, suggestions, bug reports, bug fixes and code!
 We are especially interested in contributions that tackle the following issues:
 
-* Modularize the tzdb database
 * Find ways to reduce the size of the library
+* Implement missing methods
 
 Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) or [issues](https://github.com/soc/scala-java-time/issues) to find something to work on! Let us know if you need help!
 
@@ -88,22 +147,7 @@ Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) o
 
 The current version is published containing the code in both packages: `org.threeten.bp` and `java.time`.
 
-A stable release of 2.0 will be published after a (hopefully) short RC phase.
-
-#### Time-zone data (JVM)
-The time-zone database is stored as a pre-compiled dat file that is included in the built jar.
-The version of the time-zone data used is stored within the dat file (near the start).
-Updating the time-zone database involves using the `TzdbZoneRulesCompiler` class
-and re-compiling the jar file.
-Pull requests with later versions of the dat file will be accepted.
-
-#### Time-zone data (JS)
-The timezone for js is provided in a separate bundle which contains all time zones available from
-[IANA Time Zone Database](https://www.iana.org/time-zones). To use them you need to add the following dependency
-
-- `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.0.0-M13"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
-
-Note that the db is fairly large and due to the characteristics of the API it's not very ammenable to optimization
+A stable release of 2.0 will be published with only `java.time` on its binary after a (hopefully) short RC phase.
 
 #### FAQs
 
