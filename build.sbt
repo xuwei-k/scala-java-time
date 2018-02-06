@@ -4,7 +4,7 @@ import sbt.io.Using
 
 val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.11.12")
-val tzdbVersion = "2017c"
+val tzdbVersion = "2018c"
 val scalaJavaTimeVersion = "2.0.0-M13-SNAPSHOT"
 val scalaTZDBVersion = s"${scalaJavaTimeVersion}_$tzdbVersion"
 
