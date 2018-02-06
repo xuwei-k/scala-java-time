@@ -5,8 +5,9 @@ import sbt.io.Using
 val scalaVer = "2.12.4"
 val crossScalaVer = Seq(scalaVer, "2.10.7", "2.11.12")
 val tzdbVersion = "2018c"
-val scalaJavaTimeVersion = "2.0.0-M13-SNAPSHOT"
-val scalaTZDBVersion = s"${scalaJavaTimeVersion}_$tzdbVersion"
+val scalaJavaTimeVer = "2.0.0-M13"
+val scalaJavaTimeVersion = s"$scalaJavaTimeVer-SNAPSHOT"
+val scalaTZDBVersion = s"${scalaJavaTimeVer}_$tzdbVersion-SNAPSHOT"
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
