@@ -1,13 +1,13 @@
 import sbtcrossproject.{crossProject, CrossType}
 import sbt._
 import sbt.io.Using
-import TZDBTasks._
 
 val scalaVer = "2.12.4"
-val crossScalaVer = Seq(scalaVer, "2.10.7", "2.12.4")
-val tzdbVersion = "2017c"
-val scalaJavaTimeVersion = "2.0.0-M13-SNAPSHOT"
-val scalaTZDBVersion = s"${scalaJavaTimeVersion}_$tzdbVersion"
+val crossScalaVer = Seq(scalaVer, "2.10.7", "2.11.12")
+val tzdbVersion = "2018c"
+val scalaJavaTimeVer = "2.0.0-M13"
+val scalaJavaTimeVersion = s"$scalaJavaTimeVer-SNAPSHOT"
+val scalaTZDBVersion = s"${scalaJavaTimeVer}_$tzdbVersion-SNAPSHOT"
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
@@ -70,7 +70,7 @@ lazy val commonSettings = Seq(
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-    },
+  },
   pomExtra := pomData,
   pomIncludeRepository := { _ => false },
   libraryDependencies ++= {
@@ -96,39 +96,6 @@ lazy val root = project.in(file("."))
     publishArtifact      := false,
     Keys.`package`       := file(""))
 
-  def download(url: String, to: File) = {
-    import gigahorse._, support.okhttp.Gigahorse
-    import scala.concurrent._, duration._
-    Gigahorse.withHttp(Gigahorse.config) { http =>
-         val r = Gigahorse.url(url)
-         val f = http.download(r, to)
-         Await.result(f, 120.seconds)
-       }
-  }
-
-lazy val tzDbSettings = Seq(
-  downloadFromZip := {
-    val tzdbDir = (resourceDirectory in Compile).value / "tzdb"
-    val tzdbTarball = (resourceDirectory in Compile).value / "tzdb.tar.gz"
-    if (java.nio.file.Files.notExists(tzdbDir.toPath)) {
-      println(s"tzdb data missing. downloading $tzdbVersion version to $tzdbDir...")
-      var url = s"http://www.iana.org/time-zones/repository/releases/tzdata$tzdbVersion.tar.gz"
-      println(s"downloading from $url")
-      println(s"to file $tzdbTarball")
-      IO.createDirectory(tzdbDir)
-      download(url, tzdbTarball)
-      Unpack.gunzipTar(tzdbTarball, tzdbDir)
-      tzdbTarball.delete()
-    } else {
-      println("tzdb files already available")
-    }
-  },
-  compile in Compile := (compile in Compile).dependsOn(downloadFromZip).value,
-  sourceGenerators in Compile += Def.task {
-    generateTZDataSources((sourceManaged in Compile).value,
-      (resourceDirectory in Compile).value / "tzdb")
-  }.taskValue
-)
 /**
   * Copy source files and translate them to the java.time package
   */
@@ -193,27 +160,23 @@ lazy val scalajavatimeJS  = scalajavatime.js
 
 lazy val scalajavatimeTZDB = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
-  .enablePlugins(ScalaJSPlugin)
   .in(file("tzdb"))
   .settings(commonSettings)
   .settings(
     name    := "scala-java-time-tzdb",
     version := scalaTZDBVersion
   )
-  .settings(
-    tzDbSettings
-  )
   .jsSettings(
+    includeTTBP := true,
     sourceGenerators in Compile += Def.task {
-      val srcDirs = (sourceDirectories in Compile).value
+      val srcDirs = (sourceManaged in Compile).value
       val destinationDir = (sourceManaged in Compile).value
-      copyAndReplace(srcDirs, destinationDir)
-    }.taskValue,
-  )
-  .dependsOn(scalajavatime)
+      copyAndReplace(Seq(srcDirs), destinationDir)
+    }.taskValue
+  ).dependsOn(scalajavatime)
 
 lazy val scalajavatimeTZDBJVM = scalajavatimeTZDB.jvm
-lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js
+lazy val scalajavatimeTZDBJS  = scalajavatimeTZDB.js.enablePlugins(TzdbPlugin)
 
 lazy val scalajavatimeTests = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
