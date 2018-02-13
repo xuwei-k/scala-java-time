@@ -77,6 +77,10 @@ and either:
 
 ### Time zones
 
+#### No timezones
+
+If you don't need to use timezones in your application you can just stop here. By default `UTC` will always be available but otherwise the library will work fine and produce the smallest possible js file
+
 #### Time-zone data (JS) alternative I (All timezones)
 
 The timezone for js is provided in a separate bundle which contains all time zones available from
@@ -99,7 +103,7 @@ To do that you need to:
 * Add `sbt-tzdb` to your list of plugins (Note you need sbt 1.x)
 
 ```scala
-addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.0")
+addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.1")
 ```
 
 * Enable the plugin for your `Scala.js` project:
@@ -108,7 +112,7 @@ addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.0")
   .enablePlugins(TzdbPlugin)
 ```
 
-or for cross projects
+or for cross projects, enable it **only** one the js side
 
 ```scala
 lazy val lib = crossProject(JVMPlatform, JSPlatform)
