@@ -151,7 +151,7 @@ lazy val scalajavatime = crossProject(JVMPlatform, JSPlatform)
         copyAndReplace(srcDirs, destinationDir)
       }.taskValue,
     libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.9-cldr32"
+      "io.github.cquiroz" %%% "scala-java-locales" % "0.3.10-cldr32"
     )
   )
 
