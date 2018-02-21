@@ -9,7 +9,7 @@
   </properties>
   <body>
     <!-- types are add, fix, remove, update -->
-    <release version="2.0.0-M13" date="2017-12-23" description="v2.0.0-13">
+    <release version="2.0.0-M13" date="2018-02-21" description="v2.0.0-13">
       <action dev="cquiroz" type="update" >
         Update to scala.js 0.6.22
       </action>
@@ -29,6 +29,9 @@
       </action>
       <action dev="cquiroz" type="update" >
         Use sbt-tzdb to build the timezone db
+      </action>
+      <action dev="cquiroz" type="update" >
+        Publish only the java.time package
       </action>
     </release>
     <release version="2.0.0-M12" date="2017-06-06" description="v2.0.0-M12">

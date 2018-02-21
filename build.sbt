@@ -3,11 +3,10 @@ import sbt._
 import sbt.io.Using
 
 val scalaVer = "2.12.4"
-val crossScalaVer = Seq(scalaVer, "2.10.7", "2.11.12")
 val tzdbVersion = "2018c"
 val scalaJavaTimeVer = "2.0.0-M13"
-val scalaJavaTimeVersion = s"$scalaJavaTimeVer-SNAPSHOT"
-val scalaTZDBVersion = s"${scalaJavaTimeVer}_$tzdbVersion-SNAPSHOT"
+val scalaJavaTimeVersion = s"$scalaJavaTimeVer"
+val scalaTZDBVersion = s"${scalaJavaTimeVer}_$tzdbVersion"
 
 lazy val downloadFromZip: TaskKey[Unit] =
   taskKey[Unit]("Download the tzdb tarball and extract it")
@@ -21,12 +20,18 @@ lazy val commonSettings = Seq(
   licenses     := Seq("BSD 3-Clause License" -> url("https://opensource.org/licenses/BSD-3-Clause")),
 
   scalaVersion       := scalaVer,
-  crossScalaVersions := crossScalaVer,
+  crossScalaVersions := {
+    if (scalaJSVersion.startsWith("0.6")) {
+      Seq("2.10.7", "2.11.12", "2.12.4", "2.13.0-M2")
+    } else {
+      Seq("2.11.12", "2.12.4", "2.13.0-M2")
+    }
+  },
   autoAPIMappings    := true,
 
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+      case Some((2, scalaMajor)) if scalaMajor >= 11 && scalaMajor <= 12 =>
         compilerPlugin("org.scalameta" % "semanticdb-scalac" % "2.1.2" cross CrossVersion.full) :: Nil
       case _ =>
         Nil
@@ -41,11 +46,17 @@ lazy val commonSettings = Seq(
   mappings in (Compile, packageBin) := (mappings in (Compile, packageBin)).value.filter { case (f, s) => !s.contains("semanticdb") && !s.contains("threeten") },
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+      case Some((2, scalaMajor)) if scalaMajor >= 11 && scalaMajor <= 12 =>
         scalacOptions.value ++ Seq(
           "-deprecation:false",
           "-Xfatal-warnings",
           "-Xplugin-require:semanticdb",
+          "-Yrangepos",
+          "-target:jvm-1.8")
+      case Some((2, 13)) =>
+        scalacOptions.value ++ Seq(
+          "-deprecation:false",
+          "-Xfatal-warnings",
           "-Yrangepos",
           "-target:jvm-1.8")
       case Some((2, 10)) =>
