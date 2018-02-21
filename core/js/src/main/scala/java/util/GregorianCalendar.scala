@@ -1,6 +1,6 @@
 package java.util
 
-import org.threeten.bp.ZonedDateTime
+import java.time.ZonedDateTime
 
 @SerialVersionUID(-8125100834729963327L)
 class GregorianCalendar(timezone: TimeZone = TimeZone.getDefault, locale: Locale = Locale.getDefault) extends Calendar(timezone, locale) {

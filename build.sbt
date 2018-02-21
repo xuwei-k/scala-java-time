@@ -37,6 +37,8 @@ lazy val commonSettings = Seq(
     "-feature",
     "-encoding", "UTF-8",
   ),
+  // Don't include threeten on the binaries
+  mappings in (Compile, packageBin) := (mappings in (Compile, packageBin)).value.filter { case (f, s) => !s.contains("semanticdb") && !s.contains("threeten") },
   scalacOptions := {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor >= 11 =>

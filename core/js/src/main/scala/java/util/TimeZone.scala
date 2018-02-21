@@ -2,8 +2,8 @@ package java.util
 
 import java.text.DateFormatSymbols
 
-import org.threeten.bp.{Instant, ZoneId}
-import org.threeten.bp.zone.ZoneRulesProvider
+import java.time.{Instant, ZoneId}
+import java.time.zone.ZoneRulesProvider
 
 import scala.collection.JavaConverters._
 import scala.util.Try

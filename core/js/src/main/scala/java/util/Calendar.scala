@@ -1,6 +1,6 @@
 package java.util
 
-import org.threeten.bp.Instant
+import java.time.Instant
 
 @SerialVersionUID(-1807547505821590642L)
 abstract class Calendar private[util](timezone: TimeZone = null, locale: Locale = null) extends Cloneable with Serializable with Ordered[Calendar] {
