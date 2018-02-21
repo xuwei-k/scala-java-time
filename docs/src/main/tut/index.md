@@ -16,9 +16,7 @@ The implementation is based on the original BSD-licensed reference implementatio
 #### Example
 
 ```tut:book
-// On scala.js you can pick either java.time or org.threeten.bp package to import
-//import java.time._
-import org.threeten.bp._
+import java.time._
 
 // always returns 2009-02-13T23:31:30
 val fixedClock = Clock.fixed(Instant.ofEpochSecond(1234567890L), ZoneOffset.ofHours(0))
@@ -60,8 +58,8 @@ Both Scala 2.11 and Scala 2.12 (2.0.0-M8 and later) are supported.
 
 To get started with SBT, add one of these dependencies:
 
-* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M12"` (for Scala)
-* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M12"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M13"` (for Scala)
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M13"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 To get the latest snapshots add the repo
 
@@ -72,8 +70,8 @@ resolvers +=
 
 and either:
 
-* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M13-SNAPSHOT"` (for Scala)
-* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M13-SNAPSHOT"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+* `libraryDependencies += "io.github.cquiroz" %% "scala-java-time" % "2.0.0-M14-SNAPSHOT"` (for Scala)
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % "2.0.0-M14-SNAPSHOT"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 ### Time zones
 
@@ -86,7 +84,7 @@ If you don't need to use timezones in your application you can just stop here. B
 The timezone for js is provided in a separate bundle which contains all time zones available from
 [IANA Time Zone Database](https://www.iana.org/time-zones). To use them you need to add the following dependency
 
-* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.0.0-M13_2018c-SNAPSHOT"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
+* `libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.0.0-M13_2018c"` (for Scala.js, [Scala.js plugin](http://www.scala-js.org/tutorial/basic/#sbt-setup) required)
 
 Note that the db is fairly large and due to the characteristics of the API it's not very ammenable to optimization
 This database is published every now and then so it maybe old. For current version see the following section.
@@ -103,7 +101,7 @@ To do that you need to:
 * Add `sbt-tzdb` to your list of plugins (Note you need sbt 1.x)
 
 ```scala
-addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.1")
+addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.2")
 ```
 
 * Enable the plugin for your `Scala.js` project:
@@ -156,11 +154,18 @@ Have a look at the [issues](https://github.com/cquiroz/scala-java-time/issues) o
 
 ##### 2.0
 
-The current version is published containing the code in both packages: `org.threeten.bp` and `java.time`.
-
 A stable release of 2.0 will be published with only `java.time` on its binary after a (hopefully) short RC phase.
 
 #### FAQs
+
+##### What's with the packages? the code uses `org.threeten.bp` but I use `java.time`
+
+The original code was in the `org.threeten.bp` and that has been maintained, among other reasons, because writing
+code on the `java` namespace tends to produce issues with the security controls of the JVM
+
+Thus the code is on `org.threeten.bp` but during packaging the code is moved to `java.time` and `org.threeten.bp` is removed.
+
+Most applications would use the `java.time` package mirroring the JVM
 
 ##### Is this project derived from OpenJDK?
 

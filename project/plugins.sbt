@@ -21,7 +21,7 @@ addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.3.1")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.5.10")
 
-addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.1")
+addSbtPlugin("io.github.cquiroz" % "sbt-tzdb" % "0.1.2")
 
 // Incompatible with 2.12.0-M5
 // addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
