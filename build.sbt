@@ -237,10 +237,6 @@ lazy val docs = project.in(file("docs")).dependsOn(scalajavatimeJVM, scalajavati
   )
 
 lazy val pomData =
-  <scm>
-    <url>git@github.com:cquiroz/scala-java-time.git</url>
-    <connection>scm:git:git@github.com:cquiroz/scala-java-time.git</connection>
-  </scm>
   <developers>
     <developer>
       <id>cquiroz</id>
