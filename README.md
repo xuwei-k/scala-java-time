@@ -1,6 +1,8 @@
 
 ## Scala Java-Time
 
+[![Join the chat at https://gitter.im/scala-java-time/Lobby](https://badges.gitter.im/scala-java-time/Lobby.svg)](https://gitter.im/scala-java-time/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/cquiroz/scala-java-time.svg?branch=master)](https://travis-ci.org/cquiroz/scala-java-time)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.cquiroz/scala-java-time_2.11.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.cquiroz/scala-java-time_2.11)
 [![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.8.svg)](http://scala-js.org)
